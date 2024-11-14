@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=examples"
+    "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=examples",
+    "build": "esbuild lib/index.ts --outdir=dist --bundle --sourcemap"
   },
   "author": "",
   "license": "ISC",
