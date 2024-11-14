@@ -1,5 +1,4 @@
-import { Clock } from "../src/lib.js";
-import { remapValues } from "../src/utils/value.ts";
+import { Clock, remapValues } from "../lib";
 import { data } from "./data.ts";
 
 (async () => {

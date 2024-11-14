@@ -1,61 +1,22 @@
-import { Application, Container, Geometry, Mesh, Shader } from "pixi.js";
-import { createRadialMeshGeometry } from "./utils/geometry";
-import { baseFragmentShader, baseVertexShader } from "./utils/shader";
+import { Geometry, Mesh, Shader } from "pixi.js";
+import { Layer } from "./Layer";
+import { Values } from "../types";
+import { clampValue } from "../utils/math";
 import {
   mapPolarPathToValues,
   mapValuesToPolarPath,
   resampleClosedPath,
   subdivideClosedPath,
-} from "./utils/path";
-import { clampValue } from "./utils/math";
-import { RadialChartOptions, Values } from "./types";
+} from "../utils/path";
+import { createRadialMeshGeometry } from "../utils/geometry";
+import { baseFragmentShader, baseVertexShader } from "../utils/shader";
 
-export class Layer extends Container {}
-
-export class Clock extends Application {
-  private scene: Layer;
-
-  async initialize() {
-    await this.init({
-      background: "#000000",
-      antialias: true,
-      autoDensity: true,
-      resolution: window.devicePixelRatio || 1,
-    });
-
-    document.body.appendChild(this.canvas);
-
-    this.scene = new Layer();
-    this.scene.position.set(this.center.x, this.center.y);
-    this.stage.addChild(this.scene);
-  }
-
-  addLayer(layer: Layer) {
-    this.scene.addChild(layer);
-    return this;
-  }
-
-  addRadialChart(values: Values, options?: RadialChartOptions) {
-    const layer = new RadialChart(values, options);
-    this.addLayer(layer);
-    return this;
-  }
-
-  get width() {
-    return this.screen.width;
-  }
-
-  get height() {
-    return this.screen.height;
-  }
-
-  get center() {
-    return {
-      x: this.width / 2,
-      y: this.height / 2,
-    };
-  }
-}
+export type RadialChartOptions = {
+  samples?: number;
+  subdivisions?: number;
+  vertexShader?: string;
+  fragmentShader?: string;
+};
 
 export class RadialChart extends Layer {
   private geometry: Geometry;
