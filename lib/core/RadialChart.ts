@@ -27,17 +27,20 @@ export class RadialChart extends Layer {
     const { subdivisions, vertexShader, fragmentShader, samples } =
       params || {};
 
-    const clampedSubdivisions = subdivisions
-      ? clampValue(subdivisions, 0, 10)
-      : 0;
-
-    const clampedSamples = samples ? clampValue(samples, 3, 1000) : 300;
-
     // Process values
-    const polarPath = mapValuesToPolarPath(values);
-    const subdividedPath = subdivideClosedPath(polarPath, clampedSubdivisions);
-    const resampledPath = resampleClosedPath(subdividedPath, clampedSamples);
-    const polarValues = mapPolarPathToValues(resampledPath);
+    let path = mapValuesToPolarPath(values);
+
+    if (typeof subdivisions === "number") {
+      const clampedSubdivisions = clampValue(subdivisions, 0, 10);
+      path = subdivideClosedPath(path, clampedSubdivisions);
+    }
+
+    if (typeof samples === "number") {
+      const clampedSamples = clampValue(samples, 3, 5000);
+      path = resampleClosedPath(path, clampedSamples);
+    }
+
+    const polarValues = mapPolarPathToValues(path);
 
     // Generate geometry attributes
     const distanceAttribute: Values = [];

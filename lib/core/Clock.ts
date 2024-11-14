@@ -42,8 +42,8 @@ export class Clock extends Application {
   }
 
   addRadialChart(values: Values, options?: RadialChartOptions) {
-    const layer = new RadialChart(values, options);
-    this.addLayer(layer);
+    const radialChart = new RadialChart(values, options);
+    this.addLayer(radialChart);
     return this;
   }
 }

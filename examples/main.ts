@@ -5,11 +5,10 @@ import { data } from "./data.ts";
   const clock = new Clock();
   await clock.initialize();
 
-  const dummyValues = remapValues(
-    data,
-    clock.height * 0.5 - 40,
-    clock.height * 0.5
-  );
+  const dummyValues = remapValues(data, 200, 300);
 
-  clock.addRadialChart(dummyValues);
+  clock.addRadialChart(dummyValues, {
+    subdivisions: 4,
+    // samples: 400,
+  });
 })();
