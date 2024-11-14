@@ -1,0 +1,16 @@
+{
+  "name": "energy-clock-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=examples"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "pixi.js": "^8.5.2"
+  }
+}
