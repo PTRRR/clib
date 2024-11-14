@@ -10,6 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@thi.ng/geom-resample": "^3.0.21",
+    "@thi.ng/geom-subdiv-curve": "^3.0.21",
+    "chaikin-smooth": "^1.0.4",
+    "curve-interpolator": "^3.3.1",
     "esbuild": "^0.24.0",
     "pixi.js": "^8.5.2"
   }

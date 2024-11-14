@@ -5,9 +5,13 @@ export const baseVertexShader = `
       precision mediump float;
       precision mediump int;
 
-      in vec2 position;
+      in vec2 aPosition;
+      in float aValue;
+      in float aDistance;
       
-      out vec3 vPosition;
+      out vec3 position;
+      out float value;
+      out float distance;
 
       uniform mat3 uProjectionMatrix;
       uniform mat3 uWorldTransformMatrix;
@@ -15,10 +19,12 @@ export const baseVertexShader = `
 
 
       void main() {
-        vPosition = vec3(position, 0.0);
+        position = vec3(aPosition, 0.0);
+        value = aValue;
+        distance = aDistance;
 
         mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
-        gl_Position = vec4((mvp * vec3(position, 1.0)).xy, 0.0, 1.0);
+        gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
       }
     `;
 
@@ -32,9 +38,14 @@ export const baseFragmentShader = `
       precision highp float;
       precision highp int;
 
+      in vec3 position;
+      in float value;
+      in float distance;
+
       out vec4 fragColor;
 
       void main() {
-        fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        float line = abs(fract(distance * 5.0) - 0.5) * 2.0;
+        fragColor = vec4(line, line, line, 1.0);
       }
     `;

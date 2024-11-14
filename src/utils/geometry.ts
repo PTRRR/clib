@@ -1,47 +1,29 @@
-import { Geometry, Point } from "pixi.js";
+import { Geometry } from "pixi.js";
+import { mapValuesToPolarPath } from "./path";
 
-type Props = {
-  radius?: number;
-  segments?: number;
-  center?: Point;
-};
-
-export const createRadialMeshGeometry = (props?: Props) => {
-  const radius: number = props?.radius || 100;
-  const segments: number = props?.segments || 20;
-  const center: Point = props?.center || new Point(0, 0);
-
-  const contour: Point[] = [];
-  const step = (Math.PI * 2) / segments;
-
-  for (let i = 0; i <= segments; i++) {
-    const angle = step * i - Math.PI * 0.5;
-    const x = center.x + Math.cos(angle) * radius;
-    const y = center.y + Math.sin(angle) * radius;
-    contour.push(new Point(x, y));
-  }
+export const createRadialMeshGeometry = (values: number[] = []) => {
+  const contour = mapValuesToPolarPath(values);
 
   // Default attributes
-  const position: number[] = [];
+  const aPosition: number[] = [];
   const indexBuffer: number[] = [];
 
-  for (let i = 0; i < segments; i++) {
+  for (let i = 0; i < contour.length; i++) {
     const vector = contour[i];
-    const nextVector = contour[i + 1];
+    const nextIndex = i + 1 < contour.length ? i + 1 : 0;
+    const nextVector = contour[nextIndex];
 
     // Indices
     indexBuffer.push(i * 3, i * 3 + 1, i * 3 + 2);
 
     // Positions
-    position.push(0, 0);
-    position.push(vector.x, vector.y);
-    position.push(nextVector.x, nextVector.y);
+    aPosition.push(0, 0);
+    aPosition.push(vector[0], vector[1]);
+    aPosition.push(nextVector[0], nextVector[1]);
   }
 
   const geometry = new Geometry({
-    attributes: {
-      position,
-    },
+    attributes: { aPosition },
     indexBuffer,
   });
 
