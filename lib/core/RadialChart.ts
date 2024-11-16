@@ -14,7 +14,7 @@ import {
 } from "../utils/path";
 import { createRadialMeshGeometry } from "../utils/geometry";
 import { baseFragmentShader, baseVertexShader } from "../utils/shader";
-import { normalizeValues, remapValues } from "../utils";
+import { remapValues } from "../utils";
 
 /**
  * Configuration options for the RadialChart
@@ -118,6 +118,7 @@ export class RadialChart extends Layer {
       buffer: remapValues(uvAttribute, 0, 1),
     });
 
+    // Load texture and create shader if texture is provided
     if (params?.texture) {
       Assets.load(params.texture).then((texture) => {
         const shader = Shader.from({
@@ -146,6 +147,9 @@ export class RadialChart extends Layer {
       gl: {
         vertex: vertexShader || baseVertexShader,
         fragment: fragmentShader || baseFragmentShader,
+      },
+      resources: {
+        ...(params?.resources || {}),
       },
     });
 
