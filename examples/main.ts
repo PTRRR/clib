@@ -2,13 +2,12 @@ import { Clock, remapValues } from "../lib";
 import { data } from "./data.ts";
 
 (async () => {
-  const clock = new Clock();
+  const container = document.querySelector(".clock") as HTMLElement;
+  const clock = new Clock(container);
   await clock.initialize();
 
-  const dummyValues = remapValues(data, 200, 300);
-
-  clock.addRadialChart(dummyValues, {
-    subdivisions: 4,
-    // samples: 400,
-  });
+  clock.addRadialChart(
+    remapValues(data, clock.height * 0.4, clock.height * 0.5),
+    { subdivisions: 4, texture: "https://pixijs.com/assets/panda.png" }
+  );
 })();

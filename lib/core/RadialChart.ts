@@ -1,18 +1,20 @@
 /**
  * Import required dependencies from PIXI.js and local modules
  */
-import { Geometry, Mesh, Shader } from "pixi.js";
+import { Assets, Geometry, Mesh, Shader } from "pixi.js";
 import { Layer } from "./Layer";
-import { Values } from "../types";
+import { BlendMode, Values } from "../types";
 import { clampValue } from "../utils/math";
 import {
   mapPolarPathToValues,
   mapValuesToPolarPath,
+  mapValueToPolar,
   resampleClosedPath,
   subdivideClosedPath,
 } from "../utils/path";
 import { createRadialMeshGeometry } from "../utils/geometry";
 import { baseFragmentShader, baseVertexShader } from "../utils/shader";
+import { normalizeValues, remapValues } from "../utils";
 
 /**
  * Configuration options for the RadialChart
@@ -27,6 +29,15 @@ export type RadialChartOptions = {
   subdivisions?: number;
   vertexShader?: string;
   fragmentShader?: string;
+  blendMode?: BlendMode;
+  texture?: string;
+  resources?: Record<string, any>;
+  color?: {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+  };
 };
 
 /**
@@ -61,30 +72,75 @@ export class RadialChart extends Layer {
       const clampedSubdivisions = clampValue(subdivisions, 0, 10);
       path = subdivideClosedPath(path, clampedSubdivisions);
     }
+
     if (typeof samples === "number") {
       const clampedSamples = clampValue(samples, 3, 5000);
       path = resampleClosedPath(path, clampedSamples);
     }
+
     const polarValues = mapPolarPathToValues(path);
 
     // Generate geometry attributes
-    const distanceAttribute: Values = [];
+    const normalizedValueAttribute: Values = [];
     const valueAttribute: Values = [];
+    const uvAttribute: Values = [];
+
     for (let i = 0; i < polarValues.length; i++) {
-      distanceAttribute.push(0, 1, 1);
       const value = polarValues[i];
       const nextValue =
         i + 1 < polarValues.length ? polarValues[i + 1] : polarValues[0];
+      const polarCoords = mapValueToPolar(value, i, polarValues.length);
+      const nextPolarCoords = mapValueToPolar(
+        nextValue,
+        i + 1,
+        polarValues.length
+      );
+      uvAttribute.push(
+        0.5,
+        0.5,
+        polarCoords[0],
+        polarCoords[1],
+        nextPolarCoords[0],
+        nextPolarCoords[1]
+      );
       valueAttribute.push(0, value, nextValue);
+      normalizedValueAttribute.push(0, 1, 1);
     }
 
     this.geometry = createRadialMeshGeometry(polarValues);
-    this.geometry.addAttribute("aDistance", {
-      buffer: distanceAttribute,
+    this.geometry.addAttribute("aNormalizedValue", {
+      buffer: normalizedValueAttribute,
     });
     this.geometry.addAttribute("aValue", {
       buffer: valueAttribute,
     });
+    this.geometry.addAttribute("aUv", {
+      buffer: remapValues(uvAttribute, 0, 1),
+    });
+
+    if (params?.texture) {
+      Assets.load(params.texture).then((texture) => {
+        const shader = Shader.from({
+          gl: {
+            vertex: vertexShader || baseVertexShader,
+            fragment: fragmentShader || baseFragmentShader,
+          },
+          resources: {
+            ...(params?.resources || {}),
+            uTexture: texture.source,
+          },
+        });
+
+        this.mesh = new Mesh<Geometry, Shader>({
+          geometry: this.geometry,
+          shader,
+        });
+
+        this.addChild(this.mesh);
+      });
+
+      return;
+    }
 
     const shader = Shader.from({
       gl: {
@@ -97,6 +153,7 @@ export class RadialChart extends Layer {
       geometry: this.geometry,
       shader,
     });
+
     this.addChild(this.mesh);
   }
 }

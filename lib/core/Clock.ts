@@ -13,6 +13,12 @@ import { RadialChart, RadialChartOptions } from "./RadialChart";
 export class Clock extends Application {
   /** The main scene layer that contains all visual elements */
   private scene: Layer;
+  private container: HTMLElement | undefined;
+
+  constructor(container?: HTMLElement) {
+    super();
+    this.container = container;
+  }
 
   /**
    * Initializes the clock application by setting up the canvas and main scene
@@ -24,9 +30,17 @@ export class Clock extends Application {
       background: "#000000",
       antialias: true,
       autoDensity: true,
+      resizeTo: this.container,
       resolution: window.devicePixelRatio || 1,
+      useBackBuffer: true,
     });
-    document.body.appendChild(this.canvas);
+
+    if (this.container) {
+      this.container.appendChild(this.canvas);
+    } else {
+      document.body.appendChild(this.canvas);
+    }
+
     this.scene = new Layer();
     this.scene.position.set(this.center.x, this.center.y);
     this.stage.addChild(this.scene);

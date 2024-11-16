@@ -19,12 +19,16 @@ import { remapValue } from "./math";
  */
 export const normalizeValues = (values: Values) => {
   let maxValue = -Infinity;
+  let minValue = Infinity;
   for (const value of values) {
+    if (value < minValue) {
+      minValue = value;
+    }
     if (value > maxValue) {
       maxValue = value;
     }
   }
-  return values.map((it) => it / maxValue);
+  return values.map((it) => remapValue(it, minValue, maxValue, 0, 1));
 };
 
 /**

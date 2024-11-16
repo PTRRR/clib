@@ -3,7 +3,19 @@
  */
 import { subdivide, SUBDIV_CHAIKIN } from "@thi.ng/geom-subdiv-curve";
 import { Sampler, simplify } from "@thi.ng/geom-resample";
-import { Path, Values } from "../types";
+import { Path, Point, Values } from "../types";
+
+export const mapValueToPolar = (
+  value: number,
+  index: number,
+  length: number
+): Point => {
+  const step = (Math.PI * 2) / length;
+  const angle = step * index - Math.PI * 0.5;
+  const x = Math.cos(angle) * value;
+  const y = Math.sin(angle) * value;
+  return [x, y];
+};
 
 /**
  * Converts an array of values into polar coordinates path
@@ -17,14 +29,11 @@ import { Path, Values } from "../types";
  */
 export const mapValuesToPolarPath = (values: Values = []) => {
   const polarCoordinates: Path = [];
-  const step = (Math.PI * 2) / values.length;
   for (let i = 0; i < values.length; i++) {
-    const angle = step * i - Math.PI * 0.5;
     const wrappedIndex = i < values.length ? i : 0;
     const value = values[wrappedIndex];
-    const x = Math.cos(angle) * value;
-    const y = Math.sin(angle) * value;
-    polarCoordinates.push([x, y]);
+    const coord = mapValueToPolar(value, i, values.length);
+    polarCoordinates.push(coord);
   }
   return polarCoordinates;
 };
