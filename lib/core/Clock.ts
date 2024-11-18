@@ -6,7 +6,15 @@ import { Layer } from "./Layer";
 import { Values } from "../types";
 import { RadialChart, RadialChartOptions } from "./RadialChart";
 import { Handle, HandleProps } from "./Handle";
-import { Index, IndexProps } from "./Index";
+import {
+  CircleShapeParams,
+  CustomShapeHandler,
+  Index,
+  IndexProps,
+  RectShapeParams,
+  TextShapeParams,
+  TriangleShapeParams,
+} from "./Index";
 
 /**
  * A Clock class that extends PIXI.Application to create a canvas-based clock visualization
@@ -109,6 +117,92 @@ export class Clock extends Application {
       boxHeight: this.height,
       ...options,
     });
+    this.addLayer(index);
+    return this;
+  }
+
+  addRectangles(options: RectShapeParams & { count: number; offset?: number }) {
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      count: options.count,
+      offset: options.offset,
+      shape: {
+        type: "rect",
+        params: options,
+      },
+    });
+
+    this.addLayer(index);
+    return this;
+  }
+
+  addTriangles(
+    options: TriangleShapeParams & { count: number; offset?: number }
+  ) {
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      count: options.count,
+      offset: options.offset,
+      shape: {
+        type: "triangle",
+        params: options,
+      },
+    });
+
+    this.addLayer(index);
+    return this;
+  }
+
+  addCircles(options: CircleShapeParams & { count: number; offset?: number }) {
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      count: options.count,
+      offset: options.offset,
+      shape: {
+        type: "circle",
+        params: options,
+      },
+    });
+
+    this.addLayer(index);
+    return this;
+  }
+
+  addTexts(options: TextShapeParams & { count: number; offset?: number }) {
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      count: options.count,
+      offset: options.offset,
+      shape: {
+        type: "text",
+        params: options,
+      },
+    });
+
+    this.addLayer(index);
+    return this;
+  }
+
+  addCustomShape(options: {
+    count: number;
+    handler: CustomShapeHandler;
+    offset?: number;
+  }) {
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      count: options.count,
+      offset: options.offset,
+      shape: {
+        type: "custom",
+        handler: options.handler,
+      },
+    });
+
     this.addLayer(index);
     return this;
   }

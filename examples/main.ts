@@ -35,65 +35,17 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   });
 
   clock
-    .addIndex({
-      count: 48,
-      offset: 30,
-      shape: {
-        type: "custom",
-        handler: async (index, instance) => {
-          return index % 2 === 1
-            ? instance.createCircleElement({
-                radius: 10,
-                fill: "white",
-              })
-            : undefined;
-        },
-      },
-    })
-    .addIndex({
-      count: 24,
-      offset: 35,
-      shape: {
-        type: "custom",
-        handler: async (index, instance) => {
-          return instance.createTextElement({
-            fontSize: 70,
-            text: index.toString().padStart(2, "0"),
-            fill: "white",
-          });
-        },
-      },
-    })
-    .addIndex({
-      count: 48,
-      offset: 70,
-      shape: {
-        type: "rect",
-        params: {
-          height: 300,
-          width: 1,
-        },
-      },
-    })
-    .addIndex({
-      count: 24,
-      offset: 170,
-      shape: {
-        type: "triangle",
-        params: {
-          height: -100,
-          width: 20,
-        },
-      },
-    })
-    .addIndex({
-      count: 24,
-      offset: 213,
-      shape: {
-        type: "circle",
-        params: {
-          radius: 35,
-        },
-      },
+    .addCircles({ count: 10, radius: 10, offset: 30 })
+    .addRectangles({ count: 10, width: 20, height: 5 })
+    .addTriangles({ count: 10, width: 20, height: 80, offset: 60 })
+    .addTexts({ count: 20, offset: 170, fontSize: 44 })
+    .addCustomShape({
+      count: 30,
+      offset: 230,
+      handler: (index, instance) =>
+        instance.createTextElement({
+          text: index.toString().padStart(2, "0"),
+          fontSize: 40,
+        }),
     });
 })();

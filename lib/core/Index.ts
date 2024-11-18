@@ -28,6 +28,11 @@ export type TriangleShapeParams = {
   fill?: string;
 };
 
+export type CustomShapeHandler = (
+  index: number,
+  instance: Index
+) => Promise<Node | undefined>;
+
 export type ShapeParams =
   | {
       type: "circle";
@@ -56,7 +61,7 @@ export type IndexProps = {
     | ShapeParams
     | {
         type: "custom";
-        handler: (index: number, instance: Index) => Promise<Node | undefined>;
+        handler: CustomShapeHandler;
       };
 };
 
