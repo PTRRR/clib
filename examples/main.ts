@@ -11,23 +11,21 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     const offset = i / count;
     const remappedOffset = remapValue(offset, 0, 1, 0, 0.5);
     const noiseValues = generatePolarSimplexNoiseValues(100, 10);
-
-    clock.addRadialChart(
-      remapValues(
-        noiseValues,
-        clock.height * (0.45 - remappedOffset),
-        clock.height * (0.5 - remappedOffset)
-      ),
-      {
-        subdivisions: 2,
-        tint: {
-          r: offset * 255,
-          g: (offset + 0.2) * 255,
-          b: offset * 255,
-          a: 255,
-        },
-      }
+    const data = remapValues(
+      noiseValues,
+      clock.height * (0.45 - remappedOffset),
+      clock.height * (0.5 - remappedOffset)
     );
+
+    clock.addRadialChart(data, {
+      subdivisions: 2,
+      tint: {
+        r: offset * 255,
+        g: (offset + 0.2) * 255,
+        b: offset * 255,
+        a: 255,
+      },
+    });
   }
 
   clock.addHandle({
@@ -41,9 +39,8 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     radius: 47.5,
     shape: {
       type: "custom",
-      handler: (index, instance) => {
+      handler: async (index, instance) => {
         return instance.createTextElement({
-          fontFamiy: "Arial",
           fontSize: 5,
           text: index.toString().padStart(2, "0"),
           fill: "white",
@@ -57,7 +54,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     radius: 48,
     shape: {
       type: "custom",
-      handler: (index, instance) => {
+      handler: async (index, instance) => {
         return index % 2 === 1
           ? instance.createCircleElement({
               radius: 1.8,

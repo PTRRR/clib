@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
     "@thi.ng/geom-resample": "^3.0.21",
     "@thi.ng/geom-subdiv-curve": "^3.0.21",
     "chaikin-smooth": "^1.0.4",

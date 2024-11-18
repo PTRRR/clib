@@ -6,6 +6,7 @@ import { Layer } from "./Layer";
 import { Values } from "../types";
 import { RadialChart, RadialChartOptions } from "./RadialChart";
 import { Handle, HandleProps } from "./Handle";
+import { Index, IndexProps } from "./Index";
 
 /**
  * A Clock class that extends PIXI.Application to create a canvas-based clock visualization
@@ -99,6 +100,12 @@ export class Clock extends Application {
   addHandle(options: HandleProps) {
     const handle = new Handle(options);
     this.addLayer(handle);
+    return this;
+  }
+
+  addIndex(options: IndexProps) {
+    const index = new Index({ ...options });
+    this.addLayer(index);
     return this;
   }
 }

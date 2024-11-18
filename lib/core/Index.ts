@@ -1,46 +1,48 @@
 import { createSvg } from "../utils/svg";
+import { getFontDataUrl } from "../utils/fonts";
 import { Layer } from "./Layer";
+import { createId } from "@paralleldrive/cuid2";
 
 export type TextShapeParams = {
   text?: string;
-  fontFamiy: string;
-  fontSize: number;
-  fill: string;
+  fontUrl?: string;
+  fontSize?: number;
+  fill?: string;
 };
 
 export type RectShapeParams = {
-  width: number;
-  height: number;
-  fill: string;
+  width?: number;
+  height?: number;
+  fill?: string;
 };
 
 export type CircleShapeParams = {
-  radius: number;
-  fill: string;
+  radius?: number;
+  fill?: string;
 };
 
 export type TriangleShapeParams = {
-  width: number;
-  height: number;
-  fill: string;
+  width?: number;
+  height?: number;
+  fill?: string;
 };
 
 export type ShapeParams =
   | {
       type: "circle";
-      params: CircleShapeParams;
+      params?: CircleShapeParams;
     }
   | {
       type: "triangle";
-      params: TriangleShapeParams;
+      params?: TriangleShapeParams;
     }
   | {
       type: "rect";
-      params: RectShapeParams;
+      params?: RectShapeParams;
     }
   | {
       type: "text";
-      params: TextShapeParams;
+      params?: TextShapeParams;
     };
 
 export type IndexProps = {
@@ -50,51 +52,62 @@ export type IndexProps = {
     | ShapeParams
     | {
         type: "custom";
-        handler: (index: number, instance: Index) => Node | undefined;
+        handler: (index: number, instance: Index) => Promise<Node | undefined>;
       };
 };
+
+const globalFonts = new Map<string, string>();
 
 export class Index extends Layer {
   private viewBoxWidth = 100;
   private viewBoxHeight = 100;
   private radius = 50;
+  private svg: SVGSVGElement;
 
   constructor(params: IndexProps) {
     super();
 
     this.radius = params.radius || 50;
 
-    const svg = createSvg({
+    this.svg = createSvg({
       viewBox: `0 0 ${this.viewBoxWidth} ${this.viewBoxHeight}`,
     });
 
     const wrapper = document.querySelector(".wrapper") as HTMLDivElement;
-    wrapper.appendChild(svg);
+    wrapper.appendChild(this.svg);
 
-    const step = 360 / params.count;
-    for (let i = 0; i < params.count; i++) {
-      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      group.setAttribute(
-        "transform",
-        `translate(${this.viewBoxWidth * 0.5}, ${
-          this.viewBoxHeight * 0.5
-        }) rotate(${i * step})`
-      );
+    (async () => {
+      const step = 360 / params.count;
+      for (let i = 0; i < params.count; i++) {
+        const group = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "g"
+        );
 
-      svg.appendChild(group);
+        group.setAttribute(
+          "transform",
+          `translate(${this.viewBoxWidth * 0.5}, ${
+            this.viewBoxHeight * 0.5
+          }) rotate(${i * step})`
+        );
 
-      const shape =
-        params.shape.type === "custom"
-          ? params.shape.handler(i, this)
-          : this.createShape({ ...params.shape, index: i });
+        this.svg.appendChild(group);
 
-      if (shape) {
-        group.appendChild(shape);
+        const shapePromise =
+          params.shape.type === "custom"
+            ? params.shape.handler(i, this)
+            : this.createShape({ ...params.shape, index: i });
+
+        await shapePromise.then((shape) => {
+          if (shape) {
+            group.appendChild(shape);
+          }
+        });
       }
-    }
+    })();
   }
 
-  private createShape({
+  private async createShape({
     type,
     params,
     index,
@@ -106,73 +119,94 @@ export class Index extends Layer {
         ? this.createRectElement(params)
         : type === "text"
         ? this.createTextElement({
-            ...params,
-            text: params.text || index.toString(),
+            ...(params || {}),
+            text: params?.text || index.toString(),
           })
         : this.createTriangleElement(params);
 
     return shape;
   }
 
-  createTextElement(params: TextShapeParams) {
+  async createTextElement(params?: TextShapeParams) {
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
 
-    text.setAttribute("font-family", params.fontFamiy);
-    text.setAttribute("font-size", params.fontSize.toString());
-    text.setAttribute("fill", params.fill);
+    const fontUrl = params?.fontUrl || "/fonts/Unica77LL-Bold.otf";
+
+    if (!globalFonts.has(fontUrl)) {
+      const fontId = `font-${createId()}`;
+      const font = await getFontDataUrl(fontUrl);
+      const style = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "style"
+      );
+
+      style.innerHTML = `
+        @font-face {
+          font-family: ${fontId};
+          src: url(${font});
+        }
+      `;
+
+      this.svg.appendChild(style);
+      globalFonts.set(fontUrl, fontId);
+    }
+
+    text.setAttribute("font-family", globalFonts.get(fontUrl) as string);
+    text.setAttribute("font-size", (params?.fontSize || 12).toString());
+    text.setAttribute("fill", params?.fill || "white");
     text.setAttribute("x", "0");
     text.setAttribute("y", (-this.radius).toString());
     text.setAttribute("transform", "rotate(180deg, 0, 0)");
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
-    text.textContent = params.text || "";
+    text.textContent = params?.text || "";
 
     return text;
   }
 
-  createRectElement(params: RectShapeParams) {
+  createRectElement(params?: RectShapeParams) {
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 
-    rect.setAttribute("width", params.width.toString());
-    rect.setAttribute("height", params.height.toString());
-    rect.setAttribute("fill", params.fill);
-    rect.setAttribute("x", (params.width * -0.5).toString());
-    rect.setAttribute("y", (this.radius - params.height).toString());
+    rect.setAttribute("width", (params?.width || 5).toString());
+    rect.setAttribute("height", (params?.height || 5).toString());
+    rect.setAttribute("fill", params?.fill || "white");
+    rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
+    rect.setAttribute("y", this.radius.toString());
 
     return rect;
   }
 
-  createCircleElement(params: CircleShapeParams) {
+  createCircleElement(params?: CircleShapeParams) {
     const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "circle"
     );
 
-    circle.setAttribute("r", params.radius.toString());
-    circle.setAttribute("fill", params.fill);
+    circle.setAttribute("r", (params?.radius || 2.5).toString());
+    circle.setAttribute("fill", params?.fill || "white");
     circle.setAttribute("cx", "0");
     circle.setAttribute("cy", this.radius.toString());
 
     return circle;
   }
 
-  createTriangleElement(params: TriangleShapeParams) {
+  createTriangleElement(params?: TriangleShapeParams) {
     const triangle = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "polygon"
     );
 
-    const x1 = -params.width * 0.5;
+    const x1 = -(params?.width || 5) * 0.5;
     const y1 = this.radius;
 
-    const x2 = params.width * 0.5;
+    const x2 = (params?.width || 5) * 0.5;
     const y2 = this.radius;
 
     const x3 = 0;
-    const y3 = this.radius - params.height;
+    const y3 = this.radius - (params?.height || 5);
 
     triangle.setAttribute("points", `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
-    triangle.setAttribute("fill", params.fill);
+    triangle.setAttribute("fill", params?.fill || "white");
 
     return triangle;
   }
