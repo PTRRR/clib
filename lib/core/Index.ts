@@ -184,7 +184,7 @@ export class Index extends Layer {
     rect.setAttribute("height", (params?.height || 5).toString());
     rect.setAttribute("fill", params?.fill || "white");
     rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
-    rect.setAttribute("y", (this.radius - this.offset).toString());
+    rect.setAttribute("y", (-this.radius + this.offset).toString());
 
     return rect;
   }

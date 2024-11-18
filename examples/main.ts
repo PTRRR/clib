@@ -63,5 +63,37 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
           });
         },
       },
+    })
+    .addIndex({
+      count: 48,
+      offset: 70,
+      shape: {
+        type: "rect",
+        params: {
+          height: 300,
+          width: 1,
+        },
+      },
+    })
+    .addIndex({
+      count: 24,
+      offset: 170,
+      shape: {
+        type: "triangle",
+        params: {
+          height: -100,
+          width: 20,
+        },
+      },
+    })
+    .addIndex({
+      count: 24,
+      offset: 213,
+      shape: {
+        type: "circle",
+        params: {
+          radius: 35,
+        },
+      },
     });
 })();
