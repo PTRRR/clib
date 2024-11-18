@@ -1,4 +1,4 @@
-import { Clock, linesFragmentShader, remapValues } from "../lib";
+import { Clock, remapValue, remapValues } from "../lib";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
 (async () => {
@@ -6,58 +6,33 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
+  const count = 10;
+  for (let i = 0; i < count; i++) {
+    const offset = i / count;
+    const remappedOffset = remapValue(offset, 0, 1, 0, 0.5);
+    const noiseValues = generatePolarSimplexNoiseValues(100, 2);
 
-  clock
-    .addRadialChart(
-      remapValues(noiseValues, clock.height * 0.48, clock.height * 0.5),
+    clock.addRadialChart(
+      remapValues(
+        noiseValues,
+        clock.height * (0.45 - remappedOffset),
+        clock.height * (0.5 - remappedOffset)
+      ),
       {
         subdivisions: 3,
         tint: {
-          r: 255,
-          g: 0,
+          r: offset * 255 + 50,
+          g: 150,
           b: 0,
-          a: 255,
-        },
-      }
-    )
-    .addRadialChart(
-      remapValues(noiseValues, clock.height * 0.35, clock.height * 0.5),
-      {
-        subdivisions: 3,
-        tint: {
-          r: 255,
-          g: 255,
-          b: 0,
-          a: 255,
-        },
-      }
-    )
-    .addRadialChart(
-      remapValues(noiseValues, clock.height * 0.35, clock.height * 0.4),
-      {
-        subdivisions: 3,
-        blendMode: "multiply",
-        tint: {
-          r: 0,
-          g: 0,
-          b: 255,
-          a: 255,
-        },
-        fragmentShader: linesFragmentShader,
-      }
-    )
-    .addRadialChart(
-      remapValues(noiseValues, clock.height * 0.2, clock.height * 0.35),
-      {
-        subdivisions: 4,
-        blendMode: "multiply",
-        tint: {
-          r: 0,
-          g: 255,
-          b: 255,
           a: 255,
         },
       }
     );
+  }
+
+  clock.addHandle({
+    imageUrl: "./images/hours.png",
+    scale: 0.2,
+    offsetY: -0.23,
+  });
 })();
