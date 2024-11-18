@@ -1,6 +1,12 @@
 export type Values = number[];
 export type Point = [number, number];
 export type Path = Point[];
+export type Tint = {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+};
 export type BlendMode =
   | "normal"
   | "add"
@@ -27,3 +33,7 @@ export type BlendMode =
   | "vivid-light"
   | "hard-mix"
   | "negation";
+
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;

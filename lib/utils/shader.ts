@@ -30,35 +30,51 @@ export const baseVertexShader = `
       }
     `;
 
-export const baseFragmentShader = `
-      #version 300 es
+export const defaultFragmentHeader = `
+  #version 300 es
 
-      #define PI 3.1415926538
-      #define MOD3 vec3(.1031,.11369,.13787)
-      #define grad(x) length(vec2(dFdx(x),dFdy(x)))
+  #define PI 3.1415926538
+  #define MOD3 vec3(.1031,.11369,.13787)
+  #define grad(x) length(vec2(dFdx(x),dFdy(x)))
 
-      precision highp float;
-      precision highp int;
+  precision highp float;
+  precision highp int;
 
-      in vec3 position;
-      in float value;
-      in float normalizedValue;
-      in vec2 uv;
-      
-      uniform sampler2D uTexture;
+  in vec3 position;
+  in float value;
+  in float normalizedValue;
+  in vec2 uv;
+  
+  uniform sampler2D uTexture;
+  uniform vec4 uTint;
 
-      out vec4 fragColor;
-      
-      void main() {
-        vec4 texture = texture(uTexture, uv);
-        // float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
-        // float mappedValue = mix(dist, normalizedValue, pow(dist + 0.1, 2.0));
-        // float sdf = abs(fract(mappedValue * 5.0 / (dist + 1.0)) - 0.5) * 2.0;
-        // float df = fwidth(sdf) * 3.0;
-        // float lines = smoothstep(1.0-df, 1.0, sdf);
-        // lines += smoothstep(df, 0.0, sdf);
-        // fragColor = vec4(lines, lines, lines, lines);
+  out vec4 fragColor;
+`;
 
-        fragColor = vec4(texture.x, texture.y, texture.z, 1.0);
-      }
-    `;
+export const texturedFragmentShader = `
+  ${defaultFragmentHeader}      
+  void main() {
+    vec4 texture = texture(uTexture, uv);
+    fragColor = vec4(texture.x, texture.y, texture.z, 1.0) * uTint;
+  }
+`;
+
+export const defaultFragmentShader = `
+  ${defaultFragmentHeader}
+  void main() {
+    fragColor = vec4(1.0, 1.0, 1.0, 1.0) * uTint;
+  }
+`;
+
+export const linesFragmentShader = `
+  ${defaultFragmentHeader}
+  void main() {
+    float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
+    float mappedValue = mix(dist, normalizedValue, pow(dist + 0.1, 2.0));
+    float sdf = abs(fract(mappedValue * 5.0 / (dist + 1.0)) - 0.5) * 2.0;
+    float df = fwidth(sdf) * 3.0;
+    float lines = smoothstep(1.0-df, 1.0, sdf);
+    lines += smoothstep(df, 0.0, sdf);
+    fragColor = vec4(lines, lines, lines, lines);
+  }
+`;

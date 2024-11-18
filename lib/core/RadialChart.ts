@@ -3,8 +3,9 @@
  */
 import { Assets, Geometry, Mesh, Shader } from "pixi.js";
 import { Layer } from "./Layer";
-import { BlendMode, Values } from "../types";
+import { BlendMode, RequiredBy, Values } from "../types";
 import { clampValue } from "../utils/math";
+import { convertTintToNormalizedVector } from "../utils/color";
 import {
   mapPolarPathToValues,
   mapValuesToPolarPath,
@@ -13,7 +14,11 @@ import {
   subdivideClosedPath,
 } from "../utils/path";
 import { createRadialMeshGeometry } from "../utils/geometry";
-import { baseFragmentShader, baseVertexShader } from "../utils/shader";
+import {
+  texturedFragmentShader,
+  baseVertexShader,
+  defaultFragmentShader,
+} from "../utils/shader";
 import { remapValues } from "../utils";
 
 /**
@@ -32,7 +37,7 @@ export type RadialChartOptions = {
   blendMode?: BlendMode;
   texture?: string;
   resources?: Record<string, any>;
-  color?: {
+  tint?: {
     r: number;
     g: number;
     b: number;
@@ -63,9 +68,24 @@ export class RadialChart extends Layer {
    */
   constructor(values: Values, params?: RadialChartOptions) {
     super();
-    const { subdivisions, vertexShader, fragmentShader, samples } =
-      params || {};
 
+    // Create geometry and mesh for the radial chart
+    this.createDefaultGeometry(values, params);
+
+    // Load texture and create shader if texture is provided
+    if (params?.texture) {
+      this.createTexturedMesh({
+        ...params,
+        texture: params.texture,
+      });
+      return;
+    }
+
+    this.createDefaultMesh(params);
+  }
+
+  private createDefaultGeometry(values: Values, params?: RadialChartOptions) {
+    const { subdivisions, samples } = params || {};
     // Process values
     let path = mapValuesToPolarPath(values);
     if (typeof subdivisions === "number") {
@@ -117,39 +137,56 @@ export class RadialChart extends Layer {
     this.geometry.addAttribute("aUv", {
       buffer: remapValues(uvAttribute, 0, 1),
     });
+  }
 
-    // Load texture and create shader if texture is provided
-    if (params?.texture) {
-      Assets.load(params.texture).then((texture) => {
-        const shader = Shader.from({
-          gl: {
-            vertex: vertexShader || baseVertexShader,
-            fragment: fragmentShader || baseFragmentShader,
+  private createTexturedMesh(
+    params: RequiredBy<RadialChartOptions, "texture">
+  ) {
+    const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
+
+    Assets.load(textureUrl).then((texture) => {
+      const shader = Shader.from({
+        gl: {
+          vertex: vertexShader || baseVertexShader,
+          fragment: fragmentShader || texturedFragmentShader,
+        },
+        resources: {
+          ...(params?.resources || {}),
+          uTexture: texture.source,
+          globals: {
+            uTint: {
+              value: convertTintToNormalizedVector(tint),
+              type: "vec4<f32>",
+            },
           },
-          resources: {
-            ...(params?.resources || {}),
-            uTexture: texture.source,
-          },
-        });
-
-        this.mesh = new Mesh<Geometry, Shader>({
-          geometry: this.geometry,
-          shader,
-        });
-
-        this.addChild(this.mesh);
+        },
       });
 
-      return;
-    }
+      this.mesh = new Mesh<Geometry, Shader>({
+        geometry: this.geometry,
+        shader,
+      });
+
+      this.addChild(this.mesh);
+    });
+  }
+
+  private createDefaultMesh(params?: RadialChartOptions) {
+    const { vertexShader, fragmentShader, tint } = params || {};
 
     const shader = Shader.from({
       gl: {
         vertex: vertexShader || baseVertexShader,
-        fragment: fragmentShader || baseFragmentShader,
+        fragment: fragmentShader || defaultFragmentShader,
       },
       resources: {
         ...(params?.resources || {}),
+        globals: {
+          uTint: {
+            value: convertTintToNormalizedVector(tint),
+            type: "vec4<f32>",
+          },
+        },
       },
     });
 

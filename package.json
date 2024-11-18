@@ -16,6 +16,7 @@
     "chaikin-smooth": "^1.0.4",
     "curve-interpolator": "^3.3.1",
     "esbuild": "^0.24.0",
-    "pixi.js": "^8.5.2"
+    "pixi.js": "^8.5.2",
+    "simplex-noise": "^4.0.3"
   }
 }
