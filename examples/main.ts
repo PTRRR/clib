@@ -1,4 +1,4 @@
-import { Clock, remapValue, remapValues } from "../lib";
+import { Clock, Index, remapValue, remapValues } from "../lib";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
 (async () => {
@@ -10,7 +10,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   for (let i = 0; i < count; i++) {
     const offset = i / count;
     const remappedOffset = remapValue(offset, 0, 1, 0, 0.5);
-    const noiseValues = generatePolarSimplexNoiseValues(100, 2);
+    const noiseValues = generatePolarSimplexNoiseValues(100, 10);
 
     clock.addRadialChart(
       remapValues(
@@ -19,11 +19,11 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
         clock.height * (0.5 - remappedOffset)
       ),
       {
-        subdivisions: 3,
+        subdivisions: 2,
         tint: {
-          r: offset * 255 + 50,
-          g: 150,
-          b: 0,
+          r: offset * 255,
+          g: (offset + 0.2) * 255,
+          b: offset * 255,
           a: 255,
         },
       }
@@ -34,5 +34,17 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     imageUrl: "./images/hours.png",
     scale: 0.2,
     offsetY: -0.23,
+  });
+
+  new Index({
+    count: 10,
+    radius: 50,
+    shape: {
+      type: "text",
+      params: {
+        fontFamiy: "Arial",
+        fontSize: 10,
+      },
+    },
   });
 })();
