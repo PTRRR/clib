@@ -1,7 +1,8 @@
-import { createSvg } from "../utils/svg";
+import { createSvg, getSvgAsImage, getSvgAsImageUrl } from "../utils/svg";
 import { getFontDataUrl } from "../utils/fonts";
 import { Layer } from "./Layer";
 import { createId } from "@paralleldrive/cuid2";
+import { Assets, Sprite } from "pixi.js";
 
 export type TextShapeParams = {
   text?: string;
@@ -47,6 +48,9 @@ export type ShapeParams =
 
 export type IndexProps = {
   count: number;
+  offset?: number;
+  boxWidth?: number;
+  boxHeight?: number;
   radius?: number;
   shape:
     | ShapeParams
@@ -59,22 +63,25 @@ export type IndexProps = {
 const globalFonts = new Map<string, string>();
 
 export class Index extends Layer {
-  private viewBoxWidth = 100;
-  private viewBoxHeight = 100;
   private radius = 50;
   private svg: SVGSVGElement;
+  private boxWidth: number;
+  private boxHeight: number;
+  private offset: number;
 
   constructor(params: IndexProps) {
     super();
 
-    this.radius = params.radius || 50;
+    this.offset = params.offset || 0;
+    this.boxWidth = params.boxWidth || 100;
+    this.boxHeight = params.boxHeight || 100;
+    this.radius = params.radius || this.boxWidth * 0.5;
 
     this.svg = createSvg({
-      viewBox: `0 0 ${this.viewBoxWidth} ${this.viewBoxHeight}`,
+      width: this.boxWidth,
+      height: this.boxHeight,
+      viewBox: `0 0 ${this.boxWidth} ${this.boxHeight}`,
     });
-
-    const wrapper = document.querySelector(".wrapper") as HTMLDivElement;
-    wrapper.appendChild(this.svg);
 
     (async () => {
       const step = 360 / params.count;
@@ -86,9 +93,9 @@ export class Index extends Layer {
 
         group.setAttribute(
           "transform",
-          `translate(${this.viewBoxWidth * 0.5}, ${
-            this.viewBoxHeight * 0.5
-          }) rotate(${i * step})`
+          `translate(${this.boxWidth * 0.5}, ${this.boxHeight * 0.5}) rotate(${
+            i * step
+          })`
         );
 
         this.svg.appendChild(group);
@@ -104,6 +111,12 @@ export class Index extends Layer {
           }
         });
       }
+
+      const svgUrl = getSvgAsImageUrl(this.svg);
+      const texture = await Assets.load(svgUrl);
+      const sprite = new Sprite(texture);
+      sprite.anchor.set(0.5, 0.5);
+      this.addChild(sprite);
     })();
   }
 
@@ -155,7 +168,7 @@ export class Index extends Layer {
     text.setAttribute("font-size", (params?.fontSize || 12).toString());
     text.setAttribute("fill", params?.fill || "white");
     text.setAttribute("x", "0");
-    text.setAttribute("y", (-this.radius).toString());
+    text.setAttribute("y", (-this.radius + this.offset).toString());
     text.setAttribute("transform", "rotate(180deg, 0, 0)");
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
@@ -171,7 +184,7 @@ export class Index extends Layer {
     rect.setAttribute("height", (params?.height || 5).toString());
     rect.setAttribute("fill", params?.fill || "white");
     rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
-    rect.setAttribute("y", this.radius.toString());
+    rect.setAttribute("y", (this.radius - this.offset).toString());
 
     return rect;
   }
@@ -185,7 +198,7 @@ export class Index extends Layer {
     circle.setAttribute("r", (params?.radius || 2.5).toString());
     circle.setAttribute("fill", params?.fill || "white");
     circle.setAttribute("cx", "0");
-    circle.setAttribute("cy", this.radius.toString());
+    circle.setAttribute("cy", (this.radius - this.offset).toString());
 
     return circle;
   }
@@ -197,13 +210,13 @@ export class Index extends Layer {
     );
 
     const x1 = -(params?.width || 5) * 0.5;
-    const y1 = this.radius;
+    const y1 = this.radius - this.offset;
 
     const x2 = (params?.width || 5) * 0.5;
-    const y2 = this.radius;
+    const y2 = this.radius - this.offset;
 
     const x3 = 0;
-    const y3 = this.radius - (params?.height || 5);
+    const y3 = this.radius - (params?.height || 5) - this.offset;
 
     triangle.setAttribute("points", `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
     triangle.setAttribute("fill", params?.fill || "white");

@@ -1,4 +1,4 @@
-import { Clock, Index, remapValue, remapValues } from "../lib";
+import { Clock, remapValue, remapValues } from "../lib";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
 (async () => {
@@ -10,7 +10,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   for (let i = 0; i < count; i++) {
     const offset = i / count;
     const remappedOffset = remapValue(offset, 0, 1, 0, 0.5);
-    const noiseValues = generatePolarSimplexNoiseValues(100, 10);
+    const noiseValues = generatePolarSimplexNoiseValues(100, 1);
     const data = remapValues(
       noiseValues,
       clock.height * (0.45 - remappedOffset),
@@ -18,7 +18,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     );
 
     clock.addRadialChart(data, {
-      subdivisions: 2,
+      subdivisions: 3,
       tint: {
         r: offset * 255,
         g: (offset + 0.2) * 255,
@@ -34,34 +34,34 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     offsetY: -0.23,
   });
 
-  new Index({
-    count: 24,
-    radius: 47.5,
-    shape: {
-      type: "custom",
-      handler: async (index, instance) => {
-        return instance.createTextElement({
-          fontSize: 5,
-          text: index.toString().padStart(2, "0"),
-          fill: "white",
-        });
+  clock
+    .addIndex({
+      count: 48,
+      offset: 30,
+      shape: {
+        type: "custom",
+        handler: async (index, instance) => {
+          return index % 2 === 1
+            ? instance.createCircleElement({
+                radius: 10,
+                fill: "white",
+              })
+            : undefined;
+        },
       },
-    },
-  });
-
-  new Index({
-    count: 48,
-    radius: 48,
-    shape: {
-      type: "custom",
-      handler: async (index, instance) => {
-        return index % 2 === 1
-          ? instance.createCircleElement({
-              radius: 1.8,
-              fill: "white",
-            })
-          : undefined;
+    })
+    .addIndex({
+      count: 24,
+      offset: 35,
+      shape: {
+        type: "custom",
+        handler: async (index, instance) => {
+          return instance.createTextElement({
+            fontSize: 70,
+            text: index.toString().padStart(2, "0"),
+            fill: "white",
+          });
+        },
       },
-    },
-  });
+    });
 })();

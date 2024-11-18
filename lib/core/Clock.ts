@@ -44,7 +44,7 @@ export class Clock extends Application {
     }
 
     this.scene = new Layer();
-    this.scene.position.set(this.center.x, this.center.y);
+    this.scene.position.set(this.screen.width * 0.5, this.screen.height * 0.5);
     this.stage.addChild(this.scene);
   }
 
@@ -53,7 +53,7 @@ export class Clock extends Application {
    * @returns {number} The width in pixels
    */
   get width() {
-    return this.screen.width;
+    return this.screen.width * 0.95;
   }
 
   /**
@@ -61,7 +61,7 @@ export class Clock extends Application {
    * @returns {number} The height in pixels
    */
   get height() {
-    return this.screen.height;
+    return this.screen.height * 0.95;
   }
 
   /**
@@ -104,7 +104,11 @@ export class Clock extends Application {
   }
 
   addIndex(options: IndexProps) {
-    const index = new Index({ ...options });
+    const index = new Index({
+      boxWidth: this.width,
+      boxHeight: this.height,
+      ...options,
+    });
     this.addLayer(index);
     return this;
   }
