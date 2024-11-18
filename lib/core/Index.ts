@@ -78,8 +78,8 @@ export class Index extends Layer {
     this.radius = params.radius || this.boxWidth * 0.5;
 
     this.svg = createSvg({
-      width: this.boxWidth,
-      height: this.boxHeight,
+      width: this.boxWidth * window.devicePixelRatio,
+      height: this.boxHeight * window.devicePixelRatio,
       viewBox: `0 0 ${this.boxWidth} ${this.boxHeight}`,
     });
 
@@ -115,6 +115,8 @@ export class Index extends Layer {
       const svgUrl = getSvgAsImageUrl(this.svg);
       const texture = await Assets.load(svgUrl);
       const sprite = new Sprite(texture);
+      sprite.width = this.boxWidth;
+      sprite.height = this.boxHeight;
       sprite.anchor.set(0.5, 0.5);
       this.addChild(sprite);
     })();
