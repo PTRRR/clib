@@ -6,14 +6,13 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const noiseValues = generatePolarSimplexNoiseValues(100, 2);
+  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
 
   clock
     .addRadialChart(
       remapValues(noiseValues, clock.height * 0.48, clock.height * 0.5),
       {
-        subdivisions: 2,
-        samples: 200,
+        subdivisions: 3,
         tint: {
           r: 255,
           g: 0,
@@ -23,7 +22,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
       }
     )
     .addRadialChart(
-      remapValues(noiseValues, clock.height * 0.4, clock.height * 0.5),
+      remapValues(noiseValues, clock.height * 0.35, clock.height * 0.5),
       {
         subdivisions: 3,
         tint: {
@@ -41,6 +40,18 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
         tint: {
           r: 255,
           g: 0,
+          b: 255,
+          a: 255,
+        },
+      }
+    )
+    .addRadialChart(
+      remapValues(noiseValues, clock.height * 0.2, clock.height * 0.35),
+      {
+        subdivisions: 4,
+        tint: {
+          r: 0,
+          g: 255,
           b: 255,
           a: 255,
         },
