@@ -1,7 +1,14 @@
 /**
  * Import required dependencies from PIXI.js and local modules
  */
-import { Assets, Geometry, Mesh, Shader } from "pixi.js";
+import {
+  Assets,
+  ContainerChild,
+  ContainerOptions,
+  Geometry,
+  Mesh,
+  Shader,
+} from "pixi.js";
 import { Layer } from "./Layer";
 import { BlendMode, RequiredBy, Values } from "../types";
 import { clampValue } from "../utils/math";
@@ -34,7 +41,7 @@ export type RadialChartOptions = {
   subdivisions?: number;
   vertexShader?: string;
   fragmentShader?: string;
-  blendMode?: BlendMode;
+  blendMode?: ContainerOptions<ContainerChild>["blendMode"];
   texture?: string;
   resources?: Record<string, any>;
   tint?: {
@@ -165,6 +172,7 @@ export class RadialChart extends Layer {
       this.mesh = new Mesh<Geometry, Shader>({
         geometry: this.geometry,
         shader,
+        blendMode: params?.blendMode,
       });
 
       this.addChild(this.mesh);
@@ -193,6 +201,7 @@ export class RadialChart extends Layer {
     this.mesh = new Mesh<Geometry, Shader>({
       geometry: this.geometry,
       shader,
+      blendMode: params?.blendMode,
     });
 
     this.addChild(this.mesh);

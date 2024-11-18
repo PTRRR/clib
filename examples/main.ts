@@ -1,4 +1,4 @@
-import { Clock, remapValues } from "../lib";
+import { Clock, linesFragmentShader, remapValues } from "../lib";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
 (async () => {
@@ -36,19 +36,22 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     .addRadialChart(
       remapValues(noiseValues, clock.height * 0.35, clock.height * 0.4),
       {
-        subdivisions: 2,
+        subdivisions: 3,
+        blendMode: "multiply",
         tint: {
-          r: 255,
+          r: 0,
           g: 0,
           b: 255,
           a: 255,
         },
+        fragmentShader: linesFragmentShader,
       }
     )
     .addRadialChart(
       remapValues(noiseValues, clock.height * 0.2, clock.height * 0.35),
       {
         subdivisions: 4,
+        blendMode: "multiply",
         tint: {
           r: 0,
           g: 255,

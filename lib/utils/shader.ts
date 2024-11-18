@@ -70,11 +70,11 @@ export const linesFragmentShader = `
   ${defaultFragmentHeader}
   void main() {
     float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
-    float mappedValue = mix(dist, normalizedValue, pow(dist + 0.1, 2.0));
-    float sdf = abs(fract(mappedValue * 5.0 / (dist + 1.0)) - 0.5) * 2.0;
+    float mappedValue = mix(dist, normalizedValue, pow(dist + 0.18, 2.0));
+    float sdf = abs(fract(mappedValue * 8.0) - 0.5) * 2.0;
     float df = fwidth(sdf) * 3.0;
     float lines = smoothstep(1.0-df, 1.0, sdf);
     lines += smoothstep(df, 0.0, sdf);
-    fragColor = vec4(lines, lines, lines, lines);
+    fragColor = vec4(lines, lines, lines, lines) * uTint;
   }
 `;
