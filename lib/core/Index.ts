@@ -5,6 +5,7 @@ export type TextShapeParams = {
   text?: string;
   fontFamiy: string;
   fontSize: number;
+  fill: string;
 };
 
 export type RectShapeParams = {
@@ -118,12 +119,9 @@ export class Index extends Layer {
 
     text.setAttribute("font-family", params.fontFamiy);
     text.setAttribute("font-size", params.fontSize.toString());
-    text.setAttribute("fill", "white");
+    text.setAttribute("fill", params.fill);
     text.setAttribute("x", "0");
-    text.setAttribute(
-      "y",
-      (-this.radius + (params.fontSize || 0) * 0.5).toString()
-    );
+    text.setAttribute("y", (-this.radius).toString());
     text.setAttribute("transform", "rotate(180deg, 0, 0)");
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
@@ -153,7 +151,7 @@ export class Index extends Layer {
     circle.setAttribute("r", params.radius.toString());
     circle.setAttribute("fill", params.fill);
     circle.setAttribute("cx", "0");
-    circle.setAttribute("cy", (this.radius - params.radius).toString());
+    circle.setAttribute("cy", this.radius.toString());
 
     return circle;
   }

@@ -37,13 +37,33 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   });
 
   new Index({
-    count: 10,
-    radius: 50,
+    count: 24,
+    radius: 47.5,
     shape: {
-      type: "text",
-      params: {
-        fontFamiy: "Arial",
-        fontSize: 10,
+      type: "custom",
+      handler: (index, instance) => {
+        return instance.createTextElement({
+          fontFamiy: "Arial",
+          fontSize: 5,
+          text: index.toString().padStart(2, "0"),
+          fill: "white",
+        });
+      },
+    },
+  });
+
+  new Index({
+    count: 48,
+    radius: 48,
+    shape: {
+      type: "custom",
+      handler: (index, instance) => {
+        return index % 2 === 1
+          ? instance.createCircleElement({
+              radius: 1.8,
+              fill: "white",
+            })
+          : undefined;
       },
     },
   });
