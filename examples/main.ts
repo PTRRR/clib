@@ -53,7 +53,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   clock
     .addCircles({ count: 24, radius: 10, offset: 10 })
     .addTexts({ count: 12, offset: 60, fontSize: 40 })
-
     .addAnimation(currentTimeAnimation(clock));
 
   clock.addHandle({
