@@ -1,6 +1,8 @@
 # Clock Visualization Library
 
-A TypeScript library for creating customizable, animated clock visualizations using PIXI.js.
+A powerful TypeScript library for creating customizable, animated clock visualizations using PIXI.js.
+
+![Example Clock Visualization](example.png)
 
 ## Workshop Origins
 
@@ -57,6 +59,8 @@ clock.addAnimation(defaultClockStep(clock));
 - Noise-based value generation
 - Font loading and rendering
 - SVG conversion utilities
+
+
 
 ## License
 
