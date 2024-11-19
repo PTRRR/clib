@@ -15,6 +15,9 @@ import {
   TextShapeParams,
   TriangleShapeParams,
 } from "./Index";
+import { Animator, Step, Timeline } from "optimo-animator";
+
+export type IndexHelperParams = { count: number; offset?: number };
 
 /**
  * A Clock class that extends PIXI.Application to create a canvas-based clock visualization
@@ -24,10 +27,15 @@ export class Clock extends Application {
   /** The main scene layer that contains all visual elements */
   private scene: Layer;
   private container: HTMLElement | undefined;
+  private steps: Step[];
+  private animator: Animator | undefined;
+  private handles: Handle[];
 
   constructor(container?: HTMLElement) {
     super();
     this.container = container;
+    this.steps = [];
+    this.handles = [];
   }
 
   /**
@@ -121,7 +129,7 @@ export class Clock extends Application {
     return this;
   }
 
-  addRectangles(options: RectShapeParams & { count: number; offset?: number }) {
+  addRectangles(options: RectShapeParams & IndexHelperParams) {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
@@ -137,9 +145,7 @@ export class Clock extends Application {
     return this;
   }
 
-  addTriangles(
-    options: TriangleShapeParams & { count: number; offset?: number }
-  ) {
+  addTriangles(options: TriangleShapeParams & IndexHelperParams) {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
@@ -155,7 +161,7 @@ export class Clock extends Application {
     return this;
   }
 
-  addCircles(options: CircleShapeParams & { count: number; offset?: number }) {
+  addCircles(options: CircleShapeParams & IndexHelperParams) {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
@@ -171,7 +177,7 @@ export class Clock extends Application {
     return this;
   }
 
-  addTexts(options: TextShapeParams & { count: number; offset?: number }) {
+  addTexts(options: TextShapeParams & IndexHelperParams) {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
@@ -205,5 +211,21 @@ export class Clock extends Application {
 
     this.addLayer(index);
     return this;
+  }
+
+  addAnimationStep(step: Step) {
+    this.steps.push(step);
+
+    if (this.animator) {
+      this.animator.stop();
+    }
+
+    const timeline = new Timeline(this.steps);
+    this.animator = new Animator([timeline]);
+    this.animator.start();
+  }
+
+  getLayerByLabel(label: string) {
+    return this.scene.getChildByLabel(label, true) as Layer | undefined;
   }
 }

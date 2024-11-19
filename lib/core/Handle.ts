@@ -3,6 +3,7 @@ import { Layer } from "./Layer";
 
 export type HandleProps = {
   imageUrl: string;
+  label?: string;
   scale?: number;
   offsetY?: number;
 };
@@ -10,6 +11,10 @@ export type HandleProps = {
 export class Handle extends Layer {
   constructor(params: HandleProps) {
     super();
+
+    if (params.label) {
+      this.label = params.label;
+    }
 
     Assets.load(params.imageUrl).then((texture) => {
       const sprite = new Sprite(texture);

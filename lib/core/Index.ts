@@ -53,6 +53,7 @@ export type ShapeParams =
 
 export type IndexProps = {
   count: number;
+  label?: string;
   offset?: number;
   boxWidth?: number;
   boxHeight?: number;
@@ -76,6 +77,10 @@ export class Index extends Layer {
 
   constructor(params: IndexProps) {
     super();
+
+    if (params.label) {
+      this.label = params.label;
+    }
 
     this.offset = params.offset || 0;
     this.boxWidth = params.boxWidth || 100;
@@ -176,7 +181,7 @@ export class Index extends Layer {
     text.setAttribute("fill", params?.fill || "white");
     text.setAttribute("x", "0");
     text.setAttribute("y", (-this.radius + this.offset).toString());
-    text.setAttribute("transform", "rotate(180deg, 0, 0)");
+    text.setAttribute("transform", "rotate(180, 0, 0)");
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
     text.textContent = params?.text || "";

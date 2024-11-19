@@ -17,6 +17,7 @@
     "chaikin-smooth": "^1.0.4",
     "curve-interpolator": "^3.3.1",
     "esbuild": "^0.24.0",
+    "optimo-animator": "^1.2.9",
     "pixi.js": "^8.5.2",
     "simplex-noise": "^4.0.3"
   }

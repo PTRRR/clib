@@ -37,6 +37,7 @@ import { remapValues } from "../utils";
  * @property {string} [fragmentShader] - Custom fragment shader code. If not provided, uses baseFragmentShader
  */
 export type RadialChartOptions = {
+  label?: string;
   samples?: number;
   subdivisions?: number;
   vertexShader?: string;
@@ -75,6 +76,10 @@ export class RadialChart extends Layer {
    */
   constructor(values: Values, params?: RadialChartOptions) {
     super();
+
+    if (params?.label) {
+      this.label = params.label;
+    }
 
     // Create geometry and mesh for the radial chart
     this.createDefaultGeometry(values, params);
