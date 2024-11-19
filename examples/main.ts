@@ -7,7 +7,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
+  const noiseValues = generatePolarSimplexNoiseValues(100, 5);
   const data = remapValues(
     noiseValues,
     clock.height * 0.45,
@@ -37,6 +37,13 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     }
   );
 
+  clock
+    .addCircles({ count: 24, radius: 10, offset: 10 })
+    .addTexts({ count: 12, offset: 60, fontSize: 40 })
+    .addRectangles({ count: 600, width: 3, height: 1, offset: 100 })
+    .addRectangles({ count: 600, width: 3, height: 3, offset: 130 })
+    .addAnimation(currentTimeAnimation(clock));
+
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.1, clock.height * 0.5),
     {
@@ -50,22 +57,17 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     }
   );
 
-  clock
-    .addCircles({ count: 24, radius: 10, offset: 10 })
-    .addTexts({ count: 12, offset: 60, fontSize: 40 })
-    .addAnimation(currentTimeAnimation(clock));
+  clock.addHandle({
+    label: "seconds",
+    imageUrl: "./images/seconds.png",
+    scale: 0.09,
+    offsetY: -0.17,
+  });
 
   clock.addHandle({
     label: "hours",
     imageUrl: "./images/hours.png",
     scale: 0.09,
     offsetY: -0.25,
-  });
-
-  clock.addHandle({
-    label: "seconds",
-    imageUrl: "./images/seconds.png",
-    scale: 0.09,
-    offsetY: -0.17,
   });
 })();
