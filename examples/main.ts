@@ -18,7 +18,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     subdivisions: 3,
     tint: {
       r: 255,
-      g: 0,
+      g: 60,
       b: 120,
       a: 255,
     },
@@ -51,7 +51,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
       tint: {
         r: 40,
         g: 0,
-        b: 30,
+        b: 20,
         a: 255,
       },
     }
