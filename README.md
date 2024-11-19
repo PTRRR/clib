@@ -2,7 +2,9 @@
 
 A powerful TypeScript library for creating customizable, animated clock visualizations using PIXI.js.
 
-![Example Clock Visualization](example.png)
+<div align="center">
+  <img src="example.png" width="400" alt="Example Clock Visualization">
+</div>
 
 ## Workshop Origins
 
