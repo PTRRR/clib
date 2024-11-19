@@ -1,3 +1,9 @@
+/**
+ * Converts a font file to a data URL
+ * @param {string} path - URL path to the font file
+ * @returns {Promise<string>} Data URL representation of the font
+ * @throws {Error} If font loading or conversion fails
+ */
 export const getFontDataUrl = (path: string): Promise<string> => {
   return new Promise(async (resolve, reject) => {
     try {

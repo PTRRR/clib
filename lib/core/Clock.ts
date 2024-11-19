@@ -9,14 +9,21 @@ import { Handle, HandleProps } from "./Handle";
 import {
   CircleShapeParams,
   CustomShapeHandler,
-  Index,
+  ClockIndex,
   IndexProps,
   RectShapeParams,
   TextShapeParams,
   TriangleShapeParams,
-} from "./Index";
+} from "./ClockIndex";
 import { Animator, Step, Timeline } from "optimo-animator";
 
+/**
+ * Parameters for index-based shape generation methods
+ * @typedef {Object} IndexHelperParams
+ * @property {number} count - Number of shapes to generate
+ * @property {number} [offset] - Optional offset for shape positioning
+ * @property {string} [label] - Optional label for the index
+ */
 export type IndexHelperParams = {
   count: number;
   offset?: number;
@@ -24,16 +31,24 @@ export type IndexHelperParams = {
 };
 
 /**
- * A Clock class that extends PIXI.Application to create a canvas-based clock visualization
+ * A Canvas-based clock visualization component built on PIXI.js
+ * Supports various graphical elements like charts, handles, and shapes
  * @extends Application
  */
 export class Clock extends Application {
-  /** The main scene layer that contains all visual elements */
+  /** Main scene layer containing all visual elements */
   private scene: Layer;
+  /** Container element for the clock */
   private container: HTMLElement | undefined;
+  /** Animation steps for the clock */
   private steps: Step[];
+  /** Animator instance for handling animations */
   private animator: Animator | undefined;
 
+  /**
+   * Creates a new Clock instance
+   * @param {HTMLElement} [container] - Optional container element to mount the clock
+   */
   constructor(container?: HTMLElement) {
     super();
     this.container = container;
@@ -41,9 +56,9 @@ export class Clock extends Application {
   }
 
   /**
-   * Initializes the clock application by setting up the canvas and main scene
+   * Initializes the clock application with canvas setup and main scene
    * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<Clock>} The initialized Clock instance
    */
   async initialize() {
     await this.init({
@@ -67,26 +82,17 @@ export class Clock extends Application {
     return this;
   }
 
-  /**
-   * Gets the current width of the application screen
-   * @returns {number} The width in pixels
-   */
+  /** Gets the current width of the application screen, scaled to 95% */
   get width() {
     return this.screen.width * 0.95;
   }
 
-  /**
-   * Gets the current height of the application screen
-   * @returns {number} The height in pixels
-   */
+  /** Gets the current height of the application screen, scaled to 95% */
   get height() {
     return this.screen.height * 0.95;
   }
 
-  /**
-   * Gets the center coordinates of the application screen
-   * @returns {{ x: number, y: number }} An object containing the x and y coordinates of the center
-   */
+  /** Gets the center coordinates of the application screen */
   get center() {
     return {
       x: this.width / 2,
@@ -96,8 +102,8 @@ export class Clock extends Application {
 
   /**
    * Adds a new layer to the main scene
-   * @param {Layer} layer - The layer to be added
-   * @returns {this} Returns the Clock instance for method chaining
+   * @param {Layer} layer - Layer to add
+   * @returns {Clock} The Clock instance for chaining
    */
   addLayer(layer: Layer) {
     this.scene.addChild(layer);
@@ -105,10 +111,10 @@ export class Clock extends Application {
   }
 
   /**
-   * Creates and adds a new RadialChart to the clock
-   * @param {Values} values - The values to be displayed in the radial chart
-   * @param {RadialChartOptions} [options] - Optional configuration options for the radial chart
-   * @returns {this} Returns the Clock instance for method chaining
+   * Creates and adds a RadialChart to the clock
+   * @param {Values} values - Values to display in the chart
+   * @param {RadialChartOptions} [options] - Configuration options
+   * @returns {Clock} The Clock instance for chaining
    */
   addRadialChart(values: Values, options?: RadialChartOptions) {
     const radialChart = new RadialChart(values, options);
@@ -116,14 +122,24 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds a handle component to the clock
+   * @param {HandleProps} options - Handle configuration options
+   * @returns {Clock} The Clock instance for chaining
+   */
   addHandle(options: HandleProps) {
     const handle = new Handle(options);
     this.addLayer(handle);
     return this;
   }
 
+  /**
+   * Adds an index component to the clock
+   * @param {IndexProps} options - Index configuration options
+   * @returns {Clock} The Clock instance for chaining
+   */
   addIndex(options: IndexProps) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       ...options,
@@ -132,8 +148,13 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds rectangular shapes in an indexed arrangement
+   * @param {RectShapeParams & IndexHelperParams} options - Rectangle and index configuration
+   * @returns {Clock} The Clock instance for chaining
+   */
   addRectangles(options: RectShapeParams & IndexHelperParams) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       label: options.label,
@@ -149,8 +170,13 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds triangular shapes in an indexed arrangement
+   * @param {TriangleShapeParams & IndexHelperParams} options - Triangle and index configuration
+   * @returns {Clock} The Clock instance for chaining
+   */
   addTriangles(options: TriangleShapeParams & IndexHelperParams) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       label: options.label,
@@ -166,8 +192,13 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds circular shapes in an indexed arrangement
+   * @param {CircleShapeParams & IndexHelperParams} options - Circle and index configuration
+   * @returns {Clock} The Clock instance for chaining
+   */
   addCircles(options: CircleShapeParams & IndexHelperParams) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       label: options.label,
@@ -183,8 +214,13 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds text elements in an indexed arrangement
+   * @param {TextShapeParams & IndexHelperParams} options - Text and index configuration
+   * @returns {Clock} The Clock instance for chaining
+   */
   addTexts(options: TextShapeParams & IndexHelperParams) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       label: options.label,
@@ -200,13 +236,22 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds custom shapes using a provided handler function
+   * @param {Object} options - Custom shape configuration
+   * @param {number} options.count - Number of shapes to generate
+   * @param {CustomShapeHandler} options.handler - Function to generate custom shapes
+   * @param {number} [options.offset] - Optional position offset
+   * @param {string} [options.label] - Optional label for the shapes
+   * @returns {Clock} The Clock instance for chaining
+   */
   addCustomShape(options: {
     count: number;
     handler: CustomShapeHandler;
     offset?: number;
     label?: string;
   }) {
-    const index = new Index({
+    const index = new ClockIndex({
       boxWidth: this.width,
       boxHeight: this.height,
       label: options.label,
@@ -222,6 +267,11 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Adds an animation step to the clock
+   * @param {Step} step - Animation step to add
+   * @returns {Clock} The Clock instance for chaining
+   */
   addAnimation(step: Step) {
     this.steps.push(step);
 
@@ -236,10 +286,20 @@ export class Clock extends Application {
     return this;
   }
 
+  /**
+   * Retrieves the first layer with the specified label
+   * @param {string} label - Label to search for
+   * @returns {Layer|undefined} The found layer or undefined
+   */
   getLayerByLabel(label: string) {
     return this.scene.getChildByLabel(label, true) as Layer | undefined;
   }
 
+  /**
+   * Retrieves all layers with the specified label
+   * @param {string} label - Label to search for
+   * @returns {Layer[]} Array of matching layers
+   */
   getLayersByLabel(label: string) {
     return this.scene.getChildrenByLabel(label, true) as Layer[];
   }

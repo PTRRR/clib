@@ -1,6 +1,3 @@
-/**
- * Import required dependencies from PIXI.js and local modules
- */
 import {
   Assets,
   ContainerChild,
@@ -29,22 +26,26 @@ import {
 import { remapValues } from "../utils";
 
 /**
- * Configuration options for the RadialChart
- * @typedef {Object} RadialChartOptions
- * @property {number} [samples] - Number of samples for path resampling. Value will be clamped between 3 and 5000
- * @property {number} [subdivisions] - Number of subdivisions for path subdivision. Value will be clamped between 0 and 10
- * @property {string} [vertexShader] - Custom vertex shader code. If not provided, uses baseVertexShader
- * @property {string} [fragmentShader] - Custom fragment shader code. If not provided, uses baseFragmentShader
+ * Configuration options for RadialChart visualization
  */
 export type RadialChartOptions = {
+  /** Optional label for the chart */
   label?: string;
+  /** Number of samples for path resampling (3-5000) */
   samples?: number;
+  /** Number of subdivisions for path subdivision (0-10) */
   subdivisions?: number;
+  /** Custom vertex shader code */
   vertexShader?: string;
+  /** Custom fragment shader code */
   fragmentShader?: string;
+  /** Blend mode for rendering */
   blendMode?: ContainerOptions<ContainerChild>["blendMode"];
+  /** URL for texture to apply to the chart */
   texture?: string;
+  /** Additional shader resources */
   resources?: Record<string, any>;
+  /** RGBA tint color */
   tint?: {
     r: number;
     g: number;
@@ -54,25 +55,19 @@ export type RadialChartOptions = {
 };
 
 /**
- * RadialChart class for rendering circular/radial data visualizations
- * Extends the Layer class and uses PIXI.js for rendering
+ * Renders circular/radial data visualizations using PIXI.js
  * @extends Layer
  */
 export class RadialChart extends Layer {
-  /** The geometry containing vertex data for the radial chart */
+  /** Geometry containing vertex data */
   private geometry: Geometry;
-
-  /** The mesh that renders the radial chart using the geometry and shader */
+  /** Mesh for rendering using geometry and shader */
   private mesh: Mesh<Geometry, Shader>;
 
   /**
    * Creates a new RadialChart instance
-   * @param {Values} values - The data values to be visualized in the radial chart
-   * @param {RadialChartOptions} [params] - Optional configuration parameters for the chart
-   * @param {number} [params.samples] - Number of samples for path resampling
-   * @param {number} [params.subdivisions] - Number of subdivisions for path subdivision
-   * @param {string} [params.vertexShader] - Custom vertex shader code
-   * @param {string} [params.fragmentShader] - Custom fragment shader code
+   * @param {Values} values - Data values to visualize
+   * @param {RadialChartOptions} [params] - Configuration options
    */
   constructor(values: Values, params?: RadialChartOptions) {
     super();
@@ -81,10 +76,8 @@ export class RadialChart extends Layer {
       this.label = params.label;
     }
 
-    // Create geometry and mesh for the radial chart
     this.createDefaultGeometry(values, params);
 
-    // Load texture and create shader if texture is provided
     if (params?.texture) {
       this.createTexturedMesh({
         ...params,
@@ -96,10 +89,16 @@ export class RadialChart extends Layer {
     this.createDefaultMesh(params);
   }
 
+  /**
+   * Creates the default geometry with processed values and attributes
+   * @private
+   * @param {Values} values - Input data values
+   * @param {RadialChartOptions} [params] - Configuration options
+   */
   private createDefaultGeometry(values: Values, params?: RadialChartOptions) {
     const { subdivisions, samples } = params || {};
-    // Process values
     let path = mapValuesToPolarPath(values);
+
     if (typeof subdivisions === "number") {
       const clampedSubdivisions = clampValue(subdivisions, 0, 10);
       path = subdivideClosedPath(path, clampedSubdivisions);
@@ -111,8 +110,6 @@ export class RadialChart extends Layer {
     }
 
     const polarValues = mapPolarPathToValues(path);
-
-    // Generate geometry attributes
     const normalizedValueAttribute: Values = [];
     const valueAttribute: Values = [];
     const uvAttribute: Values = [];
@@ -127,6 +124,7 @@ export class RadialChart extends Layer {
         i + 1,
         polarValues.length
       );
+
       uvAttribute.push(
         0.5,
         0.5,
@@ -143,14 +141,17 @@ export class RadialChart extends Layer {
     this.geometry.addAttribute("aNormalizedValue", {
       buffer: normalizedValueAttribute,
     });
-    this.geometry.addAttribute("aValue", {
-      buffer: valueAttribute,
-    });
+    this.geometry.addAttribute("aValue", { buffer: valueAttribute });
     this.geometry.addAttribute("aUv", {
       buffer: remapValues(uvAttribute, 0, 1),
     });
   }
 
+  /**
+   * Creates a textured mesh with specified parameters
+   * @private
+   * @param {RequiredBy<RadialChartOptions, "texture">} params - Configuration with required texture
+   */
   private createTexturedMesh(
     params: RequiredBy<RadialChartOptions, "texture">
   ) {
@@ -184,6 +185,11 @@ export class RadialChart extends Layer {
     });
   }
 
+  /**
+   * Creates a default mesh with basic shader configuration
+   * @private
+   * @param {RadialChartOptions} [params] - Optional configuration parameters
+   */
   private createDefaultMesh(params?: RadialChartOptions) {
     const { vertexShader, fragmentShader, tint } = params || {};
 

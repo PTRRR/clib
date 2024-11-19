@@ -4,35 +4,69 @@ import { Layer } from "./Layer";
 import { createId } from "@paralleldrive/cuid2";
 import { Assets, Sprite } from "pixi.js";
 
+/**
+ * Parameters for text shape creation
+ */
 export type TextShapeParams = {
+  /** Text content to display */
   text?: string;
+  /** URL of the font file to use */
   fontUrl?: string;
+  /** Font size in pixels */
   fontSize?: number;
+  /** Text color */
   fill?: string;
 };
 
+/**
+ * Parameters for rectangle shape creation
+ */
 export type RectShapeParams = {
+  /** Width in pixels */
   width?: number;
+  /** Height in pixels */
   height?: number;
+  /** Fill color */
   fill?: string;
 };
 
+/**
+ * Parameters for circle shape creation
+ */
 export type CircleShapeParams = {
+  /** Radius in pixels */
   radius?: number;
+  /** Fill color */
   fill?: string;
 };
 
+/**
+ * Parameters for triangle shape creation
+ */
 export type TriangleShapeParams = {
+  /** Width of the triangle base */
   width?: number;
+  /** Height from base to apex */
   height?: number;
+  /** Fill color */
   fill?: string;
 };
 
+/**
+ * Function type for custom shape generation
+ * @callback CustomShapeHandler
+ * @param {number} index - Current index in the sequence
+ * @param {ClockIndex} instance - Reference to the Index instance
+ * @returns {Promise<Node|undefined>} Generated SVG node
+ */
 export type CustomShapeHandler = (
   index: number,
-  instance: Index
+  instance: ClockIndex
 ) => Promise<Node | undefined>;
 
+/**
+ * Union type for different shape configurations
+ */
 export type ShapeParams =
   | {
       type: "circle";
@@ -51,13 +85,23 @@ export type ShapeParams =
       params?: TextShapeParams;
     };
 
+/**
+ * Configuration options for Index component
+ */
 export type IndexProps = {
+  /** Number of shapes to generate */
   count: number;
+  /** Optional label for the index */
   label?: string;
+  /** Offset from the center */
   offset?: number;
+  /** Width of bounding box */
   boxWidth?: number;
+  /** Height of bounding box */
   boxHeight?: number;
+  /** Radius for circular arrangement */
   radius?: number;
+  /** Shape configuration or custom handler */
   shape:
     | ShapeParams
     | {
@@ -66,15 +110,24 @@ export type IndexProps = {
       };
 };
 
+/** Store for loaded fonts */
 const globalFonts = new Map<string, string>();
 
-export class Index extends Layer {
+/**
+ * Component that creates and manages indexed arrangements of shapes
+ * @extends Layer
+ */
+export class ClockIndex extends Layer {
   private radius = 50;
   private svg: SVGSVGElement;
   private boxWidth: number;
   private boxHeight: number;
   private offset: number;
 
+  /**
+   * Creates a new ClockIndex instance
+   * @param {IndexProps} params - Configuration options
+   */
   constructor(params: IndexProps) {
     super();
 
@@ -132,6 +185,10 @@ export class Index extends Layer {
     })();
   }
 
+  /**
+   * Creates a shape based on type and parameters
+   * @private
+   */
   private async createShape({
     type,
     params,
@@ -152,6 +209,11 @@ export class Index extends Layer {
     return shape;
   }
 
+  /**
+   * Creates an SVG text element with custom font support
+   * @param {TextShapeParams} [params] - Text configuration options
+   * @returns {Promise<SVGTextElement>} The created text element
+   */
   async createTextElement(params?: TextShapeParams) {
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
 
@@ -188,6 +250,11 @@ export class Index extends Layer {
     return text;
   }
 
+  /**
+   * Creates an SVG rectangle element
+   * @param {RectShapeParams} [params] - Rectangle configuration options
+   * @returns {SVGRectElement} The created rectangle element
+   */
   createRectElement(params?: RectShapeParams) {
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 
@@ -200,6 +267,11 @@ export class Index extends Layer {
     return rect;
   }
 
+  /**
+   * Creates an SVG circle element
+   * @param {CircleShapeParams} [params] - Circle configuration options
+   * @returns {SVGCircleElement} The created circle element
+   */
   createCircleElement(params?: CircleShapeParams) {
     const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -214,6 +286,11 @@ export class Index extends Layer {
     return circle;
   }
 
+  /**
+   * Creates an SVG triangle element using polygon
+   * @param {TriangleShapeParams} [params] - Triangle configuration options
+   * @returns {SVGPolygonElement} The created triangle element
+   */
   createTriangleElement(params?: TriangleShapeParams) {
     const triangle = document.createElementNS(
       "http://www.w3.org/2000/svg",
