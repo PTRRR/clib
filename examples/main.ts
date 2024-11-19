@@ -1,4 +1,4 @@
-import { Clock, remapValue, remapValues } from "../lib";
+import { Clock, remapValues } from "../lib";
 import { defaultClockStep as currentTimeAnimation } from "../lib/utils/animation.ts";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
@@ -7,46 +7,66 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const count = 5;
-  for (let i = 0; i < count; i++) {
-    const offset = i / count;
-    const remappedOffset = remapValue(offset, 0, 1, 0, 0.5);
-    const noiseValues = generatePolarSimplexNoiseValues(100, 1);
-    const data = remapValues(
-      noiseValues,
-      clock.height * (0.45 - remappedOffset),
-      clock.height * (0.5 - remappedOffset)
-    );
+  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
+  const data = remapValues(
+    noiseValues,
+    clock.height * 0.45,
+    clock.height * 0.5
+  );
 
-    clock.addRadialChart(data, {
+  clock.addRadialChart(data, {
+    subdivisions: 3,
+    tint: {
+      r: 255,
+      g: 0,
+      b: 120,
+      a: 255,
+    },
+  });
+
+  clock.addRadialChart(
+    remapValues(noiseValues, clock.height * 0.3, clock.height * 0.5),
+    {
       subdivisions: 3,
       tint: {
-        r: offset * 255,
-        g: (offset + 0.2) * 255,
-        b: offset * 255,
+        r: 245,
+        g: 0,
+        b: 30,
         a: 255,
       },
-    });
-  }
+    }
+  );
+
+  clock.addRadialChart(
+    remapValues(noiseValues, clock.height * 0.1, clock.height * 0.5),
+    {
+      subdivisions: 3,
+      tint: {
+        r: 40,
+        g: 0,
+        b: 30,
+        a: 255,
+      },
+    }
+  );
+
+  clock
+    .addCircles({ count: 24, radius: 10, offset: 10 })
+    .addTexts({ count: 12, offset: 60, fontSize: 40 })
+
+    .addAnimation(currentTimeAnimation(clock));
+
+  clock.addHandle({
+    label: "hours",
+    imageUrl: "./images/hours.png",
+    scale: 0.09,
+    offsetY: -0.25,
+  });
 
   clock.addHandle({
     label: "seconds",
-    imageUrl: "./images/hours.png",
-    scale: 0.2,
-    offsetY: -0.23,
+    imageUrl: "./images/seconds.png",
+    scale: 0.09,
+    offsetY: -0.17,
   });
-
-  clock.addHandle({
-    label: "minutes",
-    imageUrl: "./images/hours.png",
-    scale: 0.2,
-    offsetY: -0.23,
-  });
-
-  clock
-    .addCircles({ count: 12, radius: 10, offset: 30 })
-    .addRectangles({ count: 12, width: 20, height: 5 })
-    .addTriangles({ count: 12, width: 20, height: 80, offset: 60 })
-    .addTexts({ label: "seconds", count: 12, offset: 170, fontSize: 44 })
-    .addAnimation(currentTimeAnimation(clock));
 })();

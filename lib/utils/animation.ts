@@ -7,7 +7,9 @@ export const defaultClockStep = (clock: Clock): Step => ({
     const date = new Date();
     const secondsProgress = date.getTime() / 1000 / 60;
     const minutesProgress = date.getTime() / 1000 / 60 / 60;
-    const hoursProgress = date.getTime() / 1000 / 60 / 60 / 12;
+    const hoursProgress = date.getTime() / 1000 / 60 / 60 / 12 + 1 / 12;
+
+    // console.log(hoursProgress);
 
     const secondsLayers = clock.getLayersByLabel("seconds");
     const minutesLayers = clock.getLayersByLabel("minutes");
