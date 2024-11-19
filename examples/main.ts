@@ -41,8 +41,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     .addCircles({ count: 24, radius: 10, offset: 10 })
     .addTexts({ count: 12, offset: 60, fontSize: 40 })
     .addRectangles({ count: 600, width: 3, height: 1, offset: 100 })
-    .addRectangles({ count: 600, width: 3, height: 3, offset: 130 })
-    .addAnimation(currentTimeAnimation(clock));
+    .addRectangles({ count: 600, width: 3, height: 3, offset: 130 });
 
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.1, clock.height * 0.5),
@@ -70,4 +69,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     scale: 0.09,
     offsetY: -0.25,
   });
+
+  clock.addAnimation(currentTimeAnimation(clock));
 })();
