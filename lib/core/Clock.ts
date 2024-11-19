@@ -17,7 +17,11 @@ import {
 } from "./Index";
 import { Animator, Step, Timeline } from "optimo-animator";
 
-export type IndexHelperParams = { count: number; offset?: number };
+export type IndexHelperParams = {
+  count: number;
+  offset?: number;
+  label?: string;
+};
 
 /**
  * A Clock class that extends PIXI.Application to create a canvas-based clock visualization
@@ -29,13 +33,11 @@ export class Clock extends Application {
   private container: HTMLElement | undefined;
   private steps: Step[];
   private animator: Animator | undefined;
-  private handles: Handle[];
 
   constructor(container?: HTMLElement) {
     super();
     this.container = container;
     this.steps = [];
-    this.handles = [];
   }
 
   /**
@@ -62,6 +64,7 @@ export class Clock extends Application {
     this.scene = new Layer();
     this.scene.position.set(this.screen.width * 0.5, this.screen.height * 0.5);
     this.stage.addChild(this.scene);
+    return this;
   }
 
   /**
@@ -133,6 +136,7 @@ export class Clock extends Application {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
+      label: options.label,
       count: options.count,
       offset: options.offset,
       shape: {
@@ -149,6 +153,7 @@ export class Clock extends Application {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
+      label: options.label,
       count: options.count,
       offset: options.offset,
       shape: {
@@ -165,6 +170,7 @@ export class Clock extends Application {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
+      label: options.label,
       count: options.count,
       offset: options.offset,
       shape: {
@@ -181,6 +187,7 @@ export class Clock extends Application {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
+      label: options.label,
       count: options.count,
       offset: options.offset,
       shape: {
@@ -197,10 +204,12 @@ export class Clock extends Application {
     count: number;
     handler: CustomShapeHandler;
     offset?: number;
+    label?: string;
   }) {
     const index = new Index({
       boxWidth: this.width,
       boxHeight: this.height,
+      label: options.label,
       count: options.count,
       offset: options.offset,
       shape: {
@@ -213,7 +222,7 @@ export class Clock extends Application {
     return this;
   }
 
-  addAnimationStep(step: Step) {
+  addAnimation(step: Step) {
     this.steps.push(step);
 
     if (this.animator) {
@@ -223,9 +232,15 @@ export class Clock extends Application {
     const timeline = new Timeline(this.steps);
     this.animator = new Animator([timeline]);
     this.animator.start();
+
+    return this;
   }
 
   getLayerByLabel(label: string) {
     return this.scene.getChildByLabel(label, true) as Layer | undefined;
+  }
+
+  getLayersByLabel(label: string) {
+    return this.scene.getChildrenByLabel(label, true) as Layer[];
   }
 }

@@ -181,7 +181,6 @@ export class Index extends Layer {
     text.setAttribute("fill", params?.fill || "white");
     text.setAttribute("x", "0");
     text.setAttribute("y", (-this.radius + this.offset).toString());
-    text.setAttribute("transform", "rotate(180, 0, 0)");
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
     text.textContent = params?.text || "";
