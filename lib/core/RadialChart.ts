@@ -23,38 +23,40 @@ import {
   baseVertexShader,
   defaultFragmentShader,
 } from "../utils/shader";
-import { getMinMaxValues, remapValues } from "../utils";
+import { getMinMaxValues } from "../utils";
 
 /**
  * Configuration options for RadialChart visualization
  */
 export type RadialChartOptions = {
-  /** Optional label for the chart */
+  /** Label for chart identification */
   label?: string;
-  /** Number of samples for path resampling (3-5000) */
+  /** Sample count for path resampling (3-5000) */
   samples?: number;
-  /** Offset for chart center positioning */
+  /** Distance from center point */
   centerOffset?: number;
+  /** Whether centerOffset follows outer contour shape */
   relativeOffset?: boolean;
-  /** Number of subdivisions for path subdivision (0-10) */
+  /** Path subdivision count (0-10) for detail enhancement */
   subdivisions?: number;
-  /** Custom vertex shader code */
+  /** Custom GLSL vertex shader */
   vertexShader?: string;
-  /** Custom fragment shader code */
+  /** Custom GLSL fragment shader */
   fragmentShader?: string;
-  /** Blend mode for rendering */
+  /** PIXI blend mode for compositing */
   blendMode?: ContainerOptions<ContainerChild>["blendMode"];
-  /** URL for texture to apply to the chart */
+  /** Texture image URL */
   texture?: string;
-  /** Additional shader resources */
+  /** Additional shader uniform resources */
   resources?: Record<string, any>;
-  /** RGBA tint color */
+  /** Color tint in RGBA format */
   tint?: {
     r: number;
     g: number;
     b: number;
     a: number;
   };
+  /** UV mapping bounds */
   boundingBox?: {
     minX: number;
     minY: number;
@@ -66,6 +68,25 @@ export type RadialChartOptions = {
 /**
  * Renders circular/radial data visualizations using PIXI.js
  * @extends Layer
+ *
+ * @description
+ * A flexible visualization component that creates radial/circular charts with:
+ * - Path resampling and subdivision for smooth rendering
+ * - Optional texture mapping with custom UV coordinates
+ * - Customizable shaders and blend modes
+ * - Color tinting and opacity control
+ * - Angular masking for animated reveals
+ * - Inner/outer contour generation with relative or absolute offsets
+ *
+ * The chart generates a quad mesh between two contours:
+ * - Outer contour from input values
+ * - Inner contour from centerOffset (either constant or following outer shape)
+ *
+ * Attributes generated for shading:
+ * - aPosition: Vertex positions in 2D space
+ * - aNormalizedValue: 0-1 values for inner/outer vertices
+ * - aValue: Original data values at vertices
+ * - aUv: Texture coordinates mapped to boundingBox
  */
 export class RadialChart extends Layer {
   /** Geometry containing vertex data */
@@ -75,8 +96,8 @@ export class RadialChart extends Layer {
 
   /**
    * Creates a new RadialChart instance
-   * @param {Values} values - Data values to visualize
-   * @param {RadialChartOptions} [params] - Configuration options
+   * @param {Values} values - Data points for outer contour
+   * @param {RadialChartOptions} [params] - Visualization configuration
    */
   constructor(values: Values, params?: RadialChartOptions) {
     super();
@@ -99,10 +120,18 @@ export class RadialChart extends Layer {
   }
 
   /**
-   * Creates the default geometry with processed values and attributes
+   * Creates geometry with processed paths and vertex attributes
    * @private
-   * @param {Values} values - Input data values
+   * @param {Values} values - Input data values to visualize
    * @param {RadialChartOptions} [params] - Configuration options
+   *
+   * Processing steps:
+   * 1. Convert values to polar coordinates
+   * 2. Apply optional subdivision for smoother paths
+   * 3. Resample path if sample count specified
+   * 4. Generate inner contour based on centerOffset
+   * 5. Create vertex buffers for position, value and UV data
+   * 6. Build triangle indices for quad mesh
    */
   private createDefaultGeometry(values: Values, params?: RadialChartOptions) {
     const { subdivisions, samples } = params || {};
@@ -201,16 +230,15 @@ export class RadialChart extends Layer {
       buffer: normalizedValueAttribute,
     });
     this.geometry.addAttribute("aValue", { buffer: valueAttribute });
-
     this.geometry.addAttribute("aUv", {
       buffer: uvAttribute,
     });
   }
 
   /**
-   * Creates a textured mesh with specified parameters
+   * Creates a textured mesh using specified shader configuration
    * @private
-   * @param {RequiredBy<RadialChartOptions, "texture">} params - Configuration with required texture
+   * @param {RequiredBy<RadialChartOptions, "texture">} params - Configuration with required texture URL
    */
   private createTexturedMesh(
     params: RequiredBy<RadialChartOptions, "texture">
@@ -246,9 +274,9 @@ export class RadialChart extends Layer {
   }
 
   /**
-   * Creates a default mesh with basic shader configuration
+   * Creates an untextured mesh with default shader configuration
    * @private
-   * @param {RadialChartOptions} [params] - Optional configuration parameters
+   * @param {RadialChartOptions} [params] - Optional visualization parameters
    */
   private createDefaultMesh(params?: RadialChartOptions) {
     const { vertexShader, fragmentShader, tint } = params || {};
@@ -286,6 +314,11 @@ export class RadialChart extends Layer {
     this.addChild(this.mesh);
   }
 
+  /**
+   * Sets angular mask for partial rendering of the chart
+   * @param {number} start - Start angle in normalized range 0-1
+   * @param {number} end - End angle in normalized range 0-1
+   */
   public setRadialMask(start: number, end: number) {
     if (this.mesh && this.mesh.shader) {
       this.mesh.shader.resources.globals.uniforms.uRadialMaskStart = start;
