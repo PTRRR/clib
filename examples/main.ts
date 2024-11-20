@@ -13,7 +13,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     remapValues(noiseValues, clock.height * 0.45, clock.height * 0.5),
     {
       subdivisions: 3,
-      label: "chart",
       tint: {
         r: 255,
         g: 60,
@@ -44,7 +43,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.1, clock.height * 0.5),
     {
-      label: "chart",
       subdivisions: 3,
       tint: {
         r: 40,
