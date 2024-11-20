@@ -7,7 +7,7 @@ import {
   Shader,
 } from "pixi.js";
 import { Layer } from "./Layer";
-import { BlendMode, RequiredBy, Values } from "../types";
+import { RequiredBy, Values } from "../types";
 import { clampValue } from "../utils/math";
 import { convertTintToNormalizedVector } from "../utils/color";
 import {
@@ -17,7 +17,7 @@ import {
   resampleClosedPath,
   subdivideClosedPath,
 } from "../utils/path";
-import { createRadialMeshGeometry } from "../utils/geometry";
+import { createRingGeometry } from "../utils/geometry";
 import {
   texturedFragmentShader,
   baseVertexShader,
@@ -33,6 +33,9 @@ export type RadialChartOptions = {
   label?: string;
   /** Number of samples for path resampling (3-5000) */
   samples?: number;
+  /** Offset for chart center positioning */
+  centerOffset?: number;
+  relativeOffset?: boolean;
   /** Number of subdivisions for path subdivision (0-10) */
   subdivisions?: number;
   /** Custom vertex shader code */
@@ -109,35 +112,61 @@ export class RadialChart extends Layer {
       path = resampleClosedPath(path, clampedSamples);
     }
 
-    const polarValues = mapPolarPathToValues(path);
+    const outerValues = mapPolarPathToValues(path);
+    const innerValues = params?.relativeOffset
+      ? outerValues.map((it) => it - (params.centerOffset || 0))
+      : new Array(outerValues.length).fill(params?.centerOffset || 0);
+
     const normalizedValueAttribute: Values = [];
     const valueAttribute: Values = [];
     const uvAttribute: Values = [];
 
-    for (let i = 0; i < polarValues.length; i++) {
-      const value = polarValues[i];
-      const nextValue =
-        i + 1 < polarValues.length ? polarValues[i + 1] : polarValues[0];
-      const polarCoords = mapValueToPolar(value, i, polarValues.length);
-      const nextPolarCoords = mapValueToPolar(
-        nextValue,
-        i + 1,
-        polarValues.length
+    const valuesCount = outerValues.length;
+    for (let i = 0; i < valuesCount; i++) {
+      const nextIndex = i + 1 < valuesCount ? i + 1 : 0;
+
+      const outerValue = outerValues[i];
+      const nextOuterValue = outerValues[nextIndex];
+
+      const outerPolarCoords = mapValueToPolar(outerValue, i, valuesCount);
+      const nextOuterPolarCoords = mapValueToPolar(
+        nextOuterValue,
+        nextIndex,
+        valuesCount
+      );
+
+      const innerValue = innerValues[i];
+      const nextInnerValue = innerValues[nextIndex];
+
+      const innerPolarCoords = mapValueToPolar(innerValue, i, valuesCount);
+      const nextInnerPolarCoords = mapValueToPolar(
+        nextInnerValue,
+        nextIndex,
+        valuesCount
       );
 
       uvAttribute.push(
-        0.5,
-        0.5,
-        polarCoords[0],
-        polarCoords[1],
-        nextPolarCoords[0],
-        nextPolarCoords[1]
+        innerPolarCoords[0],
+        innerPolarCoords[1],
+        outerPolarCoords[0],
+        outerPolarCoords[1],
+        nextOuterPolarCoords[0],
+        nextOuterPolarCoords[1],
+        nextInnerPolarCoords[0],
+        nextInnerPolarCoords[1]
       );
-      valueAttribute.push(0, value, nextValue);
-      normalizedValueAttribute.push(0, 1, 1);
+
+      valueAttribute.push(
+        innerValue,
+        outerValue,
+        nextOuterValue,
+        nextInnerValue
+      );
+
+      normalizedValueAttribute.push(0, 1, 1, 0);
     }
 
-    this.geometry = createRadialMeshGeometry(polarValues);
+    this.geometry = createRingGeometry(outerValues, innerValues);
     this.geometry.addAttribute("aNormalizedValue", {
       buffer: normalizedValueAttribute,
     });

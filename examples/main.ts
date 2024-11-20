@@ -7,22 +7,22 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const noiseValues = generatePolarSimplexNoiseValues(100, 5);
-  const data = remapValues(
-    noiseValues,
-    clock.height * 0.45,
-    clock.height * 0.5
-  );
+  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
 
-  clock.addRadialChart(data, {
-    subdivisions: 3,
-    tint: {
-      r: 255,
-      g: 60,
-      b: 120,
-      a: 255,
-    },
-  });
+  clock.addRadialChart(
+    remapValues(noiseValues, clock.height * 0.45, clock.height * 0.5),
+    {
+      subdivisions: 3,
+      // relativeOffset: true,
+      // centerOffset: 100,
+      tint: {
+        r: 255,
+        g: 60,
+        b: 120,
+        a: 255,
+      },
+    }
+  );
 
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.3, clock.height * 0.5),
@@ -60,13 +60,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     scale: 0.09,
     offsetY: -0.17,
   });
-
-  // clock.addHandle({
-  //   label: "hours",
-  //   imageUrl: "./images/hours.png",
-  //   scale: 0.09,
-  //   offsetY: -0.25,
-  // });
 
   clock.addAnimation(currentTimeAnimation(clock));
 })();
