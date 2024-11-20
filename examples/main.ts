@@ -64,10 +64,6 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
   const charts = clock.getLayersByLabel("chart") as RadialChart[];
 
-  charts.forEach((chart) => {
-    chart.setRadialMask(0.0, 0.25);
-  });
-
   clock.addAnimation({
     duration: 5000,
     handler(progress, delta) {

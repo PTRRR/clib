@@ -35965,6 +35965,863 @@ ${parts.join("\n")}
     }
   });
 
+  // node_modules/@noble/hashes/_assert.js
+  var require_assert = __commonJS({
+    "node_modules/@noble/hashes/_assert.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.isBytes = isBytes;
+      exports.number = number;
+      exports.bool = bool;
+      exports.bytes = bytes;
+      exports.hash = hash;
+      exports.exists = exists;
+      exports.output = output;
+      function number(n2) {
+        if (!Number.isSafeInteger(n2) || n2 < 0)
+          throw new Error(`positive integer expected, not ${n2}`);
+      }
+      function bool(b2) {
+        if (typeof b2 !== "boolean")
+          throw new Error(`boolean expected, not ${b2}`);
+      }
+      function isBytes(a2) {
+        return a2 instanceof Uint8Array || a2 != null && typeof a2 === "object" && a2.constructor.name === "Uint8Array";
+      }
+      function bytes(b2, ...lengths) {
+        if (!isBytes(b2))
+          throw new Error("Uint8Array expected");
+        if (lengths.length > 0 && !lengths.includes(b2.length))
+          throw new Error(`Uint8Array expected of length ${lengths}, not of length=${b2.length}`);
+      }
+      function hash(h2) {
+        if (typeof h2 !== "function" || typeof h2.create !== "function")
+          throw new Error("Hash should be wrapped by utils.wrapConstructor");
+        number(h2.outputLen);
+        number(h2.blockLen);
+      }
+      function exists(instance, checkFinished = true) {
+        if (instance.destroyed)
+          throw new Error("Hash instance has been destroyed");
+        if (checkFinished && instance.finished)
+          throw new Error("Hash#digest() has already been called");
+      }
+      function output(out2, instance) {
+        bytes(out2);
+        const min = instance.outputLen;
+        if (out2.length < min) {
+          throw new Error(`digestInto() expects output buffer of length at least ${min}`);
+        }
+      }
+      var assert = { number, bool, bytes, hash, exists, output };
+      exports.default = assert;
+    }
+  });
+
+  // node_modules/@noble/hashes/_u64.js
+  var require_u64 = __commonJS({
+    "node_modules/@noble/hashes/_u64.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.add5L = exports.add5H = exports.add4H = exports.add4L = exports.add3H = exports.add3L = exports.rotlBL = exports.rotlBH = exports.rotlSL = exports.rotlSH = exports.rotr32L = exports.rotr32H = exports.rotrBL = exports.rotrBH = exports.rotrSL = exports.rotrSH = exports.shrSL = exports.shrSH = exports.toBig = void 0;
+      exports.fromBig = fromBig;
+      exports.split = split;
+      exports.add = add;
+      var U32_MASK64 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
+      var _32n = /* @__PURE__ */ BigInt(32);
+      function fromBig(n2, le = false) {
+        if (le)
+          return { h: Number(n2 & U32_MASK64), l: Number(n2 >> _32n & U32_MASK64) };
+        return { h: Number(n2 >> _32n & U32_MASK64) | 0, l: Number(n2 & U32_MASK64) | 0 };
+      }
+      function split(lst, le = false) {
+        let Ah = new Uint32Array(lst.length);
+        let Al = new Uint32Array(lst.length);
+        for (let i2 = 0; i2 < lst.length; i2++) {
+          const { h: h2, l: l2 } = fromBig(lst[i2], le);
+          [Ah[i2], Al[i2]] = [h2, l2];
+        }
+        return [Ah, Al];
+      }
+      var toBig = (h2, l2) => BigInt(h2 >>> 0) << _32n | BigInt(l2 >>> 0);
+      exports.toBig = toBig;
+      var shrSH = (h2, _l, s2) => h2 >>> s2;
+      exports.shrSH = shrSH;
+      var shrSL = (h2, l2, s2) => h2 << 32 - s2 | l2 >>> s2;
+      exports.shrSL = shrSL;
+      var rotrSH = (h2, l2, s2) => h2 >>> s2 | l2 << 32 - s2;
+      exports.rotrSH = rotrSH;
+      var rotrSL = (h2, l2, s2) => h2 << 32 - s2 | l2 >>> s2;
+      exports.rotrSL = rotrSL;
+      var rotrBH = (h2, l2, s2) => h2 << 64 - s2 | l2 >>> s2 - 32;
+      exports.rotrBH = rotrBH;
+      var rotrBL = (h2, l2, s2) => h2 >>> s2 - 32 | l2 << 64 - s2;
+      exports.rotrBL = rotrBL;
+      var rotr32H = (_h, l2) => l2;
+      exports.rotr32H = rotr32H;
+      var rotr32L = (h2, _l) => h2;
+      exports.rotr32L = rotr32L;
+      var rotlSH = (h2, l2, s2) => h2 << s2 | l2 >>> 32 - s2;
+      exports.rotlSH = rotlSH;
+      var rotlSL = (h2, l2, s2) => l2 << s2 | h2 >>> 32 - s2;
+      exports.rotlSL = rotlSL;
+      var rotlBH = (h2, l2, s2) => l2 << s2 - 32 | h2 >>> 64 - s2;
+      exports.rotlBH = rotlBH;
+      var rotlBL = (h2, l2, s2) => h2 << s2 - 32 | l2 >>> 64 - s2;
+      exports.rotlBL = rotlBL;
+      function add(Ah, Al, Bh, Bl) {
+        const l2 = (Al >>> 0) + (Bl >>> 0);
+        return { h: Ah + Bh + (l2 / 2 ** 32 | 0) | 0, l: l2 | 0 };
+      }
+      var add3L = (Al, Bl, Cl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0);
+      exports.add3L = add3L;
+      var add3H = (low, Ah, Bh, Ch) => Ah + Bh + Ch + (low / 2 ** 32 | 0) | 0;
+      exports.add3H = add3H;
+      var add4L = (Al, Bl, Cl, Dl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0);
+      exports.add4L = add4L;
+      var add4H = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0;
+      exports.add4H = add4H;
+      var add5L = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
+      exports.add5L = add5L;
+      var add5H = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
+      exports.add5H = add5H;
+      var u64 = {
+        fromBig,
+        split,
+        toBig,
+        shrSH,
+        shrSL,
+        rotrSH,
+        rotrSL,
+        rotrBH,
+        rotrBL,
+        rotr32H,
+        rotr32L,
+        rotlSH,
+        rotlSL,
+        rotlBH,
+        rotlBL,
+        add,
+        add3L,
+        add3H,
+        add4L,
+        add4H,
+        add5H,
+        add5L
+      };
+      exports.default = u64;
+    }
+  });
+
+  // node_modules/@noble/hashes/crypto.js
+  var require_crypto = __commonJS({
+    "node_modules/@noble/hashes/crypto.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.crypto = void 0;
+      exports.crypto = typeof globalThis === "object" && "crypto" in globalThis ? globalThis.crypto : void 0;
+    }
+  });
+
+  // node_modules/@noble/hashes/utils.js
+  var require_utils = __commonJS({
+    "node_modules/@noble/hashes/utils.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.Hash = exports.nextTick = exports.byteSwapIfBE = exports.byteSwap = exports.isLE = exports.rotl = exports.rotr = exports.createView = exports.u32 = exports.u8 = void 0;
+      exports.isBytes = isBytes;
+      exports.byteSwap32 = byteSwap32;
+      exports.bytesToHex = bytesToHex;
+      exports.hexToBytes = hexToBytes;
+      exports.asyncLoop = asyncLoop;
+      exports.utf8ToBytes = utf8ToBytes;
+      exports.toBytes = toBytes;
+      exports.concatBytes = concatBytes;
+      exports.checkOpts = checkOpts;
+      exports.wrapConstructor = wrapConstructor;
+      exports.wrapConstructorWithOpts = wrapConstructorWithOpts;
+      exports.wrapXOFConstructorWithOpts = wrapXOFConstructorWithOpts;
+      exports.randomBytes = randomBytes;
+      var crypto_1 = require_crypto();
+      var _assert_js_1 = require_assert();
+      function isBytes(a2) {
+        return a2 instanceof Uint8Array || a2 != null && typeof a2 === "object" && a2.constructor.name === "Uint8Array";
+      }
+      var u8 = (arr) => new Uint8Array(arr.buffer, arr.byteOffset, arr.byteLength);
+      exports.u8 = u8;
+      var u32 = (arr) => new Uint32Array(arr.buffer, arr.byteOffset, Math.floor(arr.byteLength / 4));
+      exports.u32 = u32;
+      var createView = (arr) => new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+      exports.createView = createView;
+      var rotr = (word, shift) => word << 32 - shift | word >>> shift;
+      exports.rotr = rotr;
+      var rotl = (word, shift) => word << shift | word >>> 32 - shift >>> 0;
+      exports.rotl = rotl;
+      exports.isLE = new Uint8Array(new Uint32Array([287454020]).buffer)[0] === 68;
+      var byteSwap = (word) => word << 24 & 4278190080 | word << 8 & 16711680 | word >>> 8 & 65280 | word >>> 24 & 255;
+      exports.byteSwap = byteSwap;
+      exports.byteSwapIfBE = exports.isLE ? (n2) => n2 : (n2) => (0, exports.byteSwap)(n2);
+      function byteSwap32(arr) {
+        for (let i2 = 0; i2 < arr.length; i2++) {
+          arr[i2] = (0, exports.byteSwap)(arr[i2]);
+        }
+      }
+      var hexes = /* @__PURE__ */ Array.from({ length: 256 }, (_, i2) => i2.toString(16).padStart(2, "0"));
+      function bytesToHex(bytes) {
+        (0, _assert_js_1.bytes)(bytes);
+        let hex = "";
+        for (let i2 = 0; i2 < bytes.length; i2++) {
+          hex += hexes[bytes[i2]];
+        }
+        return hex;
+      }
+      var asciis = { _0: 48, _9: 57, _A: 65, _F: 70, _a: 97, _f: 102 };
+      function asciiToBase16(char) {
+        if (char >= asciis._0 && char <= asciis._9)
+          return char - asciis._0;
+        if (char >= asciis._A && char <= asciis._F)
+          return char - (asciis._A - 10);
+        if (char >= asciis._a && char <= asciis._f)
+          return char - (asciis._a - 10);
+        return;
+      }
+      function hexToBytes(hex) {
+        if (typeof hex !== "string")
+          throw new Error("hex string expected, got " + typeof hex);
+        const hl = hex.length;
+        const al = hl / 2;
+        if (hl % 2)
+          throw new Error("padded hex string expected, got unpadded hex of length " + hl);
+        const array = new Uint8Array(al);
+        for (let ai = 0, hi = 0; ai < al; ai++, hi += 2) {
+          const n1 = asciiToBase16(hex.charCodeAt(hi));
+          const n2 = asciiToBase16(hex.charCodeAt(hi + 1));
+          if (n1 === void 0 || n2 === void 0) {
+            const char = hex[hi] + hex[hi + 1];
+            throw new Error('hex string expected, got non-hex character "' + char + '" at index ' + hi);
+          }
+          array[ai] = n1 * 16 + n2;
+        }
+        return array;
+      }
+      var nextTick = async () => {
+      };
+      exports.nextTick = nextTick;
+      async function asyncLoop(iters, tick, cb) {
+        let ts = Date.now();
+        for (let i2 = 0; i2 < iters; i2++) {
+          cb(i2);
+          const diff = Date.now() - ts;
+          if (diff >= 0 && diff < tick)
+            continue;
+          await (0, exports.nextTick)();
+          ts += diff;
+        }
+      }
+      function utf8ToBytes(str2) {
+        if (typeof str2 !== "string")
+          throw new Error(`utf8ToBytes expected string, got ${typeof str2}`);
+        return new Uint8Array(new TextEncoder().encode(str2));
+      }
+      function toBytes(data) {
+        if (typeof data === "string")
+          data = utf8ToBytes(data);
+        (0, _assert_js_1.bytes)(data);
+        return data;
+      }
+      function concatBytes(...arrays) {
+        let sum = 0;
+        for (let i2 = 0; i2 < arrays.length; i2++) {
+          const a2 = arrays[i2];
+          (0, _assert_js_1.bytes)(a2);
+          sum += a2.length;
+        }
+        const res = new Uint8Array(sum);
+        for (let i2 = 0, pad = 0; i2 < arrays.length; i2++) {
+          const a2 = arrays[i2];
+          res.set(a2, pad);
+          pad += a2.length;
+        }
+        return res;
+      }
+      var Hash = class {
+        // Safe version that clones internal state
+        clone() {
+          return this._cloneInto();
+        }
+      };
+      exports.Hash = Hash;
+      var toStr = {}.toString;
+      function checkOpts(defaults, opts) {
+        if (opts !== void 0 && toStr.call(opts) !== "[object Object]")
+          throw new Error("Options should be object or undefined");
+        const merged = Object.assign(defaults, opts);
+        return merged;
+      }
+      function wrapConstructor(hashCons) {
+        const hashC = (msg) => hashCons().update(toBytes(msg)).digest();
+        const tmp = hashCons();
+        hashC.outputLen = tmp.outputLen;
+        hashC.blockLen = tmp.blockLen;
+        hashC.create = () => hashCons();
+        return hashC;
+      }
+      function wrapConstructorWithOpts(hashCons) {
+        const hashC = (msg, opts) => hashCons(opts).update(toBytes(msg)).digest();
+        const tmp = hashCons({});
+        hashC.outputLen = tmp.outputLen;
+        hashC.blockLen = tmp.blockLen;
+        hashC.create = (opts) => hashCons(opts);
+        return hashC;
+      }
+      function wrapXOFConstructorWithOpts(hashCons) {
+        const hashC = (msg, opts) => hashCons(opts).update(toBytes(msg)).digest();
+        const tmp = hashCons({});
+        hashC.outputLen = tmp.outputLen;
+        hashC.blockLen = tmp.blockLen;
+        hashC.create = (opts) => hashCons(opts);
+        return hashC;
+      }
+      function randomBytes(bytesLength = 32) {
+        if (crypto_1.crypto && typeof crypto_1.crypto.getRandomValues === "function") {
+          return crypto_1.crypto.getRandomValues(new Uint8Array(bytesLength));
+        }
+        if (crypto_1.crypto && typeof crypto_1.crypto.randomBytes === "function") {
+          return crypto_1.crypto.randomBytes(bytesLength);
+        }
+        throw new Error("crypto.getRandomValues must be defined");
+      }
+    }
+  });
+
+  // node_modules/@noble/hashes/sha3.js
+  var require_sha3 = __commonJS({
+    "node_modules/@noble/hashes/sha3.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.shake256 = exports.shake128 = exports.keccak_512 = exports.keccak_384 = exports.keccak_256 = exports.keccak_224 = exports.sha3_512 = exports.sha3_384 = exports.sha3_256 = exports.sha3_224 = exports.Keccak = void 0;
+      exports.keccakP = keccakP;
+      var _assert_js_1 = require_assert();
+      var _u64_js_1 = require_u64();
+      var utils_js_1 = require_utils();
+      var SHA3_PI = [];
+      var SHA3_ROTL = [];
+      var _SHA3_IOTA = [];
+      var _0n = /* @__PURE__ */ BigInt(0);
+      var _1n = /* @__PURE__ */ BigInt(1);
+      var _2n = /* @__PURE__ */ BigInt(2);
+      var _7n = /* @__PURE__ */ BigInt(7);
+      var _256n = /* @__PURE__ */ BigInt(256);
+      var _0x71n = /* @__PURE__ */ BigInt(113);
+      for (let round2 = 0, R = _1n, x2 = 1, y2 = 0; round2 < 24; round2++) {
+        [x2, y2] = [y2, (2 * x2 + 3 * y2) % 5];
+        SHA3_PI.push(2 * (5 * y2 + x2));
+        SHA3_ROTL.push((round2 + 1) * (round2 + 2) / 2 % 64);
+        let t2 = _0n;
+        for (let j2 = 0; j2 < 7; j2++) {
+          R = (R << _1n ^ (R >> _7n) * _0x71n) % _256n;
+          if (R & _2n)
+            t2 ^= _1n << (_1n << /* @__PURE__ */ BigInt(j2)) - _1n;
+        }
+        _SHA3_IOTA.push(t2);
+      }
+      var [SHA3_IOTA_H, SHA3_IOTA_L] = /* @__PURE__ */ (0, _u64_js_1.split)(_SHA3_IOTA, true);
+      var rotlH = (h2, l2, s2) => s2 > 32 ? (0, _u64_js_1.rotlBH)(h2, l2, s2) : (0, _u64_js_1.rotlSH)(h2, l2, s2);
+      var rotlL = (h2, l2, s2) => s2 > 32 ? (0, _u64_js_1.rotlBL)(h2, l2, s2) : (0, _u64_js_1.rotlSL)(h2, l2, s2);
+      function keccakP(s2, rounds = 24) {
+        const B = new Uint32Array(5 * 2);
+        for (let round2 = 24 - rounds; round2 < 24; round2++) {
+          for (let x2 = 0; x2 < 10; x2++)
+            B[x2] = s2[x2] ^ s2[x2 + 10] ^ s2[x2 + 20] ^ s2[x2 + 30] ^ s2[x2 + 40];
+          for (let x2 = 0; x2 < 10; x2 += 2) {
+            const idx1 = (x2 + 8) % 10;
+            const idx0 = (x2 + 2) % 10;
+            const B0 = B[idx0];
+            const B1 = B[idx0 + 1];
+            const Th = rotlH(B0, B1, 1) ^ B[idx1];
+            const Tl = rotlL(B0, B1, 1) ^ B[idx1 + 1];
+            for (let y2 = 0; y2 < 50; y2 += 10) {
+              s2[x2 + y2] ^= Th;
+              s2[x2 + y2 + 1] ^= Tl;
+            }
+          }
+          let curH = s2[2];
+          let curL = s2[3];
+          for (let t2 = 0; t2 < 24; t2++) {
+            const shift = SHA3_ROTL[t2];
+            const Th = rotlH(curH, curL, shift);
+            const Tl = rotlL(curH, curL, shift);
+            const PI2 = SHA3_PI[t2];
+            curH = s2[PI2];
+            curL = s2[PI2 + 1];
+            s2[PI2] = Th;
+            s2[PI2 + 1] = Tl;
+          }
+          for (let y2 = 0; y2 < 50; y2 += 10) {
+            for (let x2 = 0; x2 < 10; x2++)
+              B[x2] = s2[y2 + x2];
+            for (let x2 = 0; x2 < 10; x2++)
+              s2[y2 + x2] ^= ~B[(x2 + 2) % 10] & B[(x2 + 4) % 10];
+          }
+          s2[0] ^= SHA3_IOTA_H[round2];
+          s2[1] ^= SHA3_IOTA_L[round2];
+        }
+        B.fill(0);
+      }
+      var Keccak = class _Keccak extends utils_js_1.Hash {
+        // NOTE: we accept arguments in bytes instead of bits here.
+        constructor(blockLen, suffix, outputLen, enableXOF = false, rounds = 24) {
+          super();
+          this.blockLen = blockLen;
+          this.suffix = suffix;
+          this.outputLen = outputLen;
+          this.enableXOF = enableXOF;
+          this.rounds = rounds;
+          this.pos = 0;
+          this.posOut = 0;
+          this.finished = false;
+          this.destroyed = false;
+          (0, _assert_js_1.number)(outputLen);
+          if (0 >= this.blockLen || this.blockLen >= 200)
+            throw new Error("Sha3 supports only keccak-f1600 function");
+          this.state = new Uint8Array(200);
+          this.state32 = (0, utils_js_1.u32)(this.state);
+        }
+        keccak() {
+          if (!utils_js_1.isLE)
+            (0, utils_js_1.byteSwap32)(this.state32);
+          keccakP(this.state32, this.rounds);
+          if (!utils_js_1.isLE)
+            (0, utils_js_1.byteSwap32)(this.state32);
+          this.posOut = 0;
+          this.pos = 0;
+        }
+        update(data) {
+          (0, _assert_js_1.exists)(this);
+          const { blockLen, state } = this;
+          data = (0, utils_js_1.toBytes)(data);
+          const len = data.length;
+          for (let pos = 0; pos < len; ) {
+            const take2 = Math.min(blockLen - this.pos, len - pos);
+            for (let i2 = 0; i2 < take2; i2++)
+              state[this.pos++] ^= data[pos++];
+            if (this.pos === blockLen)
+              this.keccak();
+          }
+          return this;
+        }
+        finish() {
+          if (this.finished)
+            return;
+          this.finished = true;
+          const { state, suffix, pos, blockLen } = this;
+          state[pos] ^= suffix;
+          if ((suffix & 128) !== 0 && pos === blockLen - 1)
+            this.keccak();
+          state[blockLen - 1] ^= 128;
+          this.keccak();
+        }
+        writeInto(out2) {
+          (0, _assert_js_1.exists)(this, false);
+          (0, _assert_js_1.bytes)(out2);
+          this.finish();
+          const bufferOut = this.state;
+          const { blockLen } = this;
+          for (let pos = 0, len = out2.length; pos < len; ) {
+            if (this.posOut >= blockLen)
+              this.keccak();
+            const take2 = Math.min(blockLen - this.posOut, len - pos);
+            out2.set(bufferOut.subarray(this.posOut, this.posOut + take2), pos);
+            this.posOut += take2;
+            pos += take2;
+          }
+          return out2;
+        }
+        xofInto(out2) {
+          if (!this.enableXOF)
+            throw new Error("XOF is not possible for this instance");
+          return this.writeInto(out2);
+        }
+        xof(bytes) {
+          (0, _assert_js_1.number)(bytes);
+          return this.xofInto(new Uint8Array(bytes));
+        }
+        digestInto(out2) {
+          (0, _assert_js_1.output)(out2, this);
+          if (this.finished)
+            throw new Error("digest() was already called");
+          this.writeInto(out2);
+          this.destroy();
+          return out2;
+        }
+        digest() {
+          return this.digestInto(new Uint8Array(this.outputLen));
+        }
+        destroy() {
+          this.destroyed = true;
+          this.state.fill(0);
+        }
+        _cloneInto(to) {
+          const { blockLen, suffix, outputLen, rounds, enableXOF } = this;
+          to || (to = new _Keccak(blockLen, suffix, outputLen, enableXOF, rounds));
+          to.state32.set(this.state32);
+          to.pos = this.pos;
+          to.posOut = this.posOut;
+          to.finished = this.finished;
+          to.rounds = rounds;
+          to.suffix = suffix;
+          to.outputLen = outputLen;
+          to.enableXOF = enableXOF;
+          to.destroyed = this.destroyed;
+          return to;
+        }
+      };
+      exports.Keccak = Keccak;
+      var gen = (suffix, blockLen, outputLen) => (0, utils_js_1.wrapConstructor)(() => new Keccak(blockLen, suffix, outputLen));
+      exports.sha3_224 = gen(6, 144, 224 / 8);
+      exports.sha3_256 = gen(6, 136, 256 / 8);
+      exports.sha3_384 = gen(6, 104, 384 / 8);
+      exports.sha3_512 = gen(6, 72, 512 / 8);
+      exports.keccak_224 = gen(1, 144, 224 / 8);
+      exports.keccak_256 = gen(1, 136, 256 / 8);
+      exports.keccak_384 = gen(1, 104, 384 / 8);
+      exports.keccak_512 = gen(1, 72, 512 / 8);
+      var genShake = (suffix, blockLen, outputLen) => (0, utils_js_1.wrapXOFConstructorWithOpts)((opts = {}) => new Keccak(blockLen, suffix, opts.dkLen === void 0 ? outputLen : opts.dkLen, true));
+      exports.shake128 = genShake(31, 168, 128 / 8);
+      exports.shake256 = genShake(31, 136, 256 / 8);
+    }
+  });
+
+  // node_modules/@paralleldrive/cuid2/src/index.js
+  var require_src = __commonJS({
+    "node_modules/@paralleldrive/cuid2/src/index.js"(exports, module) {
+      var { sha3_512: sha3 } = require_sha3();
+      var defaultLength = 24;
+      var bigLength = 32;
+      var createEntropy = (length = 4, random = Math.random) => {
+        let entropy = "";
+        while (entropy.length < length) {
+          entropy = entropy + Math.floor(random() * 36).toString(36);
+        }
+        return entropy;
+      };
+      function bufToBigInt(buf) {
+        let bits = 8n;
+        let value = 0n;
+        for (const i2 of buf.values()) {
+          const bi = BigInt(i2);
+          value = (value << bits) + bi;
+        }
+        return value;
+      }
+      var hash = (input = "") => {
+        return bufToBigInt(sha3(input)).toString(36).slice(1);
+      };
+      var alphabet = Array.from(
+        { length: 26 },
+        (x2, i2) => String.fromCharCode(i2 + 97)
+      );
+      var randomLetter = (random) => alphabet[Math.floor(random() * alphabet.length)];
+      var createFingerprint = ({
+        globalObj = typeof global !== "undefined" ? global : typeof window !== "undefined" ? window : {},
+        random = Math.random
+      } = {}) => {
+        const globals = Object.keys(globalObj).toString();
+        const sourceString = globals.length ? globals + createEntropy(bigLength, random) : createEntropy(bigLength, random);
+        return hash(sourceString).substring(0, bigLength);
+      };
+      var createCounter = (count2) => () => {
+        return count2++;
+      };
+      var initialCountMax = 476782367;
+      var init2 = ({
+        // Fallback if the user does not pass in a CSPRNG. This should be OK
+        // because we don't rely solely on the random number generator for entropy.
+        // We also use the host fingerprint, current time, and a session counter.
+        random = Math.random,
+        counter = createCounter(Math.floor(random() * initialCountMax)),
+        length = defaultLength,
+        fingerprint = createFingerprint({ random })
+      } = {}) => {
+        return function cuid2() {
+          const firstLetter = randomLetter(random);
+          const time = Date.now().toString(36);
+          const count2 = counter().toString(36);
+          const salt = createEntropy(length, random);
+          const hashInput = `${time + salt + count2 + fingerprint}`;
+          return `${firstLetter + hash(hashInput).substring(1, length)}`;
+        };
+      };
+      var createId2 = init2();
+      var isCuid = (id, { minLength = 2, maxLength = bigLength } = {}) => {
+        const length = id.length;
+        const regex = /^[0-9a-z]+$/;
+        try {
+          if (typeof id === "string" && length >= minLength && length <= maxLength && regex.test(id))
+            return true;
+        } finally {
+        }
+        return false;
+      };
+      module.exports.getConstants = () => ({ defaultLength, bigLength });
+      module.exports.init = init2;
+      module.exports.createId = createId2;
+      module.exports.bufToBigInt = bufToBigInt;
+      module.exports.createCounter = createCounter;
+      module.exports.createFingerprint = createFingerprint;
+      module.exports.isCuid = isCuid;
+    }
+  });
+
+  // node_modules/@paralleldrive/cuid2/index.js
+  var require_cuid2 = __commonJS({
+    "node_modules/@paralleldrive/cuid2/index.js"(exports, module) {
+      var { createId: createId2, init: init2, getConstants, isCuid } = require_src();
+      module.exports.createId = createId2;
+      module.exports.init = init2;
+      module.exports.getConstants = getConstants;
+      module.exports.isCuid = isCuid;
+    }
+  });
+
+  // node_modules/optimo-animator/lib/Animator.js
+  var require_Animator = __commonJS({
+    "node_modules/optimo-animator/lib/Animator.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.Animator = void 0;
+      var Animator2 = (
+        /** @class */
+        function() {
+          function Animator3(timelines) {
+            this._pausedTime = void 0;
+            this._lastTime = Date.now();
+            this._startTime = Date.now();
+            this._timelines = timelines;
+            this._animationFrame = null;
+          }
+          Object.defineProperty(Animator3.prototype, "isRunning", {
+            get: function() {
+              return Boolean(this._animationFrame);
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Animator3.prototype, "startTime", {
+            get: function() {
+              return this._startTime;
+            },
+            set: function(startTime) {
+              this._startTime = startTime;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Animator3.prototype.onTick = function(onTick) {
+            this._onTick = onTick;
+          };
+          Animator3.prototype.onStep = function(onStep) {
+            this._onStep = onStep;
+          };
+          Animator3.prototype.computeFrameAt = function(time) {
+            var _a;
+            var elapsedTime = time - this._startTime;
+            var deltaTime = (time - this._lastTime) / 1e3;
+            this._lastTime = time;
+            for (var _i = 0, _b = this._timelines; _i < _b.length; _i++) {
+              var timeline = _b[_i];
+              var timelineTime = elapsedTime % timeline.totalDuration;
+              var step = timeline.getCurrentStep(timelineTime);
+              if (step) {
+                var durationUntilStep = timeline.getDurationUntilStep(step);
+                var stepTime = (timelineTime - durationUntilStep) / step.duration;
+                if (step !== timeline.lastStep || timeline.lastStepTime > stepTime) {
+                  if ((_a = timeline.lastStep) === null || _a === void 0 ? void 0 : _a.onEnd) {
+                    timeline.lastStep.onEnd();
+                  }
+                  if (step.onStart) {
+                    step.onStart();
+                  }
+                  if (this._onStep) {
+                    this._onStep(elapsedTime, step, deltaTime);
+                  }
+                }
+                if (step.handler) {
+                  step.handler(stepTime, deltaTime);
+                }
+                if (this._onTick) {
+                  this._onTick(elapsedTime, step, deltaTime);
+                }
+                timeline.lastStepTime = stepTime;
+                timeline.lastStep = step;
+              } else {
+                this.stop();
+              }
+            }
+          };
+          Animator3.prototype.loop = function() {
+            var _this = this;
+            this._animationFrame = requestAnimationFrame(function() {
+              _this.computeFrameAt(Date.now());
+              _this.loop();
+            });
+          };
+          Animator3.prototype.start = function() {
+            if (typeof this._pausedTime !== "undefined") {
+              var deltaTime = this._pausedTime - this._startTime;
+              this._startTime = Date.now() - deltaTime;
+            } else {
+              this._startTime = Date.now();
+            }
+            this._lastTime = Date.now();
+            this._pausedTime = void 0;
+            this.loop();
+          };
+          Animator3.prototype.stop = function() {
+            if (this._animationFrame) {
+              cancelAnimationFrame(this._animationFrame);
+            }
+            this._pausedTime = void 0;
+            this._animationFrame = null;
+          };
+          Animator3.prototype.pause = function() {
+            if (this._animationFrame) {
+              cancelAnimationFrame(this._animationFrame);
+            }
+            this._pausedTime = Date.now();
+            this._animationFrame = null;
+          };
+          Animator3.prototype.getDuration = function() {
+            return Math.max.apply(Math, this._timelines.map(function(timeline) {
+              return timeline.getDuration();
+            }));
+          };
+          return Animator3;
+        }()
+      );
+      exports.Animator = Animator2;
+    }
+  });
+
+  // node_modules/optimo-animator/lib/Timeline.js
+  var require_Timeline = __commonJS({
+    "node_modules/optimo-animator/lib/Timeline.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.Timeline = void 0;
+      var Timeline2 = (
+        /** @class */
+        function() {
+          function Timeline3(steps) {
+            this._steps = steps;
+            this._lastStepTime = 0;
+            this._lastStep = null;
+          }
+          Object.defineProperty(Timeline3.prototype, "totalDuration", {
+            get: function() {
+              return this._steps.reduce(function(acc, step) {
+                return acc += step.duration;
+              }, 0);
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Timeline3.prototype, "lastStep", {
+            get: function() {
+              return this._lastStep;
+            },
+            set: function(lastStep) {
+              this._lastStep = lastStep;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Timeline3.prototype, "lastStepTime", {
+            get: function() {
+              return this._lastStepTime;
+            },
+            set: function(lastStepTime) {
+              this._lastStepTime = lastStepTime;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Timeline3.prototype.getCurrentStep = function(time) {
+            var currentTime = 0;
+            for (var _i = 0, _a = this._steps; _i < _a.length; _i++) {
+              var step = _a[_i];
+              if (time <= currentTime + step.duration)
+                return step;
+              currentTime += step.duration;
+            }
+            return this._steps[this._steps.length - 1];
+          };
+          Timeline3.prototype.getDurationUntilStep = function(step) {
+            var stepIndex = this._steps.indexOf(step);
+            var beforeSteps = this._steps.slice(0, stepIndex);
+            return beforeSteps.reduce(function(acc, it) {
+              return acc += it.duration;
+            }, 0);
+          };
+          Timeline3.prototype.getDuration = function() {
+            return this._steps.reduce(function(duration, step) {
+              duration += step.duration;
+              return duration;
+            }, 0);
+          };
+          return Timeline3;
+        }()
+      );
+      exports.Timeline = Timeline2;
+    }
+  });
+
+  // node_modules/optimo-animator/lib/Step.js
+  var require_Step = __commonJS({
+    "node_modules/optimo-animator/lib/Step.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.Step = void 0;
+      var Step2 = (
+        /** @class */
+        /* @__PURE__ */ function() {
+          function Step3() {
+            this.duration = 0;
+          }
+          return Step3;
+        }()
+      );
+      exports.Step = Step2;
+    }
+  });
+
+  // node_modules/optimo-animator/lib/index.js
+  var require_lib = __commonJS({
+    "node_modules/optimo-animator/lib/index.js"(exports) {
+      "use strict";
+      var __createBinding = exports && exports.__createBinding || (Object.create ? function(o2, m2, k2, k22) {
+        if (k22 === void 0) k22 = k2;
+        var desc = Object.getOwnPropertyDescriptor(m2, k2);
+        if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+          desc = { enumerable: true, get: function() {
+            return m2[k2];
+          } };
+        }
+        Object.defineProperty(o2, k22, desc);
+      } : function(o2, m2, k2, k22) {
+        if (k22 === void 0) k22 = k2;
+        o2[k22] = m2[k2];
+      });
+      var __exportStar = exports && exports.__exportStar || function(m2, exports2) {
+        for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+      };
+      Object.defineProperty(exports, "__esModule", { value: true });
+      __exportStar(require_Animator(), exports);
+      __exportStar(require_Timeline(), exports);
+      __exportStar(require_Step(), exports);
+    }
+  });
+
   // node_modules/pixi.js/lib/environment-browser/browserExt.mjs
   init_Extensions();
   var browserExt = {
@@ -36187,6 +37044,1831 @@ ${parts.join("\n")}
   extensions.handleByList(ExtensionType.Application, Application._plugins);
   extensions.add(ApplicationInitHook);
 
+  // node_modules/pixi.js/lib/assets/Assets.mjs
+  init_Extensions();
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/loadBitmapFont.mjs
+  init_LoaderParser();
+  init_copySearchParams();
+  init_adapter();
+  init_Extensions();
+  init_path();
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/BitmapFont.mjs
+  init_Rectangle();
+  init_Texture();
+  init_AbstractBitmapFont();
+  init_BitmapFontManager();
+  var BitmapFont = class extends AbstractBitmapFont {
+    constructor(options, url) {
+      super();
+      const { textures, data } = options;
+      Object.keys(data.pages).forEach((key) => {
+        const pageData = data.pages[parseInt(key, 10)];
+        const texture = textures[pageData.id];
+        this.pages.push({ texture });
+      });
+      Object.keys(data.chars).forEach((key) => {
+        const charData = data.chars[key];
+        const {
+          frame: textureFrame,
+          source: textureSource
+        } = textures[charData.page];
+        const frameReal = new Rectangle(
+          charData.x + textureFrame.x,
+          charData.y + textureFrame.y,
+          charData.width,
+          charData.height
+        );
+        const texture = new Texture({
+          source: textureSource,
+          frame: frameReal
+        });
+        this.chars[key] = {
+          id: key.codePointAt(0),
+          xOffset: charData.xOffset,
+          yOffset: charData.yOffset,
+          xAdvance: charData.xAdvance,
+          kerning: charData.kerning ?? {},
+          texture
+        };
+      });
+      this.baseRenderedFontSize = data.fontSize;
+      this.baseMeasurementFontSize = data.fontSize;
+      this.fontMetrics = {
+        ascent: 0,
+        descent: 0,
+        fontSize: data.fontSize
+      };
+      this.baseLineOffset = data.baseLineOffset;
+      this.lineHeight = data.lineHeight;
+      this.fontFamily = data.fontFamily;
+      this.distanceField = data.distanceField ?? {
+        type: "none",
+        range: 0
+      };
+      this.url = url;
+    }
+    /** Destroys the BitmapFont object. */
+    destroy() {
+      super.destroy();
+      for (let i2 = 0; i2 < this.pages.length; i2++) {
+        const { texture } = this.pages[i2];
+        texture.destroy(true);
+      }
+      this.pages = null;
+    }
+    /**
+     * Generates a bitmap-font for the given style and character set
+     * @param options - Setup options for font generation.
+     * @returns Font generated by style options.
+     * @example
+     * import { BitmapFont, BitmapText } from 'pixi.js';
+     *
+     * BitmapFont.install('TitleFont', {
+     *     fontFamily: 'Arial',
+     *     fontSize: 12,
+     *     strokeThickness: 2,
+     *     fill: 'purple',
+     * });
+     *
+     * const title = new BitmapText({ text: 'This is the title', fontFamily: 'TitleFont' });
+     */
+    static install(options) {
+      BitmapFontManager.install(options);
+    }
+    /**
+     * Uninstalls a bitmap font from the cache.
+     * @param {string} name - The name of the bitmap font to uninstall.
+     */
+    static uninstall(name) {
+      BitmapFontManager.uninstall(name);
+    }
+  };
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/bitmapFontTextParser.mjs
+  var bitmapFontTextParser = {
+    test(data) {
+      return typeof data === "string" && data.startsWith("info face=");
+    },
+    parse(txt) {
+      const items = txt.match(/^[a-z]+\s+.+$/gm);
+      const rawData = {
+        info: [],
+        common: [],
+        page: [],
+        char: [],
+        chars: [],
+        kerning: [],
+        kernings: [],
+        distanceField: []
+      };
+      for (const i2 in items) {
+        const name = items[i2].match(/^[a-z]+/gm)[0];
+        const attributeList = items[i2].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
+        const itemData = {};
+        for (const i22 in attributeList) {
+          const split = attributeList[i22].split("=");
+          const key = split[0];
+          const strValue = split[1].replace(/"/gm, "");
+          const floatValue = parseFloat(strValue);
+          const value = isNaN(floatValue) ? strValue : floatValue;
+          itemData[key] = value;
+        }
+        rawData[name].push(itemData);
+      }
+      const font = {
+        chars: {},
+        pages: [],
+        lineHeight: 0,
+        fontSize: 0,
+        fontFamily: "",
+        distanceField: null,
+        baseLineOffset: 0
+      };
+      const [info] = rawData.info;
+      const [common] = rawData.common;
+      const [distanceField] = rawData.distanceField ?? [];
+      if (distanceField) {
+        font.distanceField = {
+          range: parseInt(distanceField.distanceRange, 10),
+          type: distanceField.fieldType
+        };
+      }
+      font.fontSize = parseInt(info.size, 10);
+      font.fontFamily = info.face;
+      font.lineHeight = parseInt(common.lineHeight, 10);
+      const page = rawData.page;
+      for (let i2 = 0; i2 < page.length; i2++) {
+        font.pages.push({
+          id: parseInt(page[i2].id, 10) || 0,
+          file: page[i2].file
+        });
+      }
+      const map2 = {};
+      font.baseLineOffset = font.lineHeight - parseInt(common.base, 10);
+      const char = rawData.char;
+      for (let i2 = 0; i2 < char.length; i2++) {
+        const charNode = char[i2];
+        const id = parseInt(charNode.id, 10);
+        let letter = charNode.letter ?? charNode.char ?? String.fromCharCode(id);
+        if (letter === "space")
+          letter = " ";
+        map2[id] = letter;
+        font.chars[letter] = {
+          id,
+          // texture deets..
+          page: parseInt(charNode.page, 10) || 0,
+          x: parseInt(charNode.x, 10),
+          y: parseInt(charNode.y, 10),
+          width: parseInt(charNode.width, 10),
+          height: parseInt(charNode.height, 10),
+          xOffset: parseInt(charNode.xoffset, 10),
+          yOffset: parseInt(charNode.yoffset, 10),
+          xAdvance: parseInt(charNode.xadvance, 10),
+          kerning: {}
+        };
+      }
+      const kerning = rawData.kerning || [];
+      for (let i2 = 0; i2 < kerning.length; i2++) {
+        const first = parseInt(kerning[i2].first, 10);
+        const second = parseInt(kerning[i2].second, 10);
+        const amount = parseInt(kerning[i2].amount, 10);
+        font.chars[map2[second]].kerning[map2[first]] = amount;
+      }
+      return font;
+    }
+  };
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/bitmapFontXMLStringParser.mjs
+  init_adapter();
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/bitmapFontXMLParser.mjs
+  var bitmapFontXMLParser = {
+    test(data) {
+      const xml = data;
+      return typeof xml !== "string" && "getElementsByTagName" in xml && xml.getElementsByTagName("page").length && xml.getElementsByTagName("info")[0].getAttribute("face") !== null;
+    },
+    parse(xml) {
+      const data = {
+        chars: {},
+        pages: [],
+        lineHeight: 0,
+        fontSize: 0,
+        fontFamily: "",
+        distanceField: null,
+        baseLineOffset: 0
+      };
+      const info = xml.getElementsByTagName("info")[0];
+      const common = xml.getElementsByTagName("common")[0];
+      const distanceField = xml.getElementsByTagName("distanceField")[0];
+      if (distanceField) {
+        data.distanceField = {
+          type: distanceField.getAttribute("fieldType"),
+          range: parseInt(distanceField.getAttribute("distanceRange"), 10)
+        };
+      }
+      const page = xml.getElementsByTagName("page");
+      const char = xml.getElementsByTagName("char");
+      const kerning = xml.getElementsByTagName("kerning");
+      data.fontSize = parseInt(info.getAttribute("size"), 10);
+      data.fontFamily = info.getAttribute("face");
+      data.lineHeight = parseInt(common.getAttribute("lineHeight"), 10);
+      for (let i2 = 0; i2 < page.length; i2++) {
+        data.pages.push({
+          id: parseInt(page[i2].getAttribute("id"), 10) || 0,
+          file: page[i2].getAttribute("file")
+        });
+      }
+      const map2 = {};
+      data.baseLineOffset = data.lineHeight - parseInt(common.getAttribute("base"), 10);
+      for (let i2 = 0; i2 < char.length; i2++) {
+        const charNode = char[i2];
+        const id = parseInt(charNode.getAttribute("id"), 10);
+        let letter = charNode.getAttribute("letter") ?? charNode.getAttribute("char") ?? String.fromCharCode(id);
+        if (letter === "space")
+          letter = " ";
+        map2[id] = letter;
+        data.chars[letter] = {
+          id,
+          // texture deets..
+          page: parseInt(charNode.getAttribute("page"), 10) || 0,
+          x: parseInt(charNode.getAttribute("x"), 10),
+          y: parseInt(charNode.getAttribute("y"), 10),
+          width: parseInt(charNode.getAttribute("width"), 10),
+          height: parseInt(charNode.getAttribute("height"), 10),
+          // render deets..
+          xOffset: parseInt(charNode.getAttribute("xoffset"), 10),
+          yOffset: parseInt(charNode.getAttribute("yoffset"), 10),
+          // + baseLineOffset,
+          xAdvance: parseInt(charNode.getAttribute("xadvance"), 10),
+          kerning: {}
+        };
+      }
+      for (let i2 = 0; i2 < kerning.length; i2++) {
+        const first = parseInt(kerning[i2].getAttribute("first"), 10);
+        const second = parseInt(kerning[i2].getAttribute("second"), 10);
+        const amount = parseInt(kerning[i2].getAttribute("amount"), 10);
+        data.chars[map2[second]].kerning[map2[first]] = amount;
+      }
+      return data;
+    }
+  };
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/bitmapFontXMLStringParser.mjs
+  var bitmapFontXMLStringParser = {
+    test(data) {
+      if (typeof data === "string" && data.includes("<font>")) {
+        return bitmapFontXMLParser.test(DOMAdapter.get().parseXML(data));
+      }
+      return false;
+    },
+    parse(data) {
+      return bitmapFontXMLParser.parse(DOMAdapter.get().parseXML(data));
+    }
+  };
+
+  // node_modules/pixi.js/lib/scene/text-bitmap/asset/loadBitmapFont.mjs
+  var validExtensions = [".xml", ".fnt"];
+  var bitmapFontCachePlugin = {
+    extension: {
+      type: ExtensionType.CacheParser,
+      name: "cacheBitmapFont"
+    },
+    test: (asset) => asset instanceof BitmapFont,
+    getCacheableAssets(keys, asset) {
+      const out2 = {};
+      keys.forEach((key) => {
+        out2[key] = asset;
+        out2[`${key}-bitmap`] = asset;
+      });
+      out2[`${asset.fontFamily}-bitmap`] = asset;
+      return out2;
+    }
+  };
+  var loadBitmapFont = {
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Normal
+    },
+    name: "loadBitmapFont",
+    test(url) {
+      return validExtensions.includes(path.extname(url).toLowerCase());
+    },
+    async testParse(data) {
+      return bitmapFontTextParser.test(data) || bitmapFontXMLStringParser.test(data);
+    },
+    async parse(asset, data, loader) {
+      const bitmapFontData = bitmapFontTextParser.test(asset) ? bitmapFontTextParser.parse(asset) : bitmapFontXMLStringParser.parse(asset);
+      const { src } = data;
+      const { pages } = bitmapFontData;
+      const textureUrls = [];
+      const textureOptions = bitmapFontData.distanceField ? {
+        scaleMode: "linear",
+        alphaMode: "premultiply-alpha-on-upload",
+        autoGenerateMipmaps: false,
+        resolution: 1
+      } : {};
+      for (let i2 = 0; i2 < pages.length; ++i2) {
+        const pageFile = pages[i2].file;
+        let imagePath = path.join(path.dirname(src), pageFile);
+        imagePath = copySearchParams(imagePath, src);
+        textureUrls.push({
+          src: imagePath,
+          data: textureOptions
+        });
+      }
+      const loadedTextures = await loader.load(textureUrls);
+      const textures = textureUrls.map((url) => loadedTextures[url.src]);
+      const bitmapFont = new BitmapFont({
+        data: bitmapFontData,
+        textures
+      }, src);
+      return bitmapFont;
+    },
+    async load(url, _options) {
+      const response = await DOMAdapter.get().fetch(url);
+      return await response.text();
+    },
+    async unload(bitmapFont, _resolvedAsset, loader) {
+      await Promise.all(bitmapFont.pages.map((page) => loader.unload(page.texture.source._sourceOrigin)));
+      bitmapFont.destroy();
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/Assets.mjs
+  init_warn();
+
+  // node_modules/pixi.js/lib/assets/BackgroundLoader.mjs
+  var BackgroundLoader = class {
+    /**
+     * @param loader
+     * @param verbose - should the loader log to the console
+     */
+    constructor(loader, verbose = false) {
+      this._loader = loader;
+      this._assetList = [];
+      this._isLoading = false;
+      this._maxConcurrent = 1;
+      this.verbose = verbose;
+    }
+    /**
+     * Adds an array of assets to load.
+     * @param assetUrls - assets to load
+     */
+    add(assetUrls) {
+      assetUrls.forEach((a2) => {
+        this._assetList.push(a2);
+      });
+      if (this.verbose) {
+        console.log("[BackgroundLoader] assets: ", this._assetList);
+      }
+      if (this._isActive && !this._isLoading) {
+        void this._next();
+      }
+    }
+    /**
+     * Loads the next set of assets. Will try to load as many assets as it can at the same time.
+     *
+     * The max assets it will try to load at one time will be 4.
+     */
+    async _next() {
+      if (this._assetList.length && this._isActive) {
+        this._isLoading = true;
+        const toLoad = [];
+        const toLoadAmount = Math.min(this._assetList.length, this._maxConcurrent);
+        for (let i2 = 0; i2 < toLoadAmount; i2++) {
+          toLoad.push(this._assetList.pop());
+        }
+        await this._loader.load(toLoad);
+        this._isLoading = false;
+        void this._next();
+      }
+    }
+    /**
+     * Activate/Deactivate the loading. If set to true then it will immediately continue to load the next asset.
+     * @returns whether the class is active
+     */
+    get active() {
+      return this._isActive;
+    }
+    set active(value) {
+      if (this._isActive === value)
+        return;
+      this._isActive = value;
+      if (value && !this._isLoading) {
+        void this._next();
+      }
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/Assets.mjs
+  init_Cache();
+
+  // node_modules/pixi.js/lib/assets/cache/parsers/cacheTextureArray.mjs
+  init_Extensions();
+  init_Texture();
+  var cacheTextureArray = {
+    extension: {
+      type: ExtensionType.CacheParser,
+      name: "cacheTextureArray"
+    },
+    test: (asset) => Array.isArray(asset) && asset.every((t2) => t2 instanceof Texture),
+    getCacheableAssets: (keys, asset) => {
+      const out2 = {};
+      keys.forEach((key) => {
+        asset.forEach((item, i2) => {
+          out2[key + (i2 === 0 ? "" : i2 + 1)] = item;
+        });
+      });
+      return out2;
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectAvif.mjs
+  init_Extensions();
+
+  // node_modules/pixi.js/lib/assets/detections/utils/testImageFormat.mjs
+  async function testImageFormat(imageData) {
+    if ("Image" in globalThis) {
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => {
+          resolve(true);
+        };
+        image.onerror = () => {
+          resolve(false);
+        };
+        image.src = imageData;
+      });
+    }
+    if ("createImageBitmap" in globalThis && "fetch" in globalThis) {
+      try {
+        const blob = await (await fetch(imageData)).blob();
+        await createImageBitmap(blob);
+      } catch (e2) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectAvif.mjs
+  var detectAvif = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: 1
+    },
+    test: async () => testImageFormat(
+      // eslint-disable-next-line max-len
+      "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A="
+    ),
+    add: async (formats) => [...formats, "avif"],
+    remove: async (formats) => formats.filter((f2) => f2 !== "avif")
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectDefaults.mjs
+  init_Extensions();
+  var imageFormats = ["png", "jpg", "jpeg"];
+  var detectDefaults = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: -1
+    },
+    test: () => Promise.resolve(true),
+    add: async (formats) => [...formats, ...imageFormats],
+    remove: async (formats) => formats.filter((f2) => !imageFormats.includes(f2))
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectMp4.mjs
+  init_Extensions();
+
+  // node_modules/pixi.js/lib/assets/detections/utils/testVideoFormat.mjs
+  var inWorker = "WorkerGlobalScope" in globalThis && globalThis instanceof globalThis.WorkerGlobalScope;
+  function testVideoFormat(mimeType) {
+    if (inWorker) {
+      return false;
+    }
+    const video = document.createElement("video");
+    return video.canPlayType(mimeType) !== "";
+  }
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectMp4.mjs
+  var detectMp4 = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: 0
+    },
+    test: async () => testVideoFormat("video/mp4"),
+    add: async (formats) => [...formats, "mp4", "m4v"],
+    remove: async (formats) => formats.filter((f2) => f2 !== "mp4" && f2 !== "m4v")
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectOgv.mjs
+  init_Extensions();
+  var detectOgv = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: 0
+    },
+    test: async () => testVideoFormat("video/ogg"),
+    add: async (formats) => [...formats, "ogv"],
+    remove: async (formats) => formats.filter((f2) => f2 !== "ogv")
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectWebm.mjs
+  init_Extensions();
+  var detectWebm = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: 0
+    },
+    test: async () => testVideoFormat("video/webm"),
+    add: async (formats) => [...formats, "webm"],
+    remove: async (formats) => formats.filter((f2) => f2 !== "webm")
+  };
+
+  // node_modules/pixi.js/lib/assets/detections/parsers/detectWebp.mjs
+  init_Extensions();
+  var detectWebp = {
+    extension: {
+      type: ExtensionType.DetectionParser,
+      priority: 0
+    },
+    test: async () => testImageFormat(
+      "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA="
+    ),
+    add: async (formats) => [...formats, "webp"],
+    remove: async (formats) => formats.filter((f2) => f2 !== "webp")
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/Loader.mjs
+  init_warn();
+  init_path();
+  init_convertToList();
+  init_isSingleItem();
+  var Loader = class {
+    constructor() {
+      this._parsers = [];
+      this._parsersValidated = false;
+      this.parsers = new Proxy(this._parsers, {
+        set: (target, key, value) => {
+          this._parsersValidated = false;
+          target[key] = value;
+          return true;
+        }
+      });
+      this.promiseCache = {};
+    }
+    /** function used for testing */
+    reset() {
+      this._parsersValidated = false;
+      this.promiseCache = {};
+    }
+    /**
+     * Used internally to generate a promise for the asset to be loaded.
+     * @param url - The URL to be loaded
+     * @param data - any custom additional information relevant to the asset being loaded
+     * @returns - a promise that will resolve to an Asset for example a Texture of a JSON object
+     */
+    _getLoadPromiseAndParser(url, data) {
+      const result = {
+        promise: null,
+        parser: null
+      };
+      result.promise = (async () => {
+        let asset = null;
+        let parser = null;
+        if (data.loadParser) {
+          parser = this._parserHash[data.loadParser];
+          if (!parser) {
+            warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+          }
+        }
+        if (!parser) {
+          for (let i2 = 0; i2 < this.parsers.length; i2++) {
+            const parserX = this.parsers[i2];
+            if (parserX.load && parserX.test?.(url, data, this)) {
+              parser = parserX;
+              break;
+            }
+          }
+          if (!parser) {
+            warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+            return null;
+          }
+        }
+        asset = await parser.load(url, data, this);
+        result.parser = parser;
+        for (let i2 = 0; i2 < this.parsers.length; i2++) {
+          const parser2 = this.parsers[i2];
+          if (parser2.parse) {
+            if (parser2.parse && await parser2.testParse?.(asset, data, this)) {
+              asset = await parser2.parse(asset, data, this) || asset;
+              result.parser = parser2;
+            }
+          }
+        }
+        return asset;
+      })();
+      return result;
+    }
+    async load(assetsToLoadIn, onProgress) {
+      if (!this._parsersValidated) {
+        this._validateParsers();
+      }
+      let count2 = 0;
+      const assets = {};
+      const singleAsset = isSingleItem(assetsToLoadIn);
+      const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
+        alias: [item],
+        src: item,
+        data: {}
+      }));
+      const total = assetsToLoad.length;
+      const promises = assetsToLoad.map(async (asset) => {
+        const url = path.toAbsolute(asset.src);
+        if (!assets[asset.src]) {
+          try {
+            if (!this.promiseCache[url]) {
+              this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
+            }
+            assets[asset.src] = await this.promiseCache[url].promise;
+            if (onProgress)
+              onProgress(++count2 / total);
+          } catch (e2) {
+            delete this.promiseCache[url];
+            delete assets[asset.src];
+            throw new Error(`[Loader.load] Failed to load ${url}.
+${e2}`);
+          }
+        }
+      });
+      await Promise.all(promises);
+      return singleAsset ? assets[assetsToLoad[0].src] : assets;
+    }
+    /**
+     * Unloads one or more assets. Any unloaded assets will be destroyed, freeing up memory for your app.
+     * The parser that created the asset, will be the one that unloads it.
+     * @example
+     * // Single asset:
+     * const asset = await Loader.load('cool.png');
+     *
+     * await Loader.unload('cool.png');
+     *
+     * console.log(asset.destroyed); // true
+     * @param assetsToUnloadIn - urls that you want to unload, or a single one!
+     */
+    async unload(assetsToUnloadIn) {
+      const assetsToUnload = convertToList(assetsToUnloadIn, (item) => ({
+        alias: [item],
+        src: item
+      }));
+      const promises = assetsToUnload.map(async (asset) => {
+        const url = path.toAbsolute(asset.src);
+        const loadPromise = this.promiseCache[url];
+        if (loadPromise) {
+          const loadedAsset = await loadPromise.promise;
+          delete this.promiseCache[url];
+          await loadPromise.parser?.unload?.(loadedAsset, asset, this);
+        }
+      });
+      await Promise.all(promises);
+    }
+    /** validates our parsers, right now it only checks for name conflicts but we can add more here as required! */
+    _validateParsers() {
+      this._parsersValidated = true;
+      this._parserHash = this._parsers.filter((parser) => parser.name).reduce((hash, parser) => {
+        if (!parser.name) {
+          warn(`[Assets] loadParser should have a name`);
+        } else if (hash[parser.name]) {
+          warn(`[Assets] loadParser name conflict "${parser.name}"`);
+        }
+        return { ...hash, [parser.name]: parser };
+      }, {});
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/loadJson.mjs
+  init_adapter();
+  init_Extensions();
+
+  // node_modules/pixi.js/lib/assets/utils/checkDataUrl.mjs
+  function checkDataUrl(url, mimes) {
+    if (Array.isArray(mimes)) {
+      for (const mime of mimes) {
+        if (url.startsWith(`data:${mime}`))
+          return true;
+      }
+      return false;
+    }
+    return url.startsWith(`data:${mimes}`);
+  }
+
+  // node_modules/pixi.js/lib/assets/utils/checkExtension.mjs
+  init_path();
+  function checkExtension(url, extension) {
+    const tempURL = url.split("?")[0];
+    const ext = path.extname(tempURL).toLowerCase();
+    if (Array.isArray(extension)) {
+      return extension.includes(ext);
+    }
+    return ext === extension;
+  }
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/loadJson.mjs
+  init_LoaderParser();
+  var validJSONExtension = ".json";
+  var validJSONMIME = "application/json";
+  var loadJson = {
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Low
+    },
+    name: "loadJson",
+    test(url) {
+      return checkDataUrl(url, validJSONMIME) || checkExtension(url, validJSONExtension);
+    },
+    async load(url) {
+      const response = await DOMAdapter.get().fetch(url);
+      const json = await response.json();
+      return json;
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/loadTxt.mjs
+  init_adapter();
+  init_Extensions();
+  init_LoaderParser();
+  var validTXTExtension = ".txt";
+  var validTXTMIME = "text/plain";
+  var loadTxt = {
+    name: "loadTxt",
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Low,
+      name: "loadTxt"
+    },
+    test(url) {
+      return checkDataUrl(url, validTXTMIME) || checkExtension(url, validTXTExtension);
+    },
+    async load(url) {
+      const response = await DOMAdapter.get().fetch(url);
+      const txt = await response.text();
+      return txt;
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/loadWebFont.mjs
+  init_adapter();
+  init_Extensions();
+  init_warn();
+  init_path();
+  init_Cache();
+  init_LoaderParser();
+  var validWeights = [
+    "normal",
+    "bold",
+    "100",
+    "200",
+    "300",
+    "400",
+    "500",
+    "600",
+    "700",
+    "800",
+    "900"
+  ];
+  var validFontExtensions = [".ttf", ".otf", ".woff", ".woff2"];
+  var validFontMIMEs = [
+    "font/ttf",
+    "font/otf",
+    "font/woff",
+    "font/woff2"
+  ];
+  var CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
+  function getFontFamilyName(url) {
+    const ext = path.extname(url);
+    const name = path.basename(url, ext);
+    const nameWithSpaces = name.replace(/(-|_)/g, " ");
+    const nameTokens = nameWithSpaces.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+    let valid = nameTokens.length > 0;
+    for (const token of nameTokens) {
+      if (!token.match(CSS_IDENT_TOKEN_REGEX)) {
+        valid = false;
+        break;
+      }
+    }
+    let fontFamilyName = nameTokens.join(" ");
+    if (!valid) {
+      fontFamilyName = `"${fontFamilyName.replace(/[\\"]/g, "\\$&")}"`;
+    }
+    return fontFamilyName;
+  }
+  var validURICharactersRegex = /^[0-9A-Za-z%:/?#\[\]@!\$&'()\*\+,;=\-._~]*$/;
+  function encodeURIWhenNeeded(uri) {
+    if (validURICharactersRegex.test(uri)) {
+      return uri;
+    }
+    return encodeURI(uri);
+  }
+  var loadWebFont = {
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Low
+    },
+    name: "loadWebFont",
+    test(url) {
+      return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
+    },
+    async load(url, options) {
+      const fonts = DOMAdapter.get().getFontFaceSet();
+      if (fonts) {
+        const fontFaces = [];
+        const name = options.data?.family ?? getFontFamilyName(url);
+        const weights = options.data?.weights?.filter((weight) => validWeights.includes(weight)) ?? ["normal"];
+        const data = options.data ?? {};
+        for (let i2 = 0; i2 < weights.length; i2++) {
+          const weight = weights[i2];
+          const font = new FontFace(name, `url(${encodeURIWhenNeeded(url)})`, {
+            ...data,
+            weight
+          });
+          await font.load();
+          fonts.add(font);
+          fontFaces.push(font);
+        }
+        Cache.set(`${name}-and-url`, {
+          url,
+          fontFaces
+        });
+        return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
+      }
+      warn("[loadWebFont] FontFace API is not supported. Skipping loading font");
+      return null;
+    },
+    unload(font) {
+      (Array.isArray(font) ? font : [font]).forEach((t2) => {
+        Cache.remove(t2.family);
+        DOMAdapter.get().getFontFaceSet().delete(t2);
+      });
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadSVG.mjs
+  init_adapter();
+  init_Extensions();
+  init_ImageSource();
+  init_GraphicsContext();
+
+  // node_modules/pixi.js/lib/utils/network/getResolutionOfUrl.mjs
+  init_Resolver();
+  function getResolutionOfUrl(url, defaultValue2 = 1) {
+    const resolution = Resolver.RETINA_PREFIX?.exec(url);
+    if (resolution) {
+      return parseFloat(resolution[1]);
+    }
+    return defaultValue2;
+  }
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadSVG.mjs
+  init_LoaderParser();
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/utils/createTexture.mjs
+  init_Texture();
+  init_warn();
+  init_Cache();
+  function createTexture(source2, loader, url) {
+    source2.label = url;
+    source2._sourceOrigin = url;
+    const texture = new Texture({
+      source: source2,
+      label: url
+    });
+    const unload = () => {
+      delete loader.promiseCache[url];
+      if (Cache.has(url)) {
+        Cache.remove(url);
+      }
+    };
+    texture.source.once("destroy", () => {
+      if (loader.promiseCache[url]) {
+        warn("[Assets] A TextureSource managed by Assets was destroyed instead of unloaded! Use Assets.unload() instead of destroying the TextureSource.");
+        unload();
+      }
+    });
+    texture.once("destroy", () => {
+      if (!source2.destroyed) {
+        warn("[Assets] A Texture managed by Assets was destroyed instead of unloaded! Use Assets.unload() instead of destroying the Texture.");
+        unload();
+      }
+    });
+    return texture;
+  }
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadSVG.mjs
+  var validSVGExtension = ".svg";
+  var validSVGMIME = "image/svg+xml";
+  var loadSvg = {
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.Low,
+      name: "loadSVG"
+    },
+    name: "loadSVG",
+    config: {
+      crossOrigin: "anonymous",
+      parseAsGraphicsContext: false
+    },
+    test(url) {
+      return checkDataUrl(url, validSVGMIME) || checkExtension(url, validSVGExtension);
+    },
+    async load(url, asset, loader) {
+      if (asset.data.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext) {
+        return loadAsGraphics(url);
+      }
+      return loadAsTexture(url, asset, loader, this.config.crossOrigin);
+    },
+    unload(asset) {
+      asset.destroy(true);
+    }
+  };
+  async function loadAsTexture(url, asset, loader, crossOrigin2) {
+    const response = await DOMAdapter.get().fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const image = new Image();
+    image.src = blobUrl;
+    image.crossOrigin = crossOrigin2;
+    await image.decode();
+    URL.revokeObjectURL(blobUrl);
+    const canvas = document.createElement("canvas");
+    const context2 = canvas.getContext("2d");
+    const resolution = asset.data?.resolution || getResolutionOfUrl(url);
+    const width = asset.data?.width ?? image.width;
+    const height = asset.data?.height ?? image.height;
+    canvas.width = width * resolution;
+    canvas.height = height * resolution;
+    context2.drawImage(image, 0, 0, width * resolution, height * resolution);
+    const { parseAsGraphicsContext: _p, ...rest } = asset.data;
+    const base = new ImageSource({
+      resource: canvas,
+      alphaMode: "premultiply-alpha-on-upload",
+      resolution,
+      ...rest
+    });
+    return createTexture(base, loader, url);
+  }
+  async function loadAsGraphics(url) {
+    const response = await DOMAdapter.get().fetch(url);
+    const svgSource = await response.text();
+    const context2 = new GraphicsContext();
+    context2.svg(svgSource);
+    return context2;
+  }
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadTextures.mjs
+  init_adapter();
+  init_Extensions();
+  init_ImageSource();
+
+  // node_modules/pixi.js/lib/_virtual/checkImageBitmap.worker.mjs
+  var WORKER_CODE = `(function () {
+    'use strict';
+
+    const WHITE_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+    async function checkImageBitmap() {
+      try {
+        if (typeof createImageBitmap !== "function")
+          return false;
+        const response = await fetch(WHITE_PNG);
+        const imageBlob = await response.blob();
+        const imageBitmap = await createImageBitmap(imageBlob);
+        return imageBitmap.width === 1 && imageBitmap.height === 1;
+      } catch (e) {
+        return false;
+      }
+    }
+    void checkImageBitmap().then((result) => {
+      self.postMessage(result);
+    });
+
+})();
+`;
+  var WORKER_URL = null;
+  var WorkerInstance = class {
+    constructor() {
+      if (!WORKER_URL) {
+        WORKER_URL = URL.createObjectURL(new Blob([WORKER_CODE], { type: "application/javascript" }));
+      }
+      this.worker = new Worker(WORKER_URL);
+    }
+  };
+  WorkerInstance.revokeObjectURL = function revokeObjectURL() {
+    if (WORKER_URL) {
+      URL.revokeObjectURL(WORKER_URL);
+      WORKER_URL = null;
+    }
+  };
+
+  // node_modules/pixi.js/lib/_virtual/loadImageBitmap.worker.mjs
+  var WORKER_CODE2 = '(function () {\n    \'use strict\';\n\n    async function loadImageBitmap(url, alphaMode) {\n      const response = await fetch(url);\n      if (!response.ok) {\n        throw new Error(`[WorkerManager.loadImageBitmap] Failed to fetch ${url}: ${response.status} ${response.statusText}`);\n      }\n      const imageBlob = await response.blob();\n      return alphaMode === "premultiplied-alpha" ? createImageBitmap(imageBlob, { premultiplyAlpha: "none" }) : createImageBitmap(imageBlob);\n    }\n    self.onmessage = async (event) => {\n      try {\n        const imageBitmap = await loadImageBitmap(event.data.data[0], event.data.data[1]);\n        self.postMessage({\n          data: imageBitmap,\n          uuid: event.data.uuid,\n          id: event.data.id\n        }, [imageBitmap]);\n      } catch (e) {\n        self.postMessage({\n          error: e,\n          uuid: event.data.uuid,\n          id: event.data.id\n        });\n      }\n    };\n\n})();\n';
+  var WORKER_URL2 = null;
+  var WorkerInstance2 = class {
+    constructor() {
+      if (!WORKER_URL2) {
+        WORKER_URL2 = URL.createObjectURL(new Blob([WORKER_CODE2], { type: "application/javascript" }));
+      }
+      this.worker = new Worker(WORKER_URL2);
+    }
+  };
+  WorkerInstance2.revokeObjectURL = function revokeObjectURL2() {
+    if (WORKER_URL2) {
+      URL.revokeObjectURL(WORKER_URL2);
+      WORKER_URL2 = null;
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/workers/WorkerManager.mjs
+  var UUID = 0;
+  var MAX_WORKERS;
+  var WorkerManagerClass = class {
+    constructor() {
+      this._initialized = false;
+      this._createdWorkers = 0;
+      this._workerPool = [];
+      this._queue = [];
+      this._resolveHash = {};
+    }
+    isImageBitmapSupported() {
+      if (this._isImageBitmapSupported !== void 0)
+        return this._isImageBitmapSupported;
+      this._isImageBitmapSupported = new Promise((resolve) => {
+        const { worker } = new WorkerInstance();
+        worker.addEventListener("message", (event) => {
+          worker.terminate();
+          WorkerInstance.revokeObjectURL();
+          resolve(event.data);
+        });
+      });
+      return this._isImageBitmapSupported;
+    }
+    loadImageBitmap(src, asset) {
+      return this._run("loadImageBitmap", [src, asset?.data?.alphaMode]);
+    }
+    async _initWorkers() {
+      if (this._initialized)
+        return;
+      this._initialized = true;
+    }
+    _getWorker() {
+      if (MAX_WORKERS === void 0) {
+        MAX_WORKERS = navigator.hardwareConcurrency || 4;
+      }
+      let worker = this._workerPool.pop();
+      if (!worker && this._createdWorkers < MAX_WORKERS) {
+        this._createdWorkers++;
+        worker = new WorkerInstance2().worker;
+        worker.addEventListener("message", (event) => {
+          this._complete(event.data);
+          this._returnWorker(event.target);
+          this._next();
+        });
+      }
+      return worker;
+    }
+    _returnWorker(worker) {
+      this._workerPool.push(worker);
+    }
+    _complete(data) {
+      if (data.error !== void 0) {
+        this._resolveHash[data.uuid].reject(data.error);
+      } else {
+        this._resolveHash[data.uuid].resolve(data.data);
+      }
+      this._resolveHash[data.uuid] = null;
+    }
+    async _run(id, args) {
+      await this._initWorkers();
+      const promise2 = new Promise((resolve, reject) => {
+        this._queue.push({ id, arguments: args, resolve, reject });
+      });
+      this._next();
+      return promise2;
+    }
+    _next() {
+      if (!this._queue.length)
+        return;
+      const worker = this._getWorker();
+      if (!worker) {
+        return;
+      }
+      const toDo = this._queue.pop();
+      const id = toDo.id;
+      this._resolveHash[UUID] = { resolve: toDo.resolve, reject: toDo.reject };
+      worker.postMessage({
+        data: toDo.arguments,
+        uuid: UUID++,
+        id
+      });
+    }
+  };
+  var WorkerManager = new WorkerManagerClass();
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadTextures.mjs
+  init_LoaderParser();
+  var validImageExtensions = [".jpeg", ".jpg", ".png", ".webp", ".avif"];
+  var validImageMIMEs = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif"
+  ];
+  async function loadImageBitmap(url, asset) {
+    const response = await DOMAdapter.get().fetch(url);
+    if (!response.ok) {
+      throw new Error(`[loadImageBitmap] Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+    }
+    const imageBlob = await response.blob();
+    return asset?.data?.alphaMode === "premultiplied-alpha" ? createImageBitmap(imageBlob, { premultiplyAlpha: "none" }) : createImageBitmap(imageBlob);
+  }
+  var loadTextures = {
+    name: "loadTextures",
+    extension: {
+      type: ExtensionType.LoadParser,
+      priority: LoaderParserPriority.High,
+      name: "loadTextures"
+    },
+    config: {
+      preferWorkers: true,
+      preferCreateImageBitmap: true,
+      crossOrigin: "anonymous"
+    },
+    test(url) {
+      return checkDataUrl(url, validImageMIMEs) || checkExtension(url, validImageExtensions);
+    },
+    async load(url, asset, loader) {
+      let src = null;
+      if (globalThis.createImageBitmap && this.config.preferCreateImageBitmap) {
+        if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported()) {
+          src = await WorkerManager.loadImageBitmap(url, asset);
+        } else {
+          src = await loadImageBitmap(url, asset);
+        }
+      } else {
+        src = await new Promise((resolve) => {
+          src = new Image();
+          src.crossOrigin = this.config.crossOrigin;
+          src.src = url;
+          if (src.complete) {
+            resolve(src);
+          } else {
+            src.onload = () => {
+              resolve(src);
+            };
+          }
+        });
+      }
+      const base = new ImageSource({
+        resource: src,
+        alphaMode: "premultiply-alpha-on-upload",
+        resolution: asset.data?.resolution || getResolutionOfUrl(url),
+        ...asset.data
+      });
+      return createTexture(base, loader, url);
+    },
+    unload(texture) {
+      texture.destroy(true);
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/loader/parsers/textures/loadVideoTextures.mjs
+  init_Extensions();
+  init_VideoSource();
+  init_detectVideoAlphaMode();
+  var validVideoExtensions = [".mp4", ".m4v", ".webm", ".ogg", ".ogv", ".h264", ".avi", ".mov"];
+  var validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring(1)}`);
+  function crossOrigin(element, url, crossorigin) {
+    if (crossorigin === void 0 && !url.startsWith("data:")) {
+      element.crossOrigin = determineCrossOrigin(url);
+    } else if (crossorigin !== false) {
+      element.crossOrigin = typeof crossorigin === "string" ? crossorigin : "anonymous";
+    }
+  }
+  function preloadVideo(element) {
+    return new Promise((resolve, reject) => {
+      element.addEventListener("canplaythrough", loaded);
+      element.addEventListener("error", error);
+      element.load();
+      function loaded() {
+        cleanup();
+        resolve();
+      }
+      function error(err) {
+        cleanup();
+        reject(err);
+      }
+      function cleanup() {
+        element.removeEventListener("canplaythrough", loaded);
+        element.removeEventListener("error", error);
+      }
+    });
+  }
+  function determineCrossOrigin(url, loc = globalThis.location) {
+    if (url.startsWith("data:")) {
+      return "";
+    }
+    loc = loc || globalThis.location;
+    const parsedUrl = new URL(url, document.baseURI);
+    if (parsedUrl.hostname !== loc.hostname || parsedUrl.port !== loc.port || parsedUrl.protocol !== loc.protocol) {
+      return "anonymous";
+    }
+    return "";
+  }
+  var loadVideoTextures = {
+    name: "loadVideo",
+    extension: {
+      type: ExtensionType.LoadParser,
+      name: "loadVideo"
+    },
+    test(url) {
+      const isValidDataUrl = checkDataUrl(url, validVideoMIMEs);
+      const isValidExtension = checkExtension(url, validVideoExtensions);
+      return isValidDataUrl || isValidExtension;
+    },
+    async load(url, asset, loader) {
+      const options = {
+        ...VideoSource.defaultOptions,
+        resolution: asset.data?.resolution || getResolutionOfUrl(url),
+        alphaMode: asset.data?.alphaMode || await detectVideoAlphaMode(),
+        ...asset.data
+      };
+      const videoElement = document.createElement("video");
+      const attributeMap = {
+        preload: options.autoLoad !== false ? "auto" : void 0,
+        "webkit-playsinline": options.playsinline !== false ? "" : void 0,
+        playsinline: options.playsinline !== false ? "" : void 0,
+        muted: options.muted === true ? "" : void 0,
+        loop: options.loop === true ? "" : void 0,
+        autoplay: options.autoPlay !== false ? "" : void 0
+      };
+      Object.keys(attributeMap).forEach((key) => {
+        const value = attributeMap[key];
+        if (value !== void 0)
+          videoElement.setAttribute(key, value);
+      });
+      if (options.muted === true) {
+        videoElement.muted = true;
+      }
+      crossOrigin(videoElement, url, options.crossorigin);
+      const sourceElement = document.createElement("source");
+      let mime;
+      if (url.startsWith("data:")) {
+        mime = url.slice(5, url.indexOf(";"));
+      } else if (!url.startsWith("blob:")) {
+        const ext = url.split("?")[0].slice(url.lastIndexOf(".") + 1).toLowerCase();
+        mime = VideoSource.MIME_TYPES[ext] || `video/${ext}`;
+      }
+      sourceElement.src = url;
+      if (mime) {
+        sourceElement.type = mime;
+      }
+      return new Promise((resolve) => {
+        const onCanPlay = async () => {
+          const base = new VideoSource({ ...options, resource: videoElement });
+          videoElement.removeEventListener("canplay", onCanPlay);
+          if (asset.data.preload) {
+            await preloadVideo(videoElement);
+          }
+          resolve(createTexture(base, loader, url));
+        };
+        videoElement.addEventListener("canplay", onCanPlay);
+        videoElement.appendChild(sourceElement);
+      });
+    },
+    unload(texture) {
+      texture.destroy(true);
+    }
+  };
+
+  // node_modules/pixi.js/lib/assets/resolver/parsers/resolveJsonUrl.mjs
+  init_Extensions();
+  init_Resolver();
+
+  // node_modules/pixi.js/lib/assets/resolver/parsers/resolveTextureUrl.mjs
+  init_Extensions();
+  init_Resolver();
+  var resolveTextureUrl = {
+    extension: {
+      type: ExtensionType.ResolveParser,
+      name: "resolveTexture"
+    },
+    test: loadTextures.test,
+    parse: (value) => ({
+      resolution: parseFloat(Resolver.RETINA_PREFIX.exec(value)?.[1] ?? "1"),
+      format: value.split(".").pop(),
+      src: value
+    })
+  };
+
+  // node_modules/pixi.js/lib/assets/resolver/parsers/resolveJsonUrl.mjs
+  var resolveJsonUrl = {
+    extension: {
+      type: ExtensionType.ResolveParser,
+      priority: -2,
+      name: "resolveJson"
+    },
+    test: (value) => Resolver.RETINA_PREFIX.test(value) && value.endsWith(".json"),
+    parse: resolveTextureUrl.parse
+  };
+
+  // node_modules/pixi.js/lib/assets/Assets.mjs
+  init_Resolver();
+  init_convertToList();
+  init_isSingleItem();
+  var AssetsClass = class {
+    constructor() {
+      this._detections = [];
+      this._initialized = false;
+      this.resolver = new Resolver();
+      this.loader = new Loader();
+      this.cache = Cache;
+      this._backgroundLoader = new BackgroundLoader(this.loader);
+      this._backgroundLoader.active = true;
+      this.reset();
+    }
+    /**
+     * Best practice is to call this function before any loading commences
+     * Initiating is the best time to add any customization to the way things are loaded.
+     *
+     * you do not need to call this for the Assets class to work, only if you want to set any initial properties
+     * @param options - options to initialize the Assets manager with
+     */
+    async init(options = {}) {
+      if (this._initialized) {
+        warn("[Assets]AssetManager already initialized, did you load before calling this Assets.init()?");
+        return;
+      }
+      this._initialized = true;
+      if (options.defaultSearchParams) {
+        this.resolver.setDefaultSearchParams(options.defaultSearchParams);
+      }
+      if (options.basePath) {
+        this.resolver.basePath = options.basePath;
+      }
+      if (options.bundleIdentifier) {
+        this.resolver.setBundleIdentifier(options.bundleIdentifier);
+      }
+      if (options.manifest) {
+        let manifest = options.manifest;
+        if (typeof manifest === "string") {
+          manifest = await this.load(manifest);
+        }
+        this.resolver.addManifest(manifest);
+      }
+      const resolutionPref = options.texturePreference?.resolution ?? 1;
+      const resolution = typeof resolutionPref === "number" ? [resolutionPref] : resolutionPref;
+      const formats = await this._detectFormats({
+        preferredFormats: options.texturePreference?.format,
+        skipDetections: options.skipDetections,
+        detections: this._detections
+      });
+      this.resolver.prefer({
+        params: {
+          format: formats,
+          resolution
+        }
+      });
+      if (options.preferences) {
+        this.setPreferences(options.preferences);
+      }
+    }
+    /**
+     * Allows you to specify how to resolve any assets load requests.
+     * There are a few ways to add things here as shown below:
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * // Simple
+     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny.png'});
+     * const bunny = await Assets.load('bunnyBooBoo');
+     *
+     * // Multiple keys:
+     * Assets.add({alias: ['burger', 'chicken'], src: 'bunny.png'});
+     *
+     * const bunny = await Assets.load('burger');
+     * const bunny2 = await Assets.load('chicken');
+     *
+     * // passing options to to the object
+     * Assets.add({
+     *     alias: 'bunnyBooBooSmooth',
+     *     src: 'bunny{png,webp}',
+     *     data: { scaleMode: SCALE_MODES.NEAREST }, // Base texture options
+     * });
+     *
+     * // Multiple assets
+     *
+     * // The following all do the same thing:
+     *
+     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny{png,webp}'});
+     *
+     * Assets.add({
+     *     alias: 'bunnyBooBoo',
+     *     src: [
+     *         'bunny.png',
+     *         'bunny.webp',
+     *    ],
+     * });
+     *
+     * const bunny = await Assets.load('bunnyBooBoo'); // Will try to load WebP if available
+     * @param assets - the unresolved assets to add to the resolver
+     */
+    add(assets) {
+      this.resolver.add(assets);
+    }
+    async load(urls, onProgress) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      const singleAsset = isSingleItem(urls);
+      const urlArray = convertToList(urls).map((url) => {
+        if (typeof url !== "string") {
+          const aliases = this.resolver.getAlias(url);
+          if (aliases.some((alias) => !this.resolver.hasKey(alias))) {
+            this.add(url);
+          }
+          return Array.isArray(aliases) ? aliases[0] : aliases;
+        }
+        if (!this.resolver.hasKey(url))
+          this.add({ alias: url, src: url });
+        return url;
+      });
+      const resolveResults = this.resolver.resolve(urlArray);
+      const out2 = await this._mapLoadToResolve(resolveResults, onProgress);
+      return singleAsset ? out2[urlArray[0]] : out2;
+    }
+    /**
+     * This adds a bundle of assets in one go so that you can load them as a group.
+     * For example you could add a bundle for each screen in you pixi app
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * Assets.addBundle('animals', [
+     *  { alias: 'bunny', src: 'bunny.png' },
+     *  { alias: 'chicken', src: 'chicken.png' },
+     *  { alias: 'thumper', src: 'thumper.png' },
+     * ]);
+     * // or
+     * Assets.addBundle('animals', {
+     *     bunny: 'bunny.png',
+     *     chicken: 'chicken.png',
+     *     thumper: 'thumper.png',
+     * });
+     *
+     * const assets = await Assets.loadBundle('animals');
+     * @param bundleId - the id of the bundle to add
+     * @param assets - a record of the asset or assets that will be chosen from when loading via the specified key
+     */
+    addBundle(bundleId, assets) {
+      this.resolver.addBundle(bundleId, assets);
+    }
+    /**
+     * Bundles are a way to load multiple assets at once.
+     * If a manifest has been provided to the init function then you can load a bundle, or bundles.
+     * you can also add bundles via `addBundle`
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * // Manifest Example
+     * const manifest = {
+     *     bundles: [
+     *         {
+     *             name: 'load-screen',
+     *             assets: [
+     *                 {
+     *                     alias: 'background',
+     *                     src: 'sunset.png',
+     *                 },
+     *                 {
+     *                     alias: 'bar',
+     *                     src: 'load-bar.{png,webp}',
+     *                 },
+     *             ],
+     *         },
+     *         {
+     *             name: 'game-screen',
+     *             assets: [
+     *                 {
+     *                     alias: 'character',
+     *                     src: 'robot.png',
+     *                 },
+     *                 {
+     *                     alias: 'enemy',
+     *                     src: 'bad-guy.png',
+     *                 },
+     *             ],
+     *         },
+     *     ]
+     * };
+     *
+     * await Assets.init({ manifest });
+     *
+     * // Load a bundle...
+     * loadScreenAssets = await Assets.loadBundle('load-screen');
+     * // Load another bundle...
+     * gameScreenAssets = await Assets.loadBundle('game-screen');
+     * @param bundleIds - the bundle id or ids to load
+     * @param onProgress - Optional function that is called when progress on asset loading is made.
+     * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
+     * of the assets loaded. Do not use this function to detect when assets are complete and available,
+     * instead use the Promise returned by this function.
+     * @returns all the bundles assets or a hash of assets for each bundle specified
+     */
+    async loadBundle(bundleIds, onProgress) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      let singleAsset = false;
+      if (typeof bundleIds === "string") {
+        singleAsset = true;
+        bundleIds = [bundleIds];
+      }
+      const resolveResults = this.resolver.resolveBundle(bundleIds);
+      const out2 = {};
+      const keys = Object.keys(resolveResults);
+      let count2 = 0;
+      let total = 0;
+      const _onProgress = () => {
+        onProgress?.(++count2 / total);
+      };
+      const promises = keys.map((bundleId) => {
+        const resolveResult = resolveResults[bundleId];
+        total += Object.keys(resolveResult).length;
+        return this._mapLoadToResolve(resolveResult, _onProgress).then((resolveResult2) => {
+          out2[bundleId] = resolveResult2;
+        });
+      });
+      await Promise.all(promises);
+      return singleAsset ? out2[bundleIds[0]] : out2;
+    }
+    /**
+     * Initiate a background load of some assets. It will passively begin to load these assets in the background.
+     * So when you actually come to loading them you will get a promise that resolves to the loaded assets immediately
+     *
+     * An example of this might be that you would background load game assets after your initial load.
+     * then when you got to actually load your game screen assets when a player goes to the game - the loading
+     * would already have stared or may even be complete, saving you having to show an interim load bar.
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * Assets.backgroundLoad('bunny.png');
+     *
+     * // later on in your app...
+     * await Assets.loadBundle('bunny.png'); // Will resolve quicker as loading may have completed!
+     * @param urls - the url / urls you want to background load
+     */
+    async backgroundLoad(urls) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      if (typeof urls === "string") {
+        urls = [urls];
+      }
+      const resolveResults = this.resolver.resolve(urls);
+      this._backgroundLoader.add(Object.values(resolveResults));
+    }
+    /**
+     * Initiate a background of a bundle, works exactly like backgroundLoad but for bundles.
+     * this can only be used if the loader has been initiated with a manifest
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * await Assets.init({
+     *     manifest: {
+     *         bundles: [
+     *             {
+     *                 name: 'load-screen',
+     *                 assets: [...],
+     *             },
+     *             ...
+     *         ],
+     *     },
+     * });
+     *
+     * Assets.backgroundLoadBundle('load-screen');
+     *
+     * // Later on in your app...
+     * await Assets.loadBundle('load-screen'); // Will resolve quicker as loading may have completed!
+     * @param bundleIds - the bundleId / bundleIds you want to background load
+     */
+    async backgroundLoadBundle(bundleIds) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      if (typeof bundleIds === "string") {
+        bundleIds = [bundleIds];
+      }
+      const resolveResults = this.resolver.resolveBundle(bundleIds);
+      Object.values(resolveResults).forEach((resolveResult) => {
+        this._backgroundLoader.add(Object.values(resolveResult));
+      });
+    }
+    /**
+     * Only intended for development purposes.
+     * This will wipe the resolver and caches.
+     * You will need to reinitialize the Asset
+     */
+    reset() {
+      this.resolver.reset();
+      this.loader.reset();
+      this.cache.reset();
+      this._initialized = false;
+    }
+    get(keys) {
+      if (typeof keys === "string") {
+        return Cache.get(keys);
+      }
+      const assets = {};
+      for (let i2 = 0; i2 < keys.length; i2++) {
+        assets[i2] = Cache.get(keys[i2]);
+      }
+      return assets;
+    }
+    /**
+     * helper function to map resolved assets back to loaded assets
+     * @param resolveResults - the resolve results from the resolver
+     * @param onProgress - the progress callback
+     */
+    async _mapLoadToResolve(resolveResults, onProgress) {
+      const resolveArray = [...new Set(Object.values(resolveResults))];
+      this._backgroundLoader.active = false;
+      const loadedAssets = await this.loader.load(resolveArray, onProgress);
+      this._backgroundLoader.active = true;
+      const out2 = {};
+      resolveArray.forEach((resolveResult) => {
+        const asset = loadedAssets[resolveResult.src];
+        const keys = [resolveResult.src];
+        if (resolveResult.alias) {
+          keys.push(...resolveResult.alias);
+        }
+        keys.forEach((key) => {
+          out2[key] = asset;
+        });
+        Cache.set(keys, asset);
+      });
+      return out2;
+    }
+    /**
+     * Unload an asset or assets. As the Assets class is responsible for creating the assets via the `load` function
+     * this will make sure to destroy any assets and release them from memory.
+     * Once unloaded, you will need to load the asset again.
+     *
+     * Use this to help manage assets if you find that you have a large app and you want to free up memory.
+     *
+     * - it's up to you as the developer to make sure that textures are not actively being used when you unload them,
+     * Pixi won't break but you will end up with missing assets. Not a good look for the user!
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * // Load a URL:
+     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     *
+     * await Assets.unload('http://some.url.com/image.png')
+     *
+     * // myImageTexture will be destroyed now.
+     *
+     * // Unload multiple assets:
+     * const textures = await Assets.unload(['thumper', 'chicko']);
+     * @param urls - the urls to unload
+     */
+    async unload(urls) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      const urlArray = convertToList(urls).map((url) => typeof url !== "string" ? url.src : url);
+      const resolveResults = this.resolver.resolve(urlArray);
+      await this._unloadFromResolved(resolveResults);
+    }
+    /**
+     * Bundles are a way to manage multiple assets at once.
+     * this will unload all files in a bundle.
+     *
+     * once a bundle has been unloaded, you need to load it again to have access to the assets.
+     * @example
+     * import { Assets } from 'pixi.js';
+     *
+     * Assets.addBundle({
+     *     'thumper': 'http://some.url.com/thumper.png',
+     * })
+     *
+     * const assets = await Assets.loadBundle('thumper');
+     *
+     * // Now to unload...
+     *
+     * await Assets.unloadBundle('thumper');
+     *
+     * // All assets in the assets object will now have been destroyed and purged from the cache
+     * @param bundleIds - the bundle id or ids to unload
+     */
+    async unloadBundle(bundleIds) {
+      if (!this._initialized) {
+        await this.init();
+      }
+      bundleIds = convertToList(bundleIds);
+      const resolveResults = this.resolver.resolveBundle(bundleIds);
+      const promises = Object.keys(resolveResults).map((bundleId) => this._unloadFromResolved(resolveResults[bundleId]));
+      await Promise.all(promises);
+    }
+    async _unloadFromResolved(resolveResult) {
+      const resolveArray = Object.values(resolveResult);
+      resolveArray.forEach((resolveResult2) => {
+        Cache.remove(resolveResult2.src);
+      });
+      await this.loader.unload(resolveArray);
+    }
+    /**
+     * Detects the supported formats for the browser, and returns an array of supported formats, respecting
+     * the users preferred formats order.
+     * @param options - the options to use when detecting formats
+     * @param options.preferredFormats - the preferred formats to use
+     * @param options.skipDetections - if we should skip the detections altogether
+     * @param options.detections - the detections to use
+     * @returns - the detected formats
+     */
+    async _detectFormats(options) {
+      let formats = [];
+      if (options.preferredFormats) {
+        formats = Array.isArray(options.preferredFormats) ? options.preferredFormats : [options.preferredFormats];
+      }
+      for (const detection of options.detections) {
+        if (options.skipDetections || await detection.test()) {
+          formats = await detection.add(formats);
+        } else if (!options.skipDetections) {
+          formats = await detection.remove(formats);
+        }
+      }
+      formats = formats.filter((format, index) => formats.indexOf(format) === index);
+      return formats;
+    }
+    /** All the detection parsers currently added to the Assets class. */
+    get detections() {
+      return this._detections;
+    }
+    /**
+     * General setter for preferences. This is a helper function to set preferences on all parsers.
+     * @param preferences - the preferences to set
+     */
+    setPreferences(preferences) {
+      this.loader.parsers.forEach((parser) => {
+        if (!parser.config)
+          return;
+        Object.keys(parser.config).filter((key) => key in preferences).forEach((key) => {
+          parser.config[key] = preferences[key];
+        });
+      });
+    }
+  };
+  var Assets = new AssetsClass();
+  extensions.handleByList(ExtensionType.LoadParser, Assets.loader.parsers).handleByList(ExtensionType.ResolveParser, Assets.resolver.parsers).handleByList(ExtensionType.CacheParser, Assets.cache.parsers).handleByList(ExtensionType.DetectionParser, Assets.detections);
+  extensions.add(
+    cacheTextureArray,
+    detectDefaults,
+    detectAvif,
+    detectWebp,
+    detectMp4,
+    detectOgv,
+    detectWebm,
+    loadJson,
+    loadTxt,
+    loadWebFont,
+    loadSvg,
+    loadTextures,
+    loadVideoTextures,
+    loadBitmapFont,
+    bitmapFontCachePlugin,
+    resolveTextureUrl,
+    resolveJsonUrl
+  );
+  var assetKeyMap = {
+    loader: ExtensionType.LoadParser,
+    resolver: ExtensionType.ResolveParser,
+    cache: ExtensionType.CacheParser,
+    detection: ExtensionType.DetectionParser
+  };
+  extensions.handle(ExtensionType.Asset, (extension) => {
+    const ref = extension.ref;
+    Object.entries(assetKeyMap).filter(([key]) => !!ref[key]).forEach(([key, type]) => extensions.add(Object.assign(
+      ref[key],
+      // Allow the function to optionally define it's own
+      // ExtensionMetadata, the use cases here is priority for LoaderParsers
+      { extension: ref[key].extension ?? type }
+    )));
+  }, (extension) => {
+    const ref = extension.ref;
+    Object.keys(assetKeyMap).filter((key) => !!ref[key]).forEach((key) => extensions.remove(ref[key]));
+  });
+
   // node_modules/pixi.js/lib/maths/point/pointInTriangle.mjs
   function pointInTriangle(px, py, x1, y1, x2, y2, x3, y3) {
     const v2x = x3 - x1;
@@ -36400,6 +39082,7 @@ ${parts.join("\n")}
   init_Shader();
   init_textureFrom();
   init_Container();
+  init_Sprite();
   init_eventemitter3();
   var import_earcut2 = __toESM(require_earcut(), 1);
   extensions.add(browserExt, webworkerExt);
@@ -36412,6 +39095,17 @@ ${parts.join("\n")}
   var clampValue = (value, min, max) => Math.min(Math.max(value, min), max);
   var remapValue = (value, low1, high1, low2, high2) => {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+  };
+
+  // lib/utils/color.ts
+  var convertTintToNormalizedVector = (tint) => {
+    const { r: r2, g: g2, b: b2, a: a2 } = tint || {};
+    return [
+      typeof r2 === "number" ? r2 / 255 : 1,
+      typeof g2 === "number" ? g2 / 255 : 1,
+      typeof b2 === "number" ? b2 / 255 : 1,
+      typeof a2 === "number" ? a2 / 255 : 1
+    ];
   };
 
   // node_modules/@thi.ng/checks/is-array.js
@@ -37415,16 +40109,20 @@ ${parts.join("\n")}
   };
 
   // lib/utils/path.ts
+  var mapValueToPolar = (value, index, length) => {
+    const step = Math.PI * 2 / length;
+    const angle = step * index - Math.PI * 0.5;
+    const x2 = Math.cos(angle) * value;
+    const y2 = Math.sin(angle) * value;
+    return [x2, y2];
+  };
   var mapValuesToPolarPath = (values = []) => {
     const polarCoordinates = [];
-    const step = Math.PI * 2 / values.length;
     for (let i2 = 0; i2 < values.length; i2++) {
-      const angle = step * i2 - Math.PI * 0.5;
       const wrappedIndex = i2 < values.length ? i2 : 0;
       const value = values[wrappedIndex];
-      const x2 = Math.cos(angle) * value;
-      const y2 = Math.sin(angle) * value;
-      polarCoordinates.push([x2, y2]);
+      const coord = mapValueToPolar(value, i2, values.length);
+      polarCoordinates.push(coord);
     }
     return polarCoordinates;
   };
@@ -37450,18 +40148,35 @@ ${parts.join("\n")}
   };
 
   // lib/utils/geometry.ts
-  var createRadialMeshGeometry = (values = []) => {
-    const contour = mapValuesToPolarPath(values);
+  var createRingGeometry = (outerValues = [], innerValues = []) => {
+    const contour = mapValuesToPolarPath(outerValues);
+    const innerContour = mapValuesToPolarPath(innerValues);
+    if (contour.length !== innerContour.length) {
+      throw new Error(
+        "The number of values in the outer and inner contours must be equal"
+      );
+    }
     const aPosition = [];
     const indexBuffer = [];
     for (let i2 = 0; i2 < contour.length; i2++) {
-      const vector = contour[i2];
       const nextIndex = i2 + 1 < contour.length ? i2 + 1 : 0;
-      const nextVector = contour[nextIndex];
-      indexBuffer.push(i2 * 3, i2 * 3 + 1, i2 * 3 + 2);
-      aPosition.push(0, 0);
-      aPosition.push(vector[0], vector[1]);
-      aPosition.push(nextVector[0], nextVector[1]);
+      const point = contour[i2];
+      const nextPoint = contour[nextIndex];
+      const innerPoint = innerContour[i2];
+      const nextInnerPoint = innerContour[nextIndex];
+      aPosition.push(innerPoint[0], innerPoint[1]);
+      aPosition.push(point[0], point[1]);
+      aPosition.push(nextPoint[0], nextPoint[1]);
+      aPosition.push(nextInnerPoint[0], nextInnerPoint[1]);
+      const startIndex = i2 * 4;
+      indexBuffer.push(
+        startIndex,
+        startIndex + 1,
+        startIndex + 2,
+        startIndex,
+        startIndex + 2,
+        startIndex + 3
+      );
     }
     const geometry = new Geometry({
       attributes: { aPosition },
@@ -37472,74 +40187,412 @@ ${parts.join("\n")}
 
   // lib/utils/shader.ts
   var baseVertexShader = `
-      #version 300 es
-      #define PI 3.1415926538
+  #version 300 es
+  #define PI 3.1415926538
 
-      precision mediump float;
-      precision mediump int;
+  precision mediump float;
+  precision mediump int;
 
-      in vec2 aPosition;
-      in float aValue;
-      in float aDistance;
-      
-      out vec3 position;
-      out float value;
-      out float distance;
+  in vec2 aPosition;
+  in vec2 aUv;
+  in float aValue;
+  in float aNormalizedValue;
+  
+  out vec3 position;
+  out float value;
+  out float normalizedValue;
+  out vec2 uv;
 
-      uniform mat3 uProjectionMatrix;
-      uniform mat3 uWorldTransformMatrix;
-      uniform mat3 uTransformMatrix;
+  uniform mat3 uProjectionMatrix;
+  uniform mat3 uWorldTransformMatrix;
+  uniform mat3 uTransformMatrix;
 
+  void main() {
+    position = vec3(aPosition, 0.0);
+    uv = aUv;
+    value = aValue;
+    normalizedValue = aNormalizedValue;
 
-      void main() {
-        position = vec3(aPosition, 0.0);
-        value = aValue;
-        distance = aDistance;
+    mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
+    gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
+  }
+`;
+  var defaultFragmentHeader = `
+  #version 300 es
 
-        mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
-        gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
+  #define PI 3.1415926538
+  #define MOD3 vec3(.1031,.11369,.13787)
+  #define grad(x) length(vec2(dFdx(x),dFdy(x)))
+
+  precision highp float;
+  precision highp int;
+
+  in vec3 position;
+  in float value;
+  in float normalizedValue;
+  in vec2 uv;
+  
+  uniform sampler2D uTexture;
+  uniform vec4 uTint;
+  uniform float uRadialMaskStart;
+  uniform float uRadialMaskEnd;
+
+  out vec4 fragColor;
+
+  vec2 rotateVec2(vec2 vec, float angle) {
+    float mid = 0.5;
+    return vec2(
+      cos(angle) * (vec.x - mid) + sin(angle) * (vec.y - mid) + mid,
+      cos(angle) * (vec.y - mid) - sin(angle) * (vec.x - mid) + mid
+    );
+  }
+
+  float getRadialGradient(vec2 uv) {
+    vec2 newUv = uv;
+    newUv = newUv - vec2(0.5);
+    
+    float c = atan(newUv.y, newUv.x);
+    c /= PI;
+    c /= 2.0;
+    c += 0.5;
+
+    return c;
+  }
+
+  float getRadialMask(vec2 uv, float alpha, float smoothing) {
+    vec2 newUv = rotateVec2(uv, PI * 0.5);
+    newUv = newUv - vec2(0.5);
+    
+    float c = atan(newUv.y, newUv.x);
+    c /= PI;
+    c /= 2.0;
+    c += 0.5;
+
+    float dlx = fwidth(c) * smoothing;
+    return smoothstep(c - dlx, c + dlx, alpha);
+  }
+
+  float getRadialMask(vec2 uv, float startAlpha, float endAlpha, float smoothing) {
+    vec2 newUv = rotateVec2(uv, PI * 0.5);
+    newUv = newUv - vec2(0.5);
+    
+    float c = atan(newUv.y, newUv.x);
+    c /= PI;
+    c /= 2.0;
+    c += 0.5;
+
+    float dlx = fwidth(c) * smoothing;
+    return endAlpha >= 1.0 ? 1.0 : smoothstep(c + dlx, c - dlx, startAlpha) * smoothstep(c - dlx, c + dlx, endAlpha);
+  }
+`;
+  var texturedFragmentShader = `
+  ${defaultFragmentHeader}
+
+  void main() {
+    vec4 texture = texture(uTexture, uv);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    fragColor = vec4(texture.x, texture.y, texture.z, 1.0) * uTint * radialMask;
+  }
+`;
+  var defaultFragmentShader = `
+  ${defaultFragmentHeader}
+
+  void main() {
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    fragColor = vec4(1.0, 1.0, 1.0, 1.0) * uTint * radialMask;
+  }
+`;
+  var linesFragmentShader = `
+  ${defaultFragmentHeader}
+
+  void main() {
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
+    float mappedValue = normalizedValue;
+    float sdf = abs(fract(mappedValue * 20.0) - 0.5) * 2.0;
+    sdf = smoothstep(0.6, 0.50, sdf);
+    fragColor = vec4(sdf, sdf, sdf, 1.0) * uTint * radialMask;
+  }
+`;
+
+  // lib/utils/value.ts
+  var getMinMaxValues = (values) => {
+    let index = 0;
+    let maxIndex = 0;
+    let minIndex = 0;
+    let maxValue = -Infinity;
+    let minValue = Infinity;
+    for (const value of values) {
+      if (value < minValue) {
+        minValue = value;
+        minIndex = index;
       }
-    `;
-  var baseFragmentShader = `
-      #version 300 es
-
-      #define PI 3.1415926538
-      #define MOD3 vec3(.1031,.11369,.13787)
-      #define grad(x) length(vec2(dFdx(x),dFdy(x)))
-
-      precision highp float;
-      precision highp int;
-
-      in vec3 position;
-      in float value;
-      in float distance;
-
-      out vec4 fragColor;
-
-      void main() {
-        float line = abs(fract(distance * 5.0) - 0.5) * 2.0;
-        fragColor = vec4(line, line, line, 1.0);
+      if (value > maxValue) {
+        maxValue = value;
+        maxIndex = index;
       }
-    `;
+      index++;
+    }
+    return {
+      maxValue,
+      maxIndex,
+      minValue,
+      minIndex
+    };
+  };
+  var normalizeValues = (values) => {
+    let maxValue = -Infinity;
+    let minValue = Infinity;
+    for (const value of values) {
+      if (value < minValue) {
+        minValue = value;
+      }
+      if (value > maxValue) {
+        maxValue = value;
+      }
+    }
+    return values.map((it) => remapValue(it, minValue, maxValue, 0, 1));
+  };
+  var remapValues = (values, low, hight) => {
+    const normalized = normalizeValues(values);
+    return normalized.map((it) => remapValue(it, 0, 1, low, hight));
+  };
+
+  // lib/utils/animation.ts
+  var defaultClockStep = (clock) => ({
+    duration: 1e3,
+    handler: () => {
+      const date = /* @__PURE__ */ new Date();
+      const secondsProgress = date.getTime() / 1e3 / 60;
+      const minutesProgress = date.getTime() / 1e3 / 60 / 60;
+      const hoursProgress = date.getTime() / 1e3 / 60 / 60 / 12 + 1 / 12;
+      const secondsLayers = clock.getLayersByLabel("seconds");
+      const minutesLayers = clock.getLayersByLabel("minutes");
+      const hourseLayers = clock.getLayersByLabel("hours");
+      secondsLayers.forEach((layer) => {
+        layer.rotation = secondsProgress * Math.PI * 2;
+      });
+      minutesLayers.forEach((layer) => {
+        layer.rotation = minutesProgress * Math.PI * 2;
+      });
+      hourseLayers.forEach((layer) => {
+        layer.rotation = hoursProgress * Math.PI * 2;
+      });
+    }
+  });
+
+  // lib/utils/fonts.ts
+  var getFontDataUrl = (path2) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await fetch(path2);
+        const blob = await resp.blob();
+        const f2 = new FileReader();
+        f2.addEventListener("load", () => resolve(f2.result));
+        f2.addEventListener("error", (error) => reject(error));
+        f2.readAsDataURL(blob);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  // lib/utils/svg.ts
+  var createSvg = (params) => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    if (params?.width) {
+      svg.setAttribute("width", params.width.toString());
+    }
+    if (params?.height) {
+      svg.setAttribute("height", params.height.toString());
+    }
+    if (params?.viewBox) {
+      svg.setAttribute("viewBox", params.viewBox);
+    }
+    return svg;
+  };
+  var getSvgAsImageUrl = (svg) => {
+    const xml = new XMLSerializer().serializeToString(svg);
+    const svg64 = btoa(xml);
+    const b64Start = "data:image/svg+xml;base64,";
+    return b64Start + svg64;
+  };
+  var getSvgAsImage = (svg) => {
+    const url = getSvgAsImageUrl(svg);
+    const img = new Image();
+    img.src = url;
+    return img;
+  };
+
+  // node_modules/simplex-noise/dist/esm/simplex-noise.js
+  var SQRT32 = /* @__PURE__ */ Math.sqrt(3);
+  var SQRT5 = /* @__PURE__ */ Math.sqrt(5);
+  var F2 = 0.5 * (SQRT32 - 1);
+  var G2 = (3 - SQRT32) / 6;
+  var F3 = 1 / 3;
+  var G3 = 1 / 6;
+  var F4 = (SQRT5 - 1) / 4;
+  var G4 = (5 - SQRT5) / 20;
+  var fastFloor = (x2) => Math.floor(x2) | 0;
+  var grad2 = /* @__PURE__ */ new Float64Array([
+    1,
+    1,
+    -1,
+    1,
+    1,
+    -1,
+    -1,
+    -1,
+    1,
+    0,
+    -1,
+    0,
+    1,
+    0,
+    -1,
+    0,
+    0,
+    1,
+    0,
+    -1,
+    0,
+    1,
+    0,
+    -1
+  ]);
+  function createNoise2D(random = Math.random) {
+    const perm = buildPermutationTable(random);
+    const permGrad2x = new Float64Array(perm).map((v2) => grad2[v2 % 12 * 2]);
+    const permGrad2y = new Float64Array(perm).map((v2) => grad2[v2 % 12 * 2 + 1]);
+    return function noise2D(x2, y2) {
+      let n0 = 0;
+      let n1 = 0;
+      let n2 = 0;
+      const s2 = (x2 + y2) * F2;
+      const i2 = fastFloor(x2 + s2);
+      const j2 = fastFloor(y2 + s2);
+      const t2 = (i2 + j2) * G2;
+      const X0 = i2 - t2;
+      const Y0 = j2 - t2;
+      const x0 = x2 - X0;
+      const y0 = y2 - Y0;
+      let i1, j1;
+      if (x0 > y0) {
+        i1 = 1;
+        j1 = 0;
+      } else {
+        i1 = 0;
+        j1 = 1;
+      }
+      const x1 = x0 - i1 + G2;
+      const y1 = y0 - j1 + G2;
+      const x22 = x0 - 1 + 2 * G2;
+      const y22 = y0 - 1 + 2 * G2;
+      const ii = i2 & 255;
+      const jj = j2 & 255;
+      let t0 = 0.5 - x0 * x0 - y0 * y0;
+      if (t0 >= 0) {
+        const gi0 = ii + perm[jj];
+        const g0x = permGrad2x[gi0];
+        const g0y = permGrad2y[gi0];
+        t0 *= t0;
+        n0 = t0 * t0 * (g0x * x0 + g0y * y0);
+      }
+      let t1 = 0.5 - x1 * x1 - y1 * y1;
+      if (t1 >= 0) {
+        const gi1 = ii + i1 + perm[jj + j1];
+        const g1x = permGrad2x[gi1];
+        const g1y = permGrad2y[gi1];
+        t1 *= t1;
+        n1 = t1 * t1 * (g1x * x1 + g1y * y1);
+      }
+      let t22 = 0.5 - x22 * x22 - y22 * y22;
+      if (t22 >= 0) {
+        const gi2 = ii + 1 + perm[jj + 1];
+        const g2x = permGrad2x[gi2];
+        const g2y = permGrad2y[gi2];
+        t22 *= t22;
+        n2 = t22 * t22 * (g2x * x22 + g2y * y22);
+      }
+      return 70 * (n0 + n1 + n2);
+    };
+  }
+  function buildPermutationTable(random) {
+    const tableSize = 512;
+    const p2 = new Uint8Array(tableSize);
+    for (let i2 = 0; i2 < tableSize / 2; i2++) {
+      p2[i2] = i2;
+    }
+    for (let i2 = 0; i2 < tableSize / 2 - 1; i2++) {
+      const r2 = i2 + ~~(random() * (256 - i2));
+      const aux = p2[i2];
+      p2[i2] = p2[r2];
+      p2[r2] = aux;
+    }
+    for (let i2 = 256; i2 < tableSize; i2++) {
+      p2[i2] = p2[i2 - 256];
+    }
+    return p2;
+  }
+
+  // lib/utils/noise.ts
+  var generatePolarSimplexNoiseValues = (count2, radius = 1, seed = Math.random()) => {
+    const step = 2 * Math.PI / count2;
+    const noise2D = createNoise2D(() => seed);
+    const values = [];
+    for (let i2 = 0; i2 < count2; i2++) {
+      const angle = i2 * step;
+      const x2 = radius * Math.cos(angle);
+      const y2 = radius * Math.sin(angle);
+      const noiseValue = noise2D(x2, y2);
+      values.push(noiseValue);
+    }
+    return values;
+  };
 
   // lib/core/RadialChart.ts
   var RadialChart = class extends Layer {
-    /** The geometry containing vertex data for the radial chart */
+    /** Geometry containing vertex data */
     geometry;
-    /** The mesh that renders the radial chart using the geometry and shader */
+    /** Mesh for rendering using geometry and shader */
     mesh;
     /**
      * Creates a new RadialChart instance
-     * @param {Values} values - The data values to be visualized in the radial chart
-     * @param {RadialChartOptions} [params] - Optional configuration parameters for the chart
-     * @param {number} [params.samples] - Number of samples for path resampling
-     * @param {number} [params.subdivisions] - Number of subdivisions for path subdivision
-     * @param {string} [params.vertexShader] - Custom vertex shader code
-     * @param {string} [params.fragmentShader] - Custom fragment shader code
+     * @param {Values} values - Data points for outer contour
+     * @param {RadialChartOptions} [params] - Visualization configuration
      */
     constructor(values, params) {
       super();
-      const { subdivisions, vertexShader, fragmentShader, samples } = params || {};
+      if (params?.label) {
+        this.label = params.label;
+      }
+      this.createDefaultGeometry(values, params);
+      if (params?.texture) {
+        this.createTexturedMesh({
+          ...params,
+          texture: params.texture
+        });
+        return;
+      }
+      this.createDefaultMesh(params);
+    }
+    /**
+     * Creates geometry with processed paths and vertex attributes
+     * @private
+     * @param {Values} values - Input data values to visualize
+     * @param {RadialChartOptions} [params] - Configuration options
+     *
+     * Processing steps:
+     * 1. Convert values to polar coordinates
+     * 2. Apply optional subdivision for smoother paths
+     * 3. Resample path if sample count specified
+     * 4. Generate inner contour based on centerOffset
+     * 5. Create vertex buffers for position, value and UV data
+     * 6. Build triangle indices for quad mesh
+     */
+    createDefaultGeometry(values, params) {
+      const { subdivisions, samples } = params || {};
       let path2 = mapValuesToPolarPath(values);
       if (typeof subdivisions === "number") {
         const clampedSubdivisions = clampValue(subdivisions, 0, 10);
@@ -37549,75 +40602,387 @@ ${parts.join("\n")}
         const clampedSamples = clampValue(samples, 3, 5e3);
         path2 = resampleClosedPath(path2, clampedSamples);
       }
-      const polarValues = mapPolarPathToValues(path2);
-      const distanceAttribute = [];
+      const outerValues = mapPolarPathToValues(path2);
+      const innerValues = params?.relativeOffset ? outerValues.map((it) => it - (params.centerOffset || 0)) : new Array(outerValues.length).fill(params?.centerOffset || 0);
+      const normalizedValueAttribute = [];
       const valueAttribute = [];
-      for (let i2 = 0; i2 < polarValues.length; i2++) {
-        distanceAttribute.push(0, 1, 1);
-        const value = polarValues[i2];
-        const nextValue = i2 + 1 < polarValues.length ? polarValues[i2 + 1] : polarValues[0];
-        valueAttribute.push(0, value, nextValue);
+      const uvAttribute = [];
+      const valuesCount = outerValues.length;
+      const outerCoords = outerValues.map(
+        (value, i2) => mapValueToPolar(value, i2, valuesCount)
+      );
+      const minOuterX = getMinMaxValues(outerCoords.map((it) => it[0])).minValue;
+      const minOuterY = getMinMaxValues(outerCoords.map((it) => it[1])).minValue;
+      const maxOuterX = getMinMaxValues(outerCoords.map((it) => it[0])).maxValue;
+      const maxOuterY = getMinMaxValues(outerCoords.map((it) => it[1])).maxValue;
+      const innerCoords = innerValues.map(
+        (value, i2) => mapValueToPolar(value, i2, valuesCount)
+      );
+      const minInnerX = getMinMaxValues(innerCoords.map((it) => it[0])).minValue;
+      const minInnerY = getMinMaxValues(innerCoords.map((it) => it[1])).minValue;
+      const maxInnerX = getMinMaxValues(innerCoords.map((it) => it[0])).maxValue;
+      const maxInnerY = getMinMaxValues(innerCoords.map((it) => it[1])).maxValue;
+      const minX = params?.boundingBox?.minX ?? Math.min(minOuterX, minInnerX);
+      const minY = params?.boundingBox?.minY ?? Math.min(minOuterY, minInnerY);
+      const maxX = params?.boundingBox?.maxX ?? Math.max(maxOuterX, maxInnerX);
+      const maxY = params?.boundingBox?.maxY ?? Math.max(maxOuterY, maxInnerY);
+      for (let i2 = 0; i2 < valuesCount; i2++) {
+        const nextIndex = i2 + 1 < valuesCount ? i2 + 1 : 0;
+        const outerValue = outerValues[i2];
+        const nextOuterValue = outerValues[nextIndex];
+        const outerPolarCoords = mapValueToPolar(outerValue, i2, valuesCount);
+        const nextOuterPolarCoords = mapValueToPolar(
+          nextOuterValue,
+          nextIndex,
+          valuesCount
+        );
+        const innerValue = innerValues[i2];
+        const nextInnerValue = innerValues[nextIndex];
+        const innerPolarCoords = mapValueToPolar(innerValue, i2, valuesCount);
+        const nextInnerPolarCoords = mapValueToPolar(
+          nextInnerValue,
+          nextIndex,
+          valuesCount
+        );
+        uvAttribute.push(
+          remapValue(innerPolarCoords[0], minX, maxX, 0, 1),
+          remapValue(innerPolarCoords[1], minY, maxY, 0, 1),
+          remapValue(outerPolarCoords[0], minX, maxX, 0, 1),
+          remapValue(outerPolarCoords[1], minY, maxY, 0, 1),
+          remapValue(nextOuterPolarCoords[0], minX, maxX, 0, 1),
+          remapValue(nextOuterPolarCoords[1], minY, maxY, 0, 1),
+          remapValue(nextInnerPolarCoords[0], minX, maxX, 0, 1),
+          remapValue(nextInnerPolarCoords[1], minY, maxY, 0, 1)
+        );
+        valueAttribute.push(
+          innerValue,
+          outerValue,
+          nextOuterValue,
+          nextInnerValue
+        );
+        normalizedValueAttribute.push(0, 1, 1, 0);
       }
-      this.geometry = createRadialMeshGeometry(polarValues);
-      this.geometry.addAttribute("aDistance", {
-        buffer: distanceAttribute
+      this.geometry = createRingGeometry(outerValues, innerValues);
+      this.geometry.addAttribute("aNormalizedValue", {
+        buffer: normalizedValueAttribute
       });
-      this.geometry.addAttribute("aValue", {
-        buffer: valueAttribute
+      this.geometry.addAttribute("aValue", { buffer: valueAttribute });
+      this.geometry.addAttribute("aUv", {
+        buffer: uvAttribute
       });
+    }
+    /**
+     * Creates a textured mesh using specified shader configuration
+     * @private
+     * @param {RequiredBy<RadialChartOptions, "texture">} params - Configuration with required texture URL
+     */
+    createTexturedMesh(params) {
+      const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
+      Assets.load(textureUrl).then((texture) => {
+        const shader = Shader.from({
+          gl: {
+            vertex: vertexShader || baseVertexShader,
+            fragment: fragmentShader || texturedFragmentShader
+          },
+          resources: {
+            ...params?.resources || {},
+            uTexture: texture.source,
+            globals: {
+              uTint: {
+                value: convertTintToNormalizedVector(tint),
+                type: "vec4<f32>"
+              }
+            }
+          }
+        });
+        this.mesh = new Mesh({
+          geometry: this.geometry,
+          shader,
+          blendMode: params?.blendMode
+        });
+        this.addChild(this.mesh);
+      });
+    }
+    /**
+     * Creates an untextured mesh with default shader configuration
+     * @private
+     * @param {RadialChartOptions} [params] - Optional visualization parameters
+     */
+    createDefaultMesh(params) {
+      const { vertexShader, fragmentShader, tint } = params || {};
       const shader = Shader.from({
         gl: {
           vertex: vertexShader || baseVertexShader,
-          fragment: fragmentShader || baseFragmentShader
+          fragment: fragmentShader || defaultFragmentShader
+        },
+        resources: {
+          ...params?.resources || {},
+          globals: {
+            uTint: {
+              value: convertTintToNormalizedVector(tint),
+              type: "vec4<f32>"
+            },
+            uRadialMaskStart: {
+              value: 0,
+              type: "f32"
+            },
+            uRadialMaskEnd: {
+              value: 1,
+              type: "f32"
+            }
+          }
         }
       });
       this.mesh = new Mesh({
         geometry: this.geometry,
-        shader
+        shader,
+        blendMode: params?.blendMode
       });
       this.addChild(this.mesh);
+    }
+    /**
+     * Sets angular mask for partial rendering of the chart
+     * @param {number} start - Start angle in normalized range 0-1
+     * @param {number} end - End angle in normalized range 0-1
+     */
+    setRadialMask(start, end) {
+      if (this.mesh && this.mesh.shader) {
+        this.mesh.shader.resources.globals.uniforms.uRadialMaskStart = start;
+        this.mesh.shader.resources.globals.uniforms.uRadialMaskEnd = end;
+      }
+    }
+  };
+
+  // lib/core/Handle.ts
+  var Handle = class extends Layer {
+    /**
+     * Creates a new Handle instance
+     * @param {HandleProps} params - Configuration options for the handle
+     */
+    constructor(params) {
+      super();
+      if (params.label) {
+        this.label = params.label;
+      }
+      Assets.load(params.imageUrl).then((texture) => {
+        const sprite = new Sprite(texture);
+        sprite.scale.set(params.scale || 1);
+        sprite.anchor.x = 0.5;
+        sprite.anchor.y = 1 + (params.offsetY || 0);
+        this.addChild(sprite);
+      });
+    }
+  };
+
+  // lib/core/ClockIndex.ts
+  var import_cuid2 = __toESM(require_cuid2());
+  var globalFonts = /* @__PURE__ */ new Map();
+  var ClockIndex = class extends Layer {
+    radius = 50;
+    svg;
+    boxWidth;
+    boxHeight;
+    offset;
+    /**
+     * Creates a new ClockIndex instance
+     * @param {IndexProps} params - Configuration options
+     */
+    constructor(params) {
+      super();
+      if (params.label) {
+        this.label = params.label;
+      }
+      this.offset = params.offset || 0;
+      this.boxWidth = params.boxWidth || 100;
+      this.boxHeight = params.boxHeight || 100;
+      this.radius = params.radius || this.boxWidth * 0.5;
+      this.svg = createSvg({
+        width: this.boxWidth * window.devicePixelRatio,
+        height: this.boxHeight * window.devicePixelRatio,
+        viewBox: `0 0 ${this.boxWidth} ${this.boxHeight}`
+      });
+      (async () => {
+        const step = 360 / params.count;
+        for (let i2 = 0; i2 < params.count; i2++) {
+          const group = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "g"
+          );
+          group.setAttribute(
+            "transform",
+            `translate(${this.boxWidth * 0.5}, ${this.boxHeight * 0.5}) rotate(${i2 * step})`
+          );
+          this.svg.appendChild(group);
+          const shapePromise = params.shape.type === "custom" ? params.shape.handler(i2, this) : this.createShape({ ...params.shape, index: i2 });
+          await shapePromise.then((shape) => {
+            if (shape) {
+              group.appendChild(shape);
+            }
+          });
+        }
+        const svgUrl = getSvgAsImageUrl(this.svg);
+        const texture = await Assets.load(svgUrl);
+        const sprite = new Sprite(texture);
+        sprite.width = this.boxWidth;
+        sprite.height = this.boxHeight;
+        sprite.anchor.set(0.5, 0.5);
+        this.addChild(sprite);
+      })();
+    }
+    /**
+     * Creates a shape based on type and parameters
+     * @private
+     */
+    async createShape({
+      type,
+      params,
+      index
+    }) {
+      const shape = type === "circle" ? this.createCircleElement(params) : type === "rect" ? this.createRectElement(params) : type === "text" ? this.createTextElement({
+        ...params || {},
+        text: params?.text || index.toString()
+      }) : this.createTriangleElement(params);
+      return shape;
+    }
+    /**
+     * Creates an SVG text element with custom font support
+     * @param {TextShapeParams} [params] - Text configuration options
+     * @returns {Promise<SVGTextElement>} The created text element
+     */
+    async createTextElement(params) {
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      const fontUrl = params?.fontUrl || "/fonts/Unica77LL-Bold.otf";
+      if (!globalFonts.has(fontUrl)) {
+        const fontId = `font-${(0, import_cuid2.createId)()}`;
+        const font = await getFontDataUrl(fontUrl);
+        const style = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "style"
+        );
+        style.innerHTML = `
+        @font-face {
+          font-family: ${fontId};
+          src: url(${font});
+        }
+      `;
+        this.svg.appendChild(style);
+        globalFonts.set(fontUrl, fontId);
+      }
+      text.setAttribute("font-family", globalFonts.get(fontUrl));
+      text.setAttribute("font-size", (params?.fontSize || 12).toString());
+      text.setAttribute("fill", params?.fill || "white");
+      text.setAttribute("x", "0");
+      text.setAttribute("y", (-this.radius + this.offset).toString());
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "middle");
+      text.textContent = params?.text || "";
+      return text;
+    }
+    /**
+     * Creates an SVG rectangle element
+     * @param {RectShapeParams} [params] - Rectangle configuration options
+     * @returns {SVGRectElement} The created rectangle element
+     */
+    createRectElement(params) {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("width", (params?.width || 5).toString());
+      rect.setAttribute("height", (params?.height || 5).toString());
+      rect.setAttribute("fill", params?.fill || "white");
+      rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
+      rect.setAttribute("y", (-this.radius + this.offset).toString());
+      return rect;
+    }
+    /**
+     * Creates an SVG circle element
+     * @param {CircleShapeParams} [params] - Circle configuration options
+     * @returns {SVGCircleElement} The created circle element
+     */
+    createCircleElement(params) {
+      const circle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      circle.setAttribute("r", (params?.radius || 2.5).toString());
+      circle.setAttribute("fill", params?.fill || "white");
+      circle.setAttribute("cx", "0");
+      circle.setAttribute("cy", (this.radius - this.offset).toString());
+      return circle;
+    }
+    /**
+     * Creates an SVG triangle element using polygon
+     * @param {TriangleShapeParams} [params] - Triangle configuration options
+     * @returns {SVGPolygonElement} The created triangle element
+     */
+    createTriangleElement(params) {
+      const triangle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "polygon"
+      );
+      const x1 = -(params?.width || 5) * 0.5;
+      const y1 = this.radius - this.offset;
+      const x2 = (params?.width || 5) * 0.5;
+      const y2 = this.radius - this.offset;
+      const x3 = 0;
+      const y3 = this.radius - (params?.height || 5) - this.offset;
+      triangle.setAttribute("points", `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
+      triangle.setAttribute("fill", params?.fill || "white");
+      return triangle;
     }
   };
 
   // lib/core/Clock.ts
+  var import_optimo_animator = __toESM(require_lib());
   var Clock = class extends Application {
-    /** The main scene layer that contains all visual elements */
+    /** Main scene layer containing all visual elements */
     scene;
+    /** Container element for the clock */
+    container;
+    /** Animation steps for the clock */
+    steps;
+    /** Animator instance for handling animations */
+    animator;
     /**
-     * Initializes the clock application by setting up the canvas and main scene
+     * Creates a new Clock instance
+     * @param {HTMLElement} [container] - Optional container element to mount the clock
+     */
+    constructor(container) {
+      super();
+      this.container = container;
+      this.steps = [];
+    }
+    /**
+     * Initializes the clock application with canvas setup and main scene
      * @async
-     * @returns {Promise<void>}
+     * @returns {Promise<Clock>} The initialized Clock instance
      */
     async initialize() {
       await this.init({
         background: "#000000",
         antialias: true,
         autoDensity: true,
-        resolution: window.devicePixelRatio || 1
+        resizeTo: this.container,
+        resolution: window.devicePixelRatio || 1,
+        useBackBuffer: true
       });
-      document.body.appendChild(this.canvas);
+      if (this.container) {
+        this.container.appendChild(this.canvas);
+      } else {
+        document.body.appendChild(this.canvas);
+      }
       this.scene = new Layer();
-      this.scene.position.set(this.center.x, this.center.y);
+      this.scene.position.set(this.screen.width * 0.5, this.screen.height * 0.5);
       this.stage.addChild(this.scene);
+      return this;
     }
-    /**
-     * Gets the current width of the application screen
-     * @returns {number} The width in pixels
-     */
+    /** Gets the current width of the application screen, scaled to 95% */
     get width() {
-      return this.screen.width;
+      return this.screen.width * 0.95;
     }
-    /**
-     * Gets the current height of the application screen
-     * @returns {number} The height in pixels
-     */
+    /** Gets the current height of the application screen, scaled to 95% */
     get height() {
-      return this.screen.height;
+      return this.screen.height * 0.95;
     }
-    /**
-     * Gets the center coordinates of the application screen
-     * @returns {{ x: number, y: number }} An object containing the x and y coordinates of the center
-     */
+    /** Gets the center coordinates of the application screen */
     get center() {
       return {
         x: this.width / 2,
@@ -37626,39 +40991,196 @@ ${parts.join("\n")}
     }
     /**
      * Adds a new layer to the main scene
-     * @param {Layer} layer - The layer to be added
-     * @returns {this} Returns the Clock instance for method chaining
+     * @param {Layer} layer - Layer to add
+     * @returns {Clock} The Clock instance for chaining
      */
     addLayer(layer) {
       this.scene.addChild(layer);
       return this;
     }
     /**
-     * Creates and adds a new RadialChart to the clock
-     * @param {Values} values - The values to be displayed in the radial chart
-     * @param {RadialChartOptions} [options] - Optional configuration options for the radial chart
-     * @returns {this} Returns the Clock instance for method chaining
+     * Creates and adds a RadialChart to the clock
+     * @param {Values} values - Values to display in the chart
+     * @param {RadialChartOptions} [options] - Configuration options
+     * @returns {Clock} The Clock instance for chaining
      */
     addRadialChart(values, options) {
-      const radialChart = new RadialChart(values, options);
+      const radialChart = new RadialChart(values, {
+        ...options,
+        boundingBox: {
+          minX: -this.width * 0.5,
+          minY: -this.height * 0.5,
+          maxX: this.width * 0.5,
+          maxY: this.height * 0.5
+        }
+      });
       this.addLayer(radialChart);
       return this;
     }
-  };
-
-  // lib/utils/value.ts
-  var normalizeValues = (values) => {
-    let maxValue = -Infinity;
-    for (const value of values) {
-      if (value > maxValue) {
-        maxValue = value;
-      }
+    /**
+     * Adds a handle component to the clock
+     * @param {HandleProps} options - Handle configuration options
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addHandle(options) {
+      const handle = new Handle(options);
+      this.addLayer(handle);
+      return this;
     }
-    return values.map((it) => it / maxValue);
-  };
-  var remapValues = (values, low, hight) => {
-    const normalized = normalizeValues(values);
-    return normalized.map((it) => remapValue(it, 0, 1, low, hight));
+    /**
+     * Adds an index component to the clock
+     * @param {IndexProps} options - Index configuration options
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addIndex(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        ...options
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds rectangular shapes in an indexed arrangement
+     * @param {RectShapeParams & IndexHelperParams} options - Rectangle and index configuration
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addRectangles(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        label: options.label,
+        count: options.count,
+        offset: options.offset,
+        shape: {
+          type: "rect",
+          params: options
+        }
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds triangular shapes in an indexed arrangement
+     * @param {TriangleShapeParams & IndexHelperParams} options - Triangle and index configuration
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addTriangles(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        label: options.label,
+        count: options.count,
+        offset: options.offset,
+        shape: {
+          type: "triangle",
+          params: options
+        }
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds circular shapes in an indexed arrangement
+     * @param {CircleShapeParams & IndexHelperParams} options - Circle and index configuration
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addCircles(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        label: options.label,
+        count: options.count,
+        offset: options.offset,
+        shape: {
+          type: "circle",
+          params: options
+        }
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds text elements in an indexed arrangement
+     * @param {TextShapeParams & IndexHelperParams} options - Text and index configuration
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addTexts(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        label: options.label,
+        count: options.count,
+        offset: options.offset,
+        shape: {
+          type: "text",
+          params: options
+        }
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds custom shapes using a provided handler function
+     * @param {Object} options - Custom shape configuration
+     * @param {number} options.count - Number of shapes to generate
+     * @param {CustomShapeHandler} options.handler - Function to generate custom shapes
+     * @param {number} [options.offset] - Optional position offset
+     * @param {string} [options.label] - Optional label for the shapes
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addCustomShape(options) {
+      const index = new ClockIndex({
+        boxWidth: this.width,
+        boxHeight: this.height,
+        label: options.label,
+        count: options.count,
+        offset: options.offset,
+        shape: {
+          type: "custom",
+          handler: options.handler
+        }
+      });
+      this.addLayer(index);
+      return this;
+    }
+    /**
+     * Adds an animation step to the clock
+     * @param {Step} step - Animation step to add
+     * @returns {Clock} The Clock instance for chaining
+     */
+    addAnimation(step) {
+      this.steps.push(step);
+      if (this.animator) {
+        this.animator.stop();
+      }
+      const timeline = new import_optimo_animator.Timeline(this.steps);
+      this.animator = new import_optimo_animator.Animator([timeline]);
+      this.animator.start();
+      return this;
+    }
+    /**
+     * Retrieves the first layer with the specified label
+     * @param {string} label - Label to search for
+     * @returns {Layer|undefined} The found layer or undefined
+     */
+    getLayerByLabel(label) {
+      return this.scene.getChildByLabel(label, true);
+    }
+    /**
+     * Retrieves all layers with the specified label
+     * @param {string} label - Label to search for
+     * @returns {Layer[]} Array of matching layers
+     */
+    getLayersByLabel(label) {
+      return this.scene.getChildrenByLabel(label, true);
+    }
   };
 })();
+/*! Bundled license information:
+
+@noble/hashes/utils.js:
+  (*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) *)
+*/
 //# sourceMappingURL=index.js.map
