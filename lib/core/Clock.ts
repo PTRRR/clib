@@ -117,7 +117,15 @@ export class Clock extends Application {
    * @returns {Clock} The Clock instance for chaining
    */
   addRadialChart(values: Values, options?: RadialChartOptions) {
-    const radialChart = new RadialChart(values, options);
+    const radialChart = new RadialChart(values, {
+      ...options,
+      boundingBox: {
+        minX: -this.width * 0.5,
+        minY: -this.height * 0.5,
+        maxX: this.width * 0.5,
+        maxY: this.height * 0.5,
+      },
+    });
     this.addLayer(radialChart);
     return this;
   }

@@ -4,6 +4,34 @@
 import { Values } from "../types";
 import { remapValue } from "./math";
 
+export const getMinMaxValues = (values: Values) => {
+  let index = 0;
+  let maxIndex = 0;
+  let minIndex = 0;
+  let maxValue = -Infinity;
+  let minValue = Infinity;
+
+  for (const value of values) {
+    if (value < minValue) {
+      minValue = value;
+      minIndex = index;
+    }
+    if (value > maxValue) {
+      maxValue = value;
+      maxIndex = index;
+    }
+
+    index++;
+  }
+
+  return {
+    maxValue,
+    maxIndex,
+    minValue,
+    minIndex,
+  };
+};
+
 /**
  * Normalizes an array of values to a range of [0, 1]
  * @param {Values} values - Array of numerical values to normalize

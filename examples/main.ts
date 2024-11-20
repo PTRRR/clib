@@ -1,4 +1,4 @@
-import { Clock, remapValues } from "../lib";
+import { Clock, RadialChart, remapValues } from "../lib";
 import { defaultClockStep as currentTimeAnimation } from "../lib/utils/animation.ts";
 import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
 
@@ -7,14 +7,13 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
-  const noiseValues = generatePolarSimplexNoiseValues(100, 10);
+  const noiseValues = generatePolarSimplexNoiseValues(100, 1);
 
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.45, clock.height * 0.5),
     {
       subdivisions: 3,
-      // relativeOffset: true,
-      // centerOffset: 100,
+      label: "chart",
       tint: {
         r: 255,
         g: 60,
@@ -28,6 +27,7 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     remapValues(noiseValues, clock.height * 0.3, clock.height * 0.5),
     {
       subdivisions: 3,
+      label: "chart",
       tint: {
         r: 245,
         g: 0,
@@ -38,12 +38,13 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
   );
 
   clock
-    .addCircles({ count: 24, radius: 10, offset: 10 })
-    .addTexts({ count: 24, offset: 60, fontSize: 40 });
+    .addCircles({ count: 0, radius: 10, offset: 10 })
+    .addRectangles({ count: 12, height: 100, width: 2, offset: 100 });
 
   clock.addRadialChart(
     remapValues(noiseValues, clock.height * 0.1, clock.height * 0.5),
     {
+      label: "chart",
       subdivisions: 3,
       tint: {
         r: 40,
@@ -54,6 +55,8 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     }
   );
 
+  clock.addTexts({ count: 24, offset: 60, fontSize: 40 });
+
   clock.addHandle({
     label: "seconds",
     imageUrl: "./images/seconds.png",
@@ -61,5 +64,22 @@ import { generatePolarSimplexNoiseValues } from "../lib/utils/noise.ts";
     offsetY: -0.17,
   });
 
-  clock.addAnimation(currentTimeAnimation(clock));
+  const charts = clock.getLayersByLabel("chart") as RadialChart[];
+
+  charts.forEach((chart) => {
+    chart.setRadialMask(0.0, 0.25);
+  });
+
+  clock.addAnimation({
+    duration: 5000,
+    handler(progress, delta) {
+      const step = currentTimeAnimation(clock);
+      step.handler?.(progress, delta);
+
+      const date = new Date();
+      charts.forEach((chart) => {
+        chart.setRadialMask(0.0, ((date.getTime() / 1000) % 60) / 60);
+      });
+    },
+  });
 })();

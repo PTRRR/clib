@@ -8,7 +8,7 @@ import {
 } from "pixi.js";
 import { Layer } from "./Layer";
 import { RequiredBy, Values } from "../types";
-import { clampValue } from "../utils/math";
+import { clampValue, remapValue } from "../utils/math";
 import { convertTintToNormalizedVector } from "../utils/color";
 import {
   mapPolarPathToValues,
@@ -23,7 +23,7 @@ import {
   baseVertexShader,
   defaultFragmentShader,
 } from "../utils/shader";
-import { remapValues } from "../utils";
+import { getMinMaxValues, remapValues } from "../utils";
 
 /**
  * Configuration options for RadialChart visualization
@@ -54,6 +54,12 @@ export type RadialChartOptions = {
     g: number;
     b: number;
     a: number;
+  };
+  boundingBox?: {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
   };
 };
 
@@ -122,6 +128,30 @@ export class RadialChart extends Layer {
     const uvAttribute: Values = [];
 
     const valuesCount = outerValues.length;
+
+    const outerCoords = outerValues.map((value, i) =>
+      mapValueToPolar(value, i, valuesCount)
+    );
+
+    const minOuterX = getMinMaxValues(outerCoords.map((it) => it[0])).minValue;
+    const minOuterY = getMinMaxValues(outerCoords.map((it) => it[1])).minValue;
+    const maxOuterX = getMinMaxValues(outerCoords.map((it) => it[0])).maxValue;
+    const maxOuterY = getMinMaxValues(outerCoords.map((it) => it[1])).maxValue;
+
+    const innerCoords = innerValues.map((value, i) =>
+      mapValueToPolar(value, i, valuesCount)
+    );
+
+    const minInnerX = getMinMaxValues(innerCoords.map((it) => it[0])).minValue;
+    const minInnerY = getMinMaxValues(innerCoords.map((it) => it[1])).minValue;
+    const maxInnerX = getMinMaxValues(innerCoords.map((it) => it[0])).maxValue;
+    const maxInnerY = getMinMaxValues(innerCoords.map((it) => it[1])).maxValue;
+
+    const minX = params?.boundingBox?.minX ?? Math.min(minOuterX, minInnerX);
+    const minY = params?.boundingBox?.minY ?? Math.min(minOuterY, minInnerY);
+    const maxX = params?.boundingBox?.maxX ?? Math.max(maxOuterX, maxInnerX);
+    const maxY = params?.boundingBox?.maxY ?? Math.max(maxOuterY, maxInnerY);
+
     for (let i = 0; i < valuesCount; i++) {
       const nextIndex = i + 1 < valuesCount ? i + 1 : 0;
 
@@ -146,14 +176,14 @@ export class RadialChart extends Layer {
       );
 
       uvAttribute.push(
-        innerPolarCoords[0],
-        innerPolarCoords[1],
-        outerPolarCoords[0],
-        outerPolarCoords[1],
-        nextOuterPolarCoords[0],
-        nextOuterPolarCoords[1],
-        nextInnerPolarCoords[0],
-        nextInnerPolarCoords[1]
+        remapValue(innerPolarCoords[0], minX, maxX, 0, 1),
+        remapValue(innerPolarCoords[1], minY, maxY, 0, 1),
+        remapValue(outerPolarCoords[0], minX, maxX, 0, 1),
+        remapValue(outerPolarCoords[1], minY, maxY, 0, 1),
+        remapValue(nextOuterPolarCoords[0], minX, maxX, 0, 1),
+        remapValue(nextOuterPolarCoords[1], minY, maxY, 0, 1),
+        remapValue(nextInnerPolarCoords[0], minX, maxX, 0, 1),
+        remapValue(nextInnerPolarCoords[1], minY, maxY, 0, 1)
       );
 
       valueAttribute.push(
@@ -171,8 +201,9 @@ export class RadialChart extends Layer {
       buffer: normalizedValueAttribute,
     });
     this.geometry.addAttribute("aValue", { buffer: valueAttribute });
+
     this.geometry.addAttribute("aUv", {
-      buffer: remapValues(uvAttribute, 0, 1),
+      buffer: uvAttribute,
     });
   }
 
@@ -234,6 +265,14 @@ export class RadialChart extends Layer {
             value: convertTintToNormalizedVector(tint),
             type: "vec4<f32>",
           },
+          uRadialMaskStart: {
+            value: 0.0,
+            type: "f32",
+          },
+          uRadialMaskEnd: {
+            value: 1,
+            type: "f32",
+          },
         },
       },
     });
@@ -245,5 +284,12 @@ export class RadialChart extends Layer {
     });
 
     this.addChild(this.mesh);
+  }
+
+  public setRadialMask(start: number, end: number) {
+    if (this.mesh && this.mesh.shader) {
+      this.mesh.shader.resources.globals.uniforms.uRadialMaskStart = start;
+      this.mesh.shader.resources.globals.uniforms.uRadialMaskEnd = end;
+    }
   }
 }
