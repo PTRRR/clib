@@ -2,11 +2,11 @@
   "name": "energy-clock-lib",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "lib/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=examples",
-    "build": "esbuild lib/index.ts --outdir=dist --bundle --sourcemap"
+    "build": "node build.js"
   },
   "author": "",
   "license": "ISC",
