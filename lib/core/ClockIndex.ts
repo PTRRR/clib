@@ -221,7 +221,9 @@ export class ClockIndex extends Layer {
   async createTextElement(params?: TextShapeParams) {
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
 
-    const fontUrl = params?.fontUrl || "/fonts/Unica77LL-Bold.otf";
+    const fontUrl =
+      params?.fontUrl ||
+      "http://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/examples/fonts/Unica77LL-Bold.otf";
 
     if (!globalFonts.has(fontUrl)) {
       const fontId = `font-${createId()}`;
