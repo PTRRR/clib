@@ -21,4 +21,6 @@ git tag -a $VERSION -m "Release $VERSION"
 git push origin main
 git push origin $VERSION
 
+curl -X POST "https://purge.jsdelivr.net/gh/PTRRR/energy-clock-lib@main/dist/index.js"
+
 echo "Successfully deployed version $VERSION"
