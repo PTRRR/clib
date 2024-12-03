@@ -1,0 +1,20 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      import { createClock } from "https://cdn.jsdelivr.net/gh/PTRRR/energy-clock-lib@v1.0.4/dist/index.js";
+
+      createClock((clock) => {
+        clock.addCircles({
+          count: 24,
+          radius: 30,
+          offset: 30,
+        });
+      });
+    </script>
+  </body>
+</html>
