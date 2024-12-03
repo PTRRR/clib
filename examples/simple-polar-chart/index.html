@@ -7,11 +7,47 @@
   </head>
   <body>
     <script type="module">
-      // Import clock creation function
-      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+      // Import required functions from the clock library
+      // createClock: Main function to create the clock
+      // remapValues: Helps scale data values to fit the clock's dimensions
+      import {
+        createClock,
+        remapValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock, data) => {
-        console.log(data);
+        // Calculate the radius of the clock (half the width)
+        // Used to determine the size range for our visualization
+        const clockRadius = clock.width * 0.5;
+
+        // Extract electricity demand data from the provided dataset
+        // This data contains hourly electricity demand values
+        const electricityDemand = data["Electricity-demand-base"];
+
+        // Take only first 24 values (one day's worth of data)
+        const electricityDemandForADay = electricityDemand.slice(0, 24);
+
+        // Scale the electricity demand values to fit between:
+        // Minimum: Half the clock radius
+        // Maximum: Full clock radius
+        // This ensures our visualization fits nicely within the clock
+        const remappedValues = remapValues(
+          electricityDemandForADay,
+          clockRadius * 0.5, // Inner boundary of visualization
+          clockRadius // Outer boundary of visualization
+        );
+
+        // Create radial chart using the scaled values
+        clock.addRadialChart(remappedValues, {
+          subdivisions: 3, // Creates 3 concentric circles for reference
+          tint: {
+            // Sets color to pure red
+            r: 255, // Maximum red
+            g: 0, // No green
+            b: 0, // No blue
+            a: 255, // Fully opaque
+          },
+        });
       });
     </script>
   </body>
