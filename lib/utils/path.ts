@@ -5,36 +5,60 @@ import { subdivide, SUBDIV_CHAIKIN } from "@thi.ng/geom-subdiv-curve";
 import { Sampler, simplify } from "@thi.ng/geom-resample";
 import { Path, Point, Values } from "../types";
 
+export const logTransform = (value: number, base: number = Math.E): number => {
+  // Handle edge case of zero
+  if (value === 0) return 0;
+
+  const sign = Math.sign(value);
+  const absValue = Math.abs(value);
+
+  // If using natural log, don't divide by log(base)
+  if (base === Math.E) {
+    return sign * Math.log(absValue + 1);
+  }
+
+  // For other bases, use change of base formula
+  return (sign * Math.log(absValue + 1)) / Math.log(base);
+};
+
 export const mapValueToPolar = (
   value: number,
   index: number,
-  length: number
+  length: number,
+  options: {
+    scale?: "linear" | "log";
+    logBase?: number;
+  } = {}
 ): Point => {
+  const { scale = "linear", logBase = Math.E } = options;
+
+  const transformedValue =
+    scale === "log" ? logTransform(value, logBase) : value;
+
   const step = (Math.PI * 2) / length;
   const angle = step * index - Math.PI * 0.5;
-  const x = Math.cos(angle) * value;
-  const y = Math.sin(angle) * value;
+  const x = Math.cos(angle) * transformedValue;
+  const y = Math.sin(angle) * transformedValue;
+
   return [x, y];
 };
 
-/**
- * Converts an array of values into polar coordinates path
- * @param {Values} [values=[]] - Array of numerical values to be converted
- * @returns {Path} Array of [x, y] coordinates representing the polar path
- * @description
- * Each value is mapped to a point on a circle where:
- * - The angle is determined by the index in the array (evenly distributed around 2π)
- * - The radius is determined by the value itself
- * - The path starts at -π/2 (top of the circle)
- */
-export const mapValuesToPolarPath = (values: Values = []) => {
+export const mapValuesToPolarPath = (
+  values: Values = [],
+  options: {
+    scale?: "linear" | "log";
+    logBase?: number;
+  } = {}
+): Path => {
   const polarCoordinates: Path = [];
+
   for (let i = 0; i < values.length; i++) {
     const wrappedIndex = i < values.length ? i : 0;
     const value = values[wrappedIndex];
-    const coord = mapValueToPolar(value, i, values.length);
+    const coord = mapValueToPolar(value, i, values.length, options);
     polarCoordinates.push(coord);
   }
+
   return polarCoordinates;
 };
 

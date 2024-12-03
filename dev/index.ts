@@ -2,6 +2,7 @@ import {
   addTimeSeries,
   createClock,
   defaultClockStep,
+  logTransform,
   scaleTimeSeries,
 } from "../lib";
 
@@ -20,9 +21,7 @@ createClock((clock, data) => {
   const demandBase = data["Electricity-demand-base"];
   const demandBaseByHour = demandBase.slice(0, 24);
 
-  // const demandHeatPumps = data["Electricity-demand-heat-pumps"];
-  // const demandHeatPumpsByHour = demandHeatPumps.slice(0, 24);
-
+  const min = radius * 0.0;
   const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
 
   const [
@@ -31,11 +30,13 @@ createClock((clock, data) => {
     scaledElectroMobilityAndBase,
   ] = scaleTimeSeries(
     [
-      supply,
-      demandElectroMobilityByHour,
-      addTimeSeries([demandElectroMobilityByHour, demandBaseByHour]),
+      supply.map((it) => logTransform(it)),
+      demandElectroMobilityByHour.map((it) => logTransform(it)),
+      addTimeSeries([demandElectroMobilityByHour, demandBaseByHour]).map((it) =>
+        logTransform(it)
+      ),
     ],
-    radius * 0.2,
+    min,
     radius * 0.85
   );
 
@@ -43,6 +44,7 @@ createClock((clock, data) => {
 
   clock.addRadialChart(scaledSupply, {
     subdivisions: 5,
+    centerOffset: min,
     tint: {
       r: 2,
       g: 48,
@@ -53,6 +55,7 @@ createClock((clock, data) => {
 
   clock.addRadialChart(scaledElectroMobilityAndBase, {
     subdivisions: 5,
+    centerOffset: min,
     tint: {
       r: 255,
       g: 183,
@@ -63,6 +66,7 @@ createClock((clock, data) => {
 
   clock.addRadialChart(scaledDemandElectroMobility, {
     subdivisions: 5,
+    centerOffset: min,
     tint: {
       r: 251,
       g: 133,
