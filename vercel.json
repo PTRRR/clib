@@ -1,0 +1,18 @@
+{
+  "buildCommand": "echo 'No build needed'",
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "builds": [
+    {
+      "src": "api/latest.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "/api/latest.js"
+    }
+  ]
+}
