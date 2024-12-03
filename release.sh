@@ -9,7 +9,7 @@ fi
 VERSION="v$1"
 
 # Build the project
-npm run build
+npm run build:lib
 
 # Update package.json version
 npm version $1 --no-git-tag-version
