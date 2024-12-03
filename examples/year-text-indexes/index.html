@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      // Import clock creation function
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock) => {
+        // Add 10 year labels (2010-2019)
+        clock.addCustomShape({
+          count: 10, // Number of years to display
+          handler: async (index, instance) => {
+            return instance.createTextElement({
+              fontSize: 40,
+              text: 2010 + index, // Years from 2010 to 2019
+              offset: 40, // Distance from edge
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
