@@ -1,0 +1,64 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      import { createClock } from "https://cdn.jsdelivr.net/gh/PTRRR/energy-clock-lib@v1.0.4/dist/index.js";
+
+      createClock((clock) => {
+        clock.addRectangles({
+          count: 12,
+          width: 5,
+          height: 50,
+          offset: 40,
+        });
+
+        clock.addCircles({
+          count: 24,
+          radius: 15,
+          offset: 15,
+        });
+
+        clock.addHandle({
+          imageUrl: "../../images/seconds.png",
+          scale: 0.1,
+          offsetY: -0.166,
+          label: "seconds",
+        });
+
+        clock.addHandle({
+          imageUrl: "../../images/minutes.png",
+          scale: 0.1,
+          offsetY: -0.166,
+          label: "minutes",
+        });
+
+        clock.addHandle({
+          imageUrl: "../../images/hours.png",
+          scale: 0.1,
+          offsetY: -0.23,
+          label: "hours",
+        });
+
+        const secondsHandle = clock.getLayerByLabel("seconds");
+        const minutesHandle = clock.getLayerByLabel("minutes");
+        const hourHandle = clock.getLayerByLabel("hours");
+
+        if (secondsHandle) {
+          secondsHandle.rotation = 0;
+        }
+
+        if (minutesHandle) {
+          minutesHandle.rotation = Math.PI / 2 + (Math.PI / 4) * 3;
+        }
+
+        if (hourHandle) {
+          hourHandle.rotation = Math.PI / 2;
+        }
+      });
+    </script>
+  </body>
+</html>
