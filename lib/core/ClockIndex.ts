@@ -223,7 +223,7 @@ export class ClockIndex extends Layer {
 
     const fontUrl =
       params?.fontUrl ||
-      "http://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/examples/fonts/Unica77LL-Bold.otf";
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/fonts/Unica77LL-Bold.otf";
 
     if (!globalFonts.has(fontUrl)) {
       const fontId = `font-${createId()}`;
