@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      import {
+        createClock,
+        remapValues,
+        linesFragmentShader,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock, data) => {
+        const clockRadius = clock.width * 0.5;
+        const electricityDemand = data["Electricity-demand-base"];
+        const electricityDemandForADay = electricityDemand.slice(0, 24);
+
+        const electroMobility = data["Electricity-demand-electro-mobility"];
+        const electroMobilityForADay = electroMobility.slice(0, 24);
+
+        // Layer 1 (outermost): Magenta ring
+        const ring1Values = remapValues(
+          electricityDemandForADay,
+          clockRadius * 0.5,
+          clockRadius
+        );
+
+        clock.addRadialChart(ring1Values, {
+          subdivisions: 3,
+          tint: { r: 255, g: 50, b: 100, a: 255 },
+          fragmentShader: linesFragmentShader,
+        });
+      });
+    </script>
+  </body>
+</html>
