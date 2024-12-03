@@ -33,6 +33,9 @@ export const loadData = <T = unknown>(string: string) => {
           reject(results.errors);
         }
       },
+      error: (error) => {
+        reject(error);
+      },
     });
   });
 };
