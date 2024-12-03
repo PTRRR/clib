@@ -1,12 +1,12 @@
 {
   "name": "energy-clock-lib",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "main": "lib/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=examples",
-    "build": "node build.js",
+    "build": "tsc",
     "release": "./release.sh"
   },
   "author": "",
