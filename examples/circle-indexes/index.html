@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,13 +7,15 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add 24 circles around the clock face
         clock.addCircles({
-          count: 24,
-          radius: 30,
-          offset: 30,
+          count: 24, // Number of circles
+          radius: 30, // Size of each circle
+          offset: 30, // Distance from outer edge of clock face
         });
       });
     </script>

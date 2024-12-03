@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,24 +7,28 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add tall rectangles (outermost)
         clock.addRectangles({
           count: 24,
           width: 25,
           height: 70,
         });
 
+        // Add wide rectangles (middle)
         clock.addRectangles({
-          offset: 70,
+          offset: 70, // Distance from edge
           count: 24,
           width: 50,
           height: 25,
         });
 
+        // Add square rectangles (innermost)
         clock.addRectangles({
-          offset: 95,
+          offset: 95, // Distance from edge
           count: 24,
           width: 25,
           height: 25,

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,22 +7,26 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add rectangular hour markers
         clock.addRectangles({
-          count: 12,
-          width: 5,
-          height: 50,
-          offset: 40,
+          count: 12, // 12 hour marks
+          width: 5, // Width of rectangles
+          height: 50, // Height of rectangles
+          offset: 40, // Distance from edge
         });
 
+        // Add small circles between hour markers
         clock.addCircles({
-          count: 24,
-          radius: 15,
-          offset: 15,
+          count: 24, // 24 circles (between hours)
+          radius: 15, // Size of circles
+          offset: 15, // Distance from edge
         });
 
+        // Add clock hands
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
@@ -29,7 +34,6 @@
           offsetY: -0.166,
           label: "seconds",
         });
-
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
@@ -37,7 +41,6 @@
           offsetY: -0.166,
           label: "minutes",
         });
-
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
@@ -46,20 +49,19 @@
           label: "hours",
         });
 
+        // Get and set initial hand positions
         const secondsHandle = clock.getLayerByLabel("seconds");
         const minutesHandle = clock.getLayerByLabel("minutes");
         const hourHandle = clock.getLayerByLabel("hours");
 
         if (secondsHandle) {
-          secondsHandle.rotation = 0;
+          secondsHandle.rotation = 0; // 12 o'clock
         }
-
         if (minutesHandle) {
-          minutesHandle.rotation = Math.PI / 2 + (Math.PI / 4) * 3;
+          minutesHandle.rotation = Math.PI / 2 + (Math.PI / 4) * 3; // 4:30
         }
-
         if (hourHandle) {
-          hourHandle.rotation = Math.PI / 2;
+          hourHandle.rotation = Math.PI / 2; // 3 o'clock
         }
       });
     </script>

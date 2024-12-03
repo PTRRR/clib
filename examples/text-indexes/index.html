@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,13 +7,15 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add 24 text labels around clock
         clock.addTexts({
-          count: 24,
-          fontSize: 40,
-          offset: 20,
+          count: 24, // Label for each hour/position
+          fontSize: 40, // Size of text
+          offset: 20, // Distance from edge
         });
       });
     </script>

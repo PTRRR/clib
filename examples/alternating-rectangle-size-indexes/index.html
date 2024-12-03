@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,14 +7,20 @@
   </head>
   <body>
     <script type="module">
+      // Import the createClock function from the library
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
+      // Create clock with custom shapes
       createClock((clock) => {
         clock.addCustomShape({
+          // Create 24 shapes for the clock
           count: 24,
+          // Handler for creating each shape
           handler: async (index, instance) => {
+            // Check if current index is even
             const isLongRectangle = index % 2 === 0;
 
+            // Create either a long or short rectangle based on index
             if (isLongRectangle) {
               return instance.createRectElement({ width: 5, height: 120 });
             } else {

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,21 +7,27 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
         clock.addCustomShape({
+          // Create 24 positions around clock
           count: 24,
+          // Define text elements for each position
           handler: async (index, instance) => {
+            // Alternate between A and B
             const isLongRectangle = index % 2 === 0;
 
             if (isLongRectangle) {
+              // Create small "A" text
               return instance.createTextElement({
                 fontSize: 40,
                 text: "A",
                 offset: 20,
               });
             } else {
+              // Create large "B" text
               return instance.createTextElement({
                 fontSize: 80,
                 text: "B",

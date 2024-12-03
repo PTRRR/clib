@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,18 +7,17 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
         clock.addCustomShape({
           count: 6,
           handler: async (index, instance) => {
-            const isLongRectangle = index % 2 === 0;
-
             return instance.createTextElement({
               fontSize: 40,
-              text: "CUSTOM - " + index.toString().padStart(2, "0"),
-              offset: 40,
+              text: "CUSTOM - " + index.toString().padStart(2, "0"), // Adds leading zero
+              offset: 40, // Distance from edge of clock
             });
           },
         });

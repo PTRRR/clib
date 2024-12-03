@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,12 +7,14 @@
   </head>
   <body>
     <script type="module">
+      // Import required functions from clock library
       import {
         createClock,
         defaultClockStep,
       } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add seconds hand
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
@@ -20,6 +23,7 @@
           label: "seconds",
         });
 
+        // Add minutes hand
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
@@ -28,6 +32,7 @@
           label: "minutes",
         });
 
+        // Add hours hand
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
@@ -36,6 +41,7 @@
           label: "hours",
         });
 
+        // Add animation to move clock hands
         clock.addAnimation({
           duration: 3000,
           handler: (progress, delta) => {

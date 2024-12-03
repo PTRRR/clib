@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,10 +10,11 @@
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add 24 triangles around clock face
         clock.addTriangles({
-          count: 24,
-          width: 50,
-          height: 50,
+          count: 24, // One triangle per hour
+          width: 50, // Width of triangles
+          height: 50, // Height of triangles
         });
       });
     </script>

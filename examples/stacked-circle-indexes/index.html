@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,25 +7,25 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // Add three concentric rings of circles
         clock.addCircles({
-          count: 24,
-          radius: 30,
-          offset: 30,
+          count: 24, // Number of circles
+          radius: 30, // Largest circles
+          offset: 30, // Closest to edge
         });
-
         clock.addCircles({
           count: 24,
-          radius: 20,
-          offset: 80,
+          radius: 20, // Medium circles
+          offset: 80, // Middle ring
         });
-
         clock.addCircles({
           count: 24,
-          radius: 10,
-          offset: 110,
+          radius: 10, // Smallest circles
+          offset: 110, // Furthest from edge
         });
       });
     </script>

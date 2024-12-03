@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,31 +7,40 @@
   </head>
   <body>
     <script type="module">
+      // Import clock creation function from external library
       import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock) => {
+        // First ring - outermost triangles
+        // Creates 24 triangles around the clock edge, each 50x50 pixels
         clock.addTriangles({
+          count: 24, // 24 triangles for each hour of the day
+          width: 50, // Width of each triangle
+          height: 50, // Height of each triangle
+        });
+
+        // Second ring - moves 50 pixels inward from edge
+        // Creates another ring of 24 triangles inside the first
+        clock.addTriangles({
+          offset: 50, // Distance from clock edge in pixels
+          count: 24, // One triangle for each hour
+          width: 50,
+          height: 50,
+        });
+
+        // Third ring - moves 100 pixels inward from edge
+        // Creates third concentric ring of triangles
+        clock.addTriangles({
+          offset: 100, // Further from edge than second ring
           count: 24,
           width: 50,
           height: 50,
         });
 
+        // Fourth ring - innermost triangles
+        // Creates final ring closest to clock center
         clock.addTriangles({
-          offset: 50,
-          count: 24,
-          width: 50,
-          height: 50,
-        });
-
-        clock.addTriangles({
-          offset: 100,
-          count: 24,
-          width: 50,
-          height: 50,
-        });
-
-        clock.addTriangles({
-          offset: 150,
+          offset: 150, // Furthest from edge (closest to center)
           count: 24,
           width: 50,
           height: 50,
