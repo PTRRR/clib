@@ -7,16 +7,19 @@
   </head>
   <body>
     <script type="module">
+      // Import required functions
       import {
-        addTimeSeries,
-        createClock,
-        defaultClockStep,
-        scaleTimeSeries,
+        addTimeSeries, // Combines multiple time series
+        createClock, // Creates the clock
+        defaultClockStep, // Default animation for clock hands
+        scaleTimeSeries, // Scales data to fit clock dimensions
       } from "https://clocks-lib.vpr-group.ch/api/latest";
 
       createClock((clock, data) => {
+        // Setup basic dimensions
         const radius = clock.width * 0.5;
 
+        // Extract 24-hour data slices from different sources
         const supplyFromGrid = data["Electricity-supply-from-grid"];
         const supplyFromGridHour = supplyFromGrid.slice(0, 24);
 
@@ -30,57 +33,48 @@
         const demandBase = data["Electricity-demand-base"];
         const demandBaseByHour = demandBase.slice(0, 24);
 
-        // const demandHeatPumps = data["Electricity-demand-heat-pumps"];
-        // const demandHeatPumpsByHour = demandHeatPumps.slice(0, 24);
-
+        // 1. First we combine the supply data sources
         const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
+        // This adds together the hourly values from:
+        // - Grid supply
+        // - Photovoltaic supply
+        // Result is total supply for each hour
 
+        // 2. Then we prepare three data series for scaling:
         const [
-          scaledSupply,
-          scaledDemandElectroMobility,
-          scaledElectroMobilityAndBase,
+          scaledSupply, // Total supply (grid + solar)
+          scaledDemandElectroMobility, // Just e-mobility demand
+          scaledElectroMobilityAndBase, // Combined e-mobility + base demand
         ] = scaleTimeSeries(
           [
-            supply,
-            demandElectroMobilityByHour,
+            supply, // Total supply array
+            demandElectroMobilityByHour, // E-mobility demand array
+            // Combined demand array (adds the hourly values)
             addTimeSeries([demandElectroMobilityByHour, demandBaseByHour]),
           ],
-          radius * 0.2,
-          radius * 0.85
+          radius * 0.2, // Minimum radius (20% of clock radius)
+          radius * 0.85 // Maximum radius (85% of clock radius)
         );
 
-        // Actual charts
-
+        // Layer 1 (bottom): Dark blue supply chart
         clock.addRadialChart(scaledSupply, {
           subdivisions: 5,
-          tint: {
-            r: 2,
-            g: 48,
-            b: 72,
-            a: 255,
-          },
+          tint: { r: 2, g: 48, b: 72, a: 255 },
         });
 
+        // Layer 2: Yellow total demand chart
         clock.addRadialChart(scaledElectroMobilityAndBase, {
           subdivisions: 5,
-          tint: {
-            r: 255,
-            g: 183,
-            b: 3,
-            a: 255,
-          },
+          tint: { r: 255, g: 183, b: 3, a: 255 },
         });
 
+        // Layer 3: Orange mobility demand chart
         clock.addRadialChart(scaledDemandElectroMobility, {
           subdivisions: 5,
-          tint: {
-            r: 251,
-            g: 133,
-            b: 0,
-            a: 255,
-          },
+          tint: { r: 251, g: 133, b: 0, a: 255 },
         });
 
+        // Layer 4: Hour tick marks
         clock.addRectangles({
           count: scaledSupply.length,
           width: 3,
@@ -88,6 +82,7 @@
           offset: 20,
         });
 
+        // Layer 5: Hour numbers
         clock.addCustomShape({
           count: scaledSupply.length,
           handler: async (index, instance) => {
@@ -99,6 +94,7 @@
           },
         });
 
+        // Layer 6: Clock hands (seconds, minutes, hours)
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
@@ -106,8 +102,6 @@
           offsetY: -0.166,
           label: "seconds",
         });
-
-        // Add minutes hand
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
@@ -115,8 +109,6 @@
           offsetY: -0.166,
           label: "minutes",
         });
-
-        // Add hours hand
         clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
@@ -125,7 +117,7 @@
           label: "hours",
         });
 
-        // Add animation to move clock hands
+        // Layer 7 (top): Animation for clock hands
         clock.addAnimation({
           duration: 3000,
           handler: (progress, delta) => {
