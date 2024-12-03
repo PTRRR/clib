@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      // Import required functions
+      import {
+        createClock,
+        remapValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock, data) => {
+        // Setup calculations
+        const clockRadius = clock.width * 0.5;
+        const electricityDemand = data["Electricity-demand-base"];
+        const electricityDemandForADay = electricityDemand.slice(0, 24);
+
+        // Scale values to fit clock dimensions
+        const remappedValues = remapValues(
+          electricityDemandForADay,
+          clockRadius * 0.5, // Inner boundary
+          clockRadius // Outer boundary
+        );
+
+        // Layer 1 (bottom): Red radial chart showing electricity demand
+        clock.addRadialChart(remappedValues, {
+          subdivisions: 3, // Smooth divisions
+          tint: {
+            r: 255, // Pure red color
+            g: 0,
+            b: 0,
+            a: 255,
+          },
+        });
+
+        // Layer 2 (middle): Hour numbers around clock
+        clock.addTexts({
+          count: 24, // 24 hour labels
+          fontSize: 30, // Text size
+          offset: 15, // Distance from edge
+        });
+
+        // Layer 3 (top): Hour markers
+        clock.addRectangles({
+          count: 24, // 24 tick marks
+          width: 3, // Thin rectangles
+          height: 30, // Length of markers
+          offset: 40, // Distance from edge
+        });
+      });
+    </script>
+  </body>
+</html>
