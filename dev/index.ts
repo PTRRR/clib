@@ -1,5 +1,5 @@
 import {
-  aggregateTimeSeries,
+  addTimeSeries,
   createClock,
   defaultClockStep,
   scaleTimeSeries,
@@ -9,38 +9,39 @@ createClock((clock, data) => {
   const radius = clock.width * 0.5;
 
   const supplyFromGrid = data["Electricity-supply-from-grid"];
-  const supplyFromGridByDay = aggregateTimeSeries(supplyFromGrid, {
-    aggregationType: "average",
-    period: "day",
-  });
+  const supplyFromGridHour = supplyFromGrid.slice(0, 24);
 
   const supplyPhoto = data["Electricity-supply-photovoltaics"];
-  const supplyPhotoByDay = aggregateTimeSeries(supplyPhoto, {
-    aggregationType: "average",
-    period: "day",
-  });
+  const supplyPhotoByHour = supplyPhoto.slice(0, 24);
 
-  const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(
-    [supplyFromGridByDay, supplyPhotoByDay],
-    radius * 0.5,
+  const demandElectroMobility = data["Electricity-demand-electro-mobility"];
+  const demandElectroMobilityByHour = demandElectroMobility.slice(0, 24);
+
+  const demandBase = data["Electricity-demand-base"];
+  const demandBaseByHour = demandBase.slice(0, 24);
+
+  // const demandHeatPumps = data["Electricity-demand-heat-pumps"];
+  // const demandHeatPumpsByHour = demandHeatPumps.slice(0, 24);
+
+  const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
+
+  const [
+    scaledSupply,
+    scaledDemandElectroMobility,
+    scaledElectroMobilityAndBase,
+  ] = scaleTimeSeries(
+    [
+      supply,
+      demandElectroMobilityByHour,
+      addTimeSeries([demandElectroMobilityByHour, demandBaseByHour]),
+    ],
+    radius * 0.2,
     radius * 0.85
   );
 
-  // White background
-
-  clock.addRadialChart(scaledSupplyPhoto, {
-    subdivisions: 5,
-    tint: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 255,
-    },
-  });
-
   // Actual charts
 
-  clock.addRadialChart(scaledSupplyFromGrid, {
+  clock.addRadialChart(scaledSupply, {
     subdivisions: 5,
     tint: {
       r: 2,
@@ -50,9 +51,8 @@ createClock((clock, data) => {
     },
   });
 
-  clock.addRadialChart(scaledSupplyPhoto, {
+  clock.addRadialChart(scaledElectroMobilityAndBase, {
     subdivisions: 5,
-    blendMode: "multiply",
     tint: {
       r: 255,
       g: 183,
@@ -61,15 +61,25 @@ createClock((clock, data) => {
     },
   });
 
+  clock.addRadialChart(scaledDemandElectroMobility, {
+    subdivisions: 5,
+    tint: {
+      r: 251,
+      g: 133,
+      b: 0,
+      a: 255,
+    },
+  });
+
   clock.addRectangles({
-    count: scaledSupplyPhoto.length,
+    count: scaledSupply.length,
     width: 3,
     height: 30,
     offset: 20,
   });
 
   clock.addCustomShape({
-    count: scaledSupplyPhoto.length,
+    count: scaledSupply.length,
     handler: async (index, instance) => {
       return instance.createTextElement({
         text: `${index.toString().padStart(2, "0")}`,

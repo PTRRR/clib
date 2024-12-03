@@ -232,3 +232,30 @@ export const scaleTimeSeries = (
     })
   );
 };
+
+export const addTimeSeries = (timeSeriesArrays: Values[]): Values => {
+  // If no arrays provided, return empty array
+  if (!timeSeriesArrays.length) {
+    return [];
+  }
+
+  // Get the length of the first array
+  const length = timeSeriesArrays[0].length;
+
+  // Validate that all arrays have the same length
+  if (!timeSeriesArrays.every((arr) => arr.length === length)) {
+    throw new Error("All time series must have the same length");
+  }
+
+  // Initialize result array with zeros
+  const result = new Array(length).fill(0);
+
+  // Add values from each time series
+  for (const timeSeries of timeSeriesArrays) {
+    for (let i = 0; i < length; i++) {
+      result[i] += timeSeries[i];
+    }
+  }
+
+  return result;
+};
