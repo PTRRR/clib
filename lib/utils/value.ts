@@ -92,7 +92,7 @@ export type AggregationPeriod = "day" | "week" | "month" | "year";
 export interface AggregationConfig {
   period: AggregationPeriod;
   aggregationType: "sum" | "average" | "max" | "min";
-  startDate: Date;
+  startDate?: Date;
 }
 
 export interface AggregatedResult {
@@ -110,9 +110,9 @@ export interface AggregatedResult {
 export const aggregateTimeSeries = (
   hourlyValues: number[],
   config: AggregationConfig
-): AggregatedResult[] => {
+): number[] => {
   const results: AggregatedResult[] = [];
-  let currentDate = new Date(config.startDate);
+  let currentDate = config.startDate ? new Date(config.startDate) : new Date();
   let currentValues: number[] = [];
 
   // Helper to get period end date
@@ -157,7 +157,9 @@ export const aggregateTimeSeries = (
   let hourIndex = 0;
 
   while (hourIndex < hourlyValues.length) {
-    const hourDate = new Date(config.startDate);
+    const hourDate = config.startDate
+      ? new Date(config.startDate)
+      : currentDate;
     hourDate.setHours(hourDate.getHours() + hourIndex);
 
     if (hourDate < periodEndDate) {
@@ -192,5 +194,5 @@ export const aggregateTimeSeries = (
     });
   }
 
-  return results;
+  return results.map((it) => it.value);
 };
