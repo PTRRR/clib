@@ -1,9 +1,12 @@
 import { createClock } from "../lib";
 
 createClock((clock) => {
-  clock.addCircles({
+  clock.addCustomShape({
     count: 24,
-    radius: 20,
-    offset: 20,
+    handler: async (index, instance) => {
+      return instance.createTextElement({
+        text: "hello",
+      });
+    },
   });
 });

@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      import { createClock } from "https://cdn.jsdelivr.net/gh/PTRRR/energy-clock-lib@v1.0.4/dist/index.js";
+
+      createClock((clock) => {
+        clock.addCustomShape({
+          count: 24,
+          handler: async (index, instance) => {
+            const isRectangle = index % 2 === 0;
+
+            if (isRectangle) {
+              return instance.createRectElement({ width: 10, height: 50 });
+            } else {
+              return instance.createCircleElement({ radius: 20, offset: 20 });
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
