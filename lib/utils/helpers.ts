@@ -28,7 +28,9 @@ export const createClock = async (
   await clock.initialize();
 
   try {
-    const data = await loadData("./data.csv");
+    const data = await loadData(
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data.csv"
+    );
     setup?.(clock, data);
   } catch (error) {
     setup?.(clock, {});

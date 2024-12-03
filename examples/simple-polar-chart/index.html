@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      // Import clock creation function
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock, data) => {
+        console.log(data);
+      });
+    </script>
+  </body>
+</html>
