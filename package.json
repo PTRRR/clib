@@ -5,9 +5,8 @@
   "main": "lib/main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "esbuild examples/main.ts --outdir=examples/dist --bundle --servedir=./",
-    "build": "echo 'No build needed'",
-    "build:lib": "node build.js",
+    "dev": "esbuild dev/index.ts --outdir=dev --bundle --servedir=./",
+    "build": "node build.js",
     "release": "./release.sh"
   },
   "author": "",

@@ -2,7 +2,8 @@ import { Clock } from "../core";
 import { loadData } from "./csv";
 
 export const createClock = async (
-  setup?: (clock: Clock, data: Record<string, number[]>) => void
+  setup?: (clock: Clock, data: Record<string, number[]>) => void,
+  params?: { dataUrl?: string }
 ) => {
   const html = document.documentElement;
   html.style.margin = "0";
@@ -29,7 +30,8 @@ export const createClock = async (
 
   try {
     const data = await loadData(
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data.csv"
+      params?.dataUrl ||
+        "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data.csv"
     );
     setup?.(clock, data);
   } catch (error) {

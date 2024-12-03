@@ -157,9 +157,7 @@ export const aggregateTimeSeries = (
   let hourIndex = 0;
 
   while (hourIndex < hourlyValues.length) {
-    const hourDate = config.startDate
-      ? new Date(config.startDate)
-      : currentDate;
+    const hourDate = config.startDate ? new Date(config.startDate) : new Date();
     hourDate.setHours(hourDate.getHours() + hourIndex);
 
     if (hourDate < periodEndDate) {
@@ -195,4 +193,42 @@ export const aggregateTimeSeries = (
   }
 
   return results.map((it) => it.value);
+};
+
+export const scaleTimeSeries = (
+  timeSeriesArrays: Values[],
+  targetMin: number = 0,
+  targetMax: number = 1
+): Values[] => {
+  // If no arrays or empty arrays, return empty result
+  if (
+    !timeSeriesArrays.length ||
+    timeSeriesArrays.every((arr) => !arr.length)
+  ) {
+    return [];
+  }
+
+  // Find global min and max using loops instead of spread operator
+  let globalMin = timeSeriesArrays[0][0];
+  let globalMax = timeSeriesArrays[0][0];
+
+  for (const timeSeries of timeSeriesArrays) {
+    for (const value of timeSeries) {
+      if (value < globalMin) globalMin = value;
+      if (value > globalMax) globalMax = value;
+    }
+  }
+
+  // If min equals max, return arrays filled with targetMin to avoid division by zero
+  if (globalMin === globalMax) {
+    return timeSeriesArrays.map((arr) => arr.map(() => targetMin));
+  }
+
+  // Scale each array using the global min and max
+  return timeSeriesArrays.map((timeSeries) =>
+    timeSeries.map((value) => {
+      const scaled = (value - globalMin) / (globalMax - globalMin);
+      return scaled * (targetMax - targetMin) + targetMin;
+    })
+  );
 };
