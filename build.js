@@ -18,6 +18,8 @@ esbuild
       ".ts": "ts",
       ".js": "js",
     },
+    external: ["stream"],
+    platform: "neutral",
     resolveExtensions: [".ts", ".js", ".json"],
     mainFields: ["module", "main"],
     tsconfig: path.resolve(__dirname, "./tsconfig.json"),
