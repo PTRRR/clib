@@ -6,7 +6,10 @@
   </head>
   <body>
     <script type="module">
-      import { createClock } from "https://cdn.jsdelivr.net/gh/PTRRR/energy-clock-lib@main/dist/index.js";
+      import { createClock } from "https://cdn.jsdelivr.net/gh/PTRRR/energy-clock-lib@v1.0.0/dist/index.js";
+      createClock((clock) => {
+        clock.addRectangles({ count: 24 });
+      });
     </script>
   </body>
 </html>

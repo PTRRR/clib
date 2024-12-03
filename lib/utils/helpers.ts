@@ -27,7 +27,11 @@ export const createClock = async (
   const clock = new Clock(container);
   await clock.initialize();
 
-  const data = await loadData("./data.csv");
-
-  setup?.(clock, data);
+  try {
+    const data = await loadData("./data.csv");
+    setup?.(clock, data);
+  } catch (error) {
+    console.error(error);
+    setup?.(clock, {});
+  }
 };
