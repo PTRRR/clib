@@ -16,6 +16,7 @@ export type TextShapeParams = {
   fontSize?: number;
   /** Text color */
   fill?: string;
+  offset?: number;
 };
 
 /**
@@ -28,6 +29,7 @@ export type RectShapeParams = {
   height?: number;
   /** Fill color */
   fill?: string;
+  offset?: number;
 };
 
 /**
@@ -38,6 +40,7 @@ export type CircleShapeParams = {
   radius?: number;
   /** Fill color */
   fill?: string;
+  offset?: number;
 };
 
 /**
@@ -50,6 +53,7 @@ export type TriangleShapeParams = {
   height?: number;
   /** Fill color */
   fill?: string;
+  offset?: number;
 };
 
 /**
@@ -242,7 +246,10 @@ export class ClockIndex extends Layer {
     text.setAttribute("font-size", (params?.fontSize || 12).toString());
     text.setAttribute("fill", params?.fill || "white");
     text.setAttribute("x", "0");
-    text.setAttribute("y", (-this.radius + this.offset).toString());
+    text.setAttribute(
+      "y",
+      (-this.radius + this.offset + (params?.offset || 0)).toString()
+    );
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
     text.textContent = params?.text || "";
@@ -262,7 +269,10 @@ export class ClockIndex extends Layer {
     rect.setAttribute("height", (params?.height || 5).toString());
     rect.setAttribute("fill", params?.fill || "white");
     rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
-    rect.setAttribute("y", (-this.radius + this.offset).toString());
+    rect.setAttribute(
+      "y",
+      (-this.radius + this.offset - (params?.offset || 0)).toString()
+    );
 
     return rect;
   }
@@ -281,7 +291,10 @@ export class ClockIndex extends Layer {
     circle.setAttribute("r", (params?.radius || 2.5).toString());
     circle.setAttribute("fill", params?.fill || "white");
     circle.setAttribute("cx", "0");
-    circle.setAttribute("cy", (this.radius - this.offset).toString());
+    circle.setAttribute(
+      "cy",
+      (this.radius - this.offset - (params?.offset || 0)).toString()
+    );
 
     return circle;
   }
@@ -298,13 +311,14 @@ export class ClockIndex extends Layer {
     );
 
     const x1 = -(params?.width || 5) * 0.5;
-    const y1 = this.radius - this.offset;
+    const y1 = this.radius - this.offset - (params?.offset || 0);
 
     const x2 = (params?.width || 5) * 0.5;
-    const y2 = this.radius - this.offset;
+    const y2 = this.radius - this.offset - (params?.offset || 0);
 
     const x3 = 0;
-    const y3 = this.radius - (params?.height || 5) - this.offset;
+    const y3 =
+      this.radius - (params?.height || 5) - this.offset - (params?.offset || 0);
 
     triangle.setAttribute("points", `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
     triangle.setAttribute("fill", params?.fill || "white");

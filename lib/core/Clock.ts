@@ -16,6 +16,7 @@ import {
   TriangleShapeParams,
 } from "./ClockIndex";
 import { Animator, Step, Timeline } from "optimo-animator";
+import { omit } from "../utils";
 
 /**
  * Parameters for index-based shape generation methods
@@ -170,7 +171,7 @@ export class Clock extends Application {
       offset: options.offset,
       shape: {
         type: "rect",
-        params: options,
+        params: omit(options, "count", "label", "offset"),
       },
     });
 
@@ -192,7 +193,7 @@ export class Clock extends Application {
       offset: options.offset,
       shape: {
         type: "triangle",
-        params: options,
+        params: omit(options, "count", "label", "offset"),
       },
     });
 
@@ -214,7 +215,7 @@ export class Clock extends Application {
       offset: options.offset,
       shape: {
         type: "circle",
-        params: options,
+        params: omit(options, "count", "label", "offset"),
       },
     });
 
@@ -236,7 +237,7 @@ export class Clock extends Application {
       offset: options.offset,
       shape: {
         type: "text",
-        params: options,
+        params: omit(options, "count", "label", "offset"),
       },
     });
 

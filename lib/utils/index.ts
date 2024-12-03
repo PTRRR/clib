@@ -8,3 +8,4 @@ export * from "./color";
 export * from "./fonts";
 export * from "./svg";
 export * from "./noise";
+export * from "./objects";

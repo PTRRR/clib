@@ -1,4 +1,4 @@
-import { Clock, getDay, RadialChart, remapValues } from "../lib";
+import { Clock, ClockIndex, getDay, RadialChart, remapValues } from "../lib";
 import { defaultClockStep as currentTimeAnimation } from "../lib/utils/animation.ts";
 import { loadData } from "../lib/utils/csv.ts";
 
@@ -7,8 +7,8 @@ import { loadData } from "../lib/utils/csv.ts";
   const clock = new Clock(container);
   await clock.initialize();
 
+  const radius = clock.width * 0.5;
   const data = await loadData("./data/clock_data_V1.csv");
-
   const energySupplyFromGrid = data["Electricity-supply-from-grid"];
   const dayOfEnergySupply = getDay(0, energySupplyFromGrid);
 
@@ -23,33 +23,39 @@ import { loadData } from "../lib/utils/csv.ts";
 
   // console.log(electroMobilityDemand);
 
-  clock.addRadialChart(remapValues(dayOfEnergySupply, 50, 100), {
-    subdivisions: 3,
-    centerOffset: 50,
-    tint: {
-      r: 255,
-      g: 60,
-      b: 0,
-      a: 255,
-    },
-  });
+  clock.addRadialChart(
+    remapValues(dayOfEnergySupply, radius * 0.1, radius * 0.25),
+    {
+      subdivisions: 3,
+      centerOffset: radius * 0.1,
+      tint: {
+        r: 255,
+        g: 60,
+        b: 0,
+        a: 255,
+      },
+    }
+  );
 
   // console.log(remapValues(dayOfEnergySupplyPhotovoltaics, 200, 300));
 
   console.log(dayOfEnergySupplyPhotovoltaics);
 
-  clock.addRadialChart(remapValues(dayOfEnergySupplyPhotovoltaics, 150, 200), {
-    subdivisions: 3,
+  clock.addRadialChart(
+    remapValues(dayOfEnergySupplyPhotovoltaics, radius * 0.25, radius * 0.4),
+    {
+      subdivisions: 3,
 
-    blendMode: "add",
-    centerOffset: 150,
-    tint: {
-      r: 0,
-      g: 60,
-      b: 255,
-      a: 255,
-    },
-  });
+      blendMode: "add",
+      centerOffset: radius * 0.25,
+      tint: {
+        r: 0,
+        g: 60,
+        b: 255,
+        a: 255,
+      },
+    }
+  );
 
   clock
     .addCircles({ count: 0, radius: 10, offset: 10 })
@@ -58,36 +64,58 @@ import { loadData } from "../lib/utils/csv.ts";
   const energyDemandBase = data["Electricity-demand-electro-mobility"];
   const dayOfEnergyDemandBase = getDay(0, energyDemandBase);
 
-  clock.addRadialChart(remapValues(dayOfEnergyDemandBase, 100, 150), {
-    subdivisions: 3,
-    blendMode: "add",
-    centerOffset: 100,
-    tint: {
-      r: 255,
-      g: 195,
-      b: 255,
-      a: 255,
-    },
-  });
+  clock.addRadialChart(
+    remapValues(dayOfEnergyDemandBase, radius * 0.4, radius * 0.55),
+    {
+      subdivisions: 3,
+      blendMode: "add",
+      centerOffset: radius * 0.4,
+      tint: {
+        r: 255,
+        g: 195,
+        b: 255,
+        a: 255,
+      },
+    }
+  );
 
   const energyHeatPumps = data["Electricity-demand-heat-pumps"];
   const dayOfEnergyHeatPumps = getDay(0, energyHeatPumps);
 
-  clock.addRadialChart(remapValues(dayOfEnergyHeatPumps, 200, 250), {
-    subdivisions: 3,
-    blendMode: "add",
-    label: "chart",
-    centerOffset: 200,
-    // relativeOffset: true,
-    tint: {
-      r: 255,
-      g: 195,
-      b: 0,
-      a: 255,
+  clock.addRadialChart(
+    remapValues(dayOfEnergyHeatPumps, radius * 0.55, radius * 0.7),
+    {
+      subdivisions: 3,
+      blendMode: "add",
+      label: "chart",
+      centerOffset: radius * 0.55,
+      // relativeOffset: true,
+      tint: {
+        r: 255,
+        g: 195,
+        b: 0,
+        a: 255,
+      },
+    }
+  );
+
+  clock.addTexts({ count: 24, offset: 80, fontSize: 20 });
+  // clock.addCircles({ count: 24, radius: 30, offset: 30 });
+
+  clock.addCustomShape({
+    count: 48,
+    handler: async (index, instance) => {
+      return index % 2 === 0
+        ? instance.createRectElement({
+            height: 50,
+            width: 10,
+          })
+        : instance.createCircleElement({
+            radius: 20,
+            offset: 20,
+          });
     },
   });
-
-  clock.addTexts({ count: 24, offset: 60, fontSize: 40 });
 
   clock.addHandle({
     label: "seconds",
