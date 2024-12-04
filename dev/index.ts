@@ -44,7 +44,7 @@ createClock((clock, data) => {
     subdivisions: 5,
     centerOffset: min,
     texture:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-3.webp",
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-4.webp",
     tint: {
       r: 255,
       g: 183,
