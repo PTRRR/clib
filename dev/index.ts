@@ -4,6 +4,7 @@ import {
   defaultClockStep,
   logTransform,
   scaleTimeSeries,
+  generatePolarSimplexNoiseValues,
 } from "../lib";
 
 createClock((clock, data) => {
@@ -15,40 +16,39 @@ createClock((clock, data) => {
   const supplyPhoto = data["Electricity-supply-photovoltaics"];
   const supplyPhotoByHour = supplyPhoto.slice(0, 24);
 
-  const demandElectroMobility = data["Electricity-demand-electro-mobility"];
-  const demandElectroMobilityByHour = demandElectroMobility.slice(0, 24);
+  const min = radius * 0.5;
 
-  const demandBase = data["Electricity-demand-base"];
-  const demandBaseByHour = demandBase.slice(0, 24);
-
-  const min = radius * 0.0;
+  const noiseValues = generatePolarSimplexNoiseValues(
+    supplyFromGrid.length,
+    1
+  ).map((it) => (it + 1) * 2);
   const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
 
-  const [
-    scaledSupply,
-    scaledDemandElectroMobility,
-    scaledElectroMobilityAndBase,
-  ] = scaleTimeSeries(
-    [
-      supply.map((it) => logTransform(it)),
-      demandElectroMobilityByHour.map((it) => logTransform(it)),
-      addTimeSeries([demandElectroMobilityByHour, demandBaseByHour]).map((it) =>
-        logTransform(it)
-      ),
-    ],
+  const [scaledSupply, scaledNoiseValues] = scaleTimeSeries(
+    [supply.map((it) => logTransform(it)), noiseValues],
     min,
     radius * 0.85
   );
 
-  clock.addRadialChart(scaledElectroMobilityAndBase, {
+  clock.addRadialChart(scaledSupply, {
     subdivisions: 5,
-    centerOffset: min,
     texture:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-4.webp",
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-4.jpeg",
     tint: {
       r: 255,
-      g: 183,
-      b: 3,
+      g: 0,
+      b: 84,
+      a: 255,
+    },
+  });
+
+  clock.addRadialChart(scaledNoiseValues, {
+    subdivisions: 5,
+    blendMode: "add",
+    tint: {
+      r: 57,
+      g: 0,
+      b: 153,
       a: 255,
     },
   });

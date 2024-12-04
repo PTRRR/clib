@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module">
+      import {
+        addTimeSeries,
+        createClock,
+        defaultClockStep,
+        logTransform,
+        scaleTimeSeries,
+        generatePolarSimplexNoiseValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock, data) => {
+        const radius = clock.width * 0.5;
+
+        const supplyFromGrid = data["Electricity-supply-from-grid"];
+        const supplyFromGridHour = supplyFromGrid.slice(0, 24);
+
+        const supplyPhoto = data["Electricity-supply-photovoltaics"];
+        const supplyPhotoByHour = supplyPhoto.slice(0, 24);
+
+        const min = radius * 0.5;
+
+        const noiseValues = generatePolarSimplexNoiseValues(
+          supplyFromGrid.length,
+          1
+        ).map((it) => (it + 1) * 2);
+        const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
+
+        const [scaledSupply, scaledNoiseValues] = scaleTimeSeries(
+          [supply.map((it) => logTransform(it)), noiseValues],
+          min,
+          radius * 0.85
+        );
+
+        clock.addRadialChart(scaledSupply, {
+          subdivisions: 5,
+          texture:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-4.jpeg",
+          tint: {
+            r: 255,
+            g: 0,
+            b: 84,
+            a: 255,
+          },
+        });
+
+        clock.addRadialChart(scaledNoiseValues, {
+          subdivisions: 5,
+          blendMode: "add",
+          tint: {
+            r: 57,
+            g: 0,
+            b: 153,
+            a: 255,
+          },
+        });
+
+        clock.addRectangles({
+          count: scaledSupply.length,
+          width: 3,
+          height: 30,
+          offset: 20,
+        });
+
+        clock.addCustomShape({
+          count: scaledSupply.length,
+          handler: async (index, instance) => {
+            return instance.createTextElement({
+              text: `${index.toString().padStart(2, "0")}`,
+              fontSize: 20,
+              offset: 10,
+            });
+          },
+        });
+
+        clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+          scale: 0.1,
+          offsetY: -0.166,
+          label: "seconds",
+        });
+
+        // Add minutes hand
+        clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
+          scale: 0.1,
+          offsetY: -0.166,
+          label: "minutes",
+        });
+
+        // Add hours hand
+        clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
+          scale: 0.1,
+          offsetY: -0.23,
+          label: "hours",
+        });
+
+        // Add animation to move clock hands
+        clock.addAnimation({
+          duration: 3000,
+          handler: (progress, delta) => {
+            const step = defaultClockStep(clock);
+            step.handler?.(progress, delta);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
