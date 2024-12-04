@@ -40,37 +40,15 @@ createClock((clock, data) => {
     radius * 0.85
   );
 
-  // Actual charts
-
-  clock.addRadialChart(scaledSupply, {
-    subdivisions: 5,
-    centerOffset: min,
-    tint: {
-      r: 2,
-      g: 48,
-      b: 72,
-      a: 255,
-    },
-  });
-
   clock.addRadialChart(scaledElectroMobilityAndBase, {
     subdivisions: 5,
     centerOffset: min,
+    texture:
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-3.webp",
     tint: {
       r: 255,
       g: 183,
       b: 3,
-      a: 255,
-    },
-  });
-
-  clock.addRadialChart(scaledDemandElectroMobility, {
-    subdivisions: 5,
-    centerOffset: min,
-    tint: {
-      r: 251,
-      g: 133,
-      b: 0,
       a: 255,
     },
   });

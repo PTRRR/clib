@@ -245,6 +245,8 @@ export class RadialChart extends Layer {
   ) {
     const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
 
+    console.log(textureUrl);
+
     Assets.load(textureUrl).then((texture) => {
       const shader = Shader.from({
         gl: {
@@ -258,6 +260,14 @@ export class RadialChart extends Layer {
             uTint: {
               value: convertTintToNormalizedVector(tint),
               type: "vec4<f32>",
+            },
+            uRadialMaskStart: {
+              value: 0.0,
+              type: "f32",
+            },
+            uRadialMaskEnd: {
+              value: 1,
+              type: "f32",
             },
           },
         },
