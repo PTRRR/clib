@@ -1,7 +1,21 @@
-import { createClock, defaultFragmentHeader } from "../lib";
+import { createClock, defaultFragmentHeader, scaleTimeSeries } from "../lib";
 
-createClock((clock) => {
+createClock((clock, data) => {
   const radius = clock.width * 0.5;
+  const supplyFromGrid = data["Electricity-supply-from-grid"];
+  const supplyFromGridHour = supplyFromGrid.slice(0, 24);
+
+  const demandBase = data["Electricity-demand-base"];
+  const demandBaseHour = demandBase.slice(0, 24);
+
+  const min = radius * 0.2;
+  const max = radius * 0.82;
+
+  const [scaledSupply, scaledDemand] = scaleTimeSeries(
+    [supplyFromGridHour, demandBaseHour],
+    min,
+    max
+  );
 
   const customFragmentShader = `
     ${defaultFragmentHeader}
@@ -9,12 +23,29 @@ createClock((clock) => {
     void main() {
       vec2 newUv = rotateVec2(uv, PI * 0.5);
       float gradient = getRadialGradient(newUv);
-      fragColor = vec4(gradient, gradient, gradient, 1.0);
+      fragColor = vec4(gradient, gradient * 0.0, gradient * (84.0 / 255.0), 1.0);
     }
 `;
 
   clock.addRadialChart(new Array(100).fill(radius * 0.8), {
     subdivisions: 5,
+    fragmentShader: customFragmentShader,
+  });
+
+  clock.addRadialChart(scaledSupply, {
+    subdivisions: 4,
+    blendMode: "add",
+    tint: {
+      r: 57,
+      g: 0,
+      b: 153,
+      a: 255,
+    },
+  });
+
+  clock.addRadialChart(scaledDemand, {
+    subdivisions: 4,
+    blendMode: "multiply",
     fragmentShader: customFragmentShader,
   });
 
