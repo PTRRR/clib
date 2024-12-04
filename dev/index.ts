@@ -1,53 +1,74 @@
-import { createClock, defaultFragmentHeader, scaleTimeSeries } from "../lib";
+import { createClock, scaleTimeSeries } from "../lib";
 
 createClock((clock, data) => {
+  console.log(data);
   const radius = clock.width * 0.5;
   const supplyFromGrid = data["Electricity-supply-from-grid"];
   const supplyFromGridHour = supplyFromGrid.slice(0, 24);
+  const supplyPhoto = data["Electricity-supply-photovoltaics"];
+  const supplyPhotoHour = supplyPhoto.slice(0, 24);
 
-  const demandBase = data["Electricity-demand-base"];
-  const demandBaseHour = demandBase.slice(0, 24);
-
-  const min = radius * 0.2;
+  const min = radius * 0.0;
   const max = radius * 0.82;
-
-  const [scaledSupply, scaledDemand] = scaleTimeSeries(
-    [supplyFromGridHour, demandBaseHour],
+  const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(
+    [supplyFromGridHour, supplyPhotoHour],
     min,
     max
   );
 
-  const customFragmentShader = `
-    ${defaultFragmentHeader}
-
-    void main() {
-      vec2 newUv = rotateVec2(uv, PI * 0.5);
-      float gradient = getRadialGradient(newUv);
-      fragColor = vec4(gradient, gradient * 0.0, gradient * (84.0 / 255.0), 1.0);
-    }
-`;
-
-  clock.addRadialChart(new Array(100).fill(radius * 0.8), {
-    subdivisions: 5,
-    fragmentShader: customFragmentShader,
-  });
-
-  clock.addRadialChart(scaledSupply, {
+  clock.addRadialChart(scaledSupplyFromGrid, {
     subdivisions: 4,
-    blendMode: "add",
     tint: {
-      r: 57,
-      g: 0,
-      b: 153,
+      r: 255,
+      g: 255,
+      b: 255,
       a: 255,
     },
   });
 
-  clock.addRadialChart(scaledDemand, {
+  clock.addRadialChart(scaledSupplyPhoto, {
     subdivisions: 4,
-    blendMode: "multiply",
-    fragmentShader: customFragmentShader,
+    tint: {
+      r: 255,
+      g: 255,
+      b: 255,
+      a: 255,
+    },
   });
+
+  const steps = 10;
+
+  for (let i = 0; i < steps; i++) {
+    const min = radius * 0.0;
+    const max = radius * 0.82 - i * (radius / steps);
+    const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(
+      [supplyFromGridHour, supplyPhotoHour],
+      min,
+      max
+    );
+
+    clock.addRadialChart(scaledSupplyFromGrid, {
+      subdivisions: 4,
+      blendMode: "multiply",
+      tint: {
+        r: 240,
+        g: 150,
+        b: 137,
+        a: 255,
+      },
+    });
+
+    clock.addRadialChart(scaledSupplyPhoto, {
+      subdivisions: 4,
+      blendMode: "multiply",
+      tint: {
+        r: 150,
+        g: 189,
+        b: 255,
+        a: 255,
+      },
+    });
+  }
 
   clock.addRectangles({
     count: 12,
