@@ -90,9 +90,9 @@ export type RadialChartOptions = {
  */
 export class RadialChart extends Layer {
   /** Geometry containing vertex data */
-  private geometry: Geometry;
+  geometry: Geometry;
   /** Mesh for rendering using geometry and shader */
-  private mesh: Mesh<Geometry, Shader>;
+  mesh: Mesh<Geometry, Shader>;
 
   /**
    * Creates a new RadialChart instance

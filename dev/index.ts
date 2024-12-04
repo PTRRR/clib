@@ -1,67 +1,51 @@
-import {
-  addTimeSeries,
-  createClock,
-  defaultClockStep,
-  logTransform,
-  scaleTimeSeries,
-  generatePolarSimplexNoiseValues,
-} from "../lib";
+import { createClock, defaultFragmentHeader, RadialChart } from "../lib";
 
-createClock((clock, data) => {
+createClock((clock) => {
   const radius = clock.width * 0.5;
 
-  const supplyFromGrid = data["Electricity-supply-from-grid"];
-  const supplyFromGridHour = supplyFromGrid.slice(0, 24);
+  const customFragmentShader = `
+    ${defaultFragmentHeader}
 
-  const supplyPhoto = data["Electricity-supply-photovoltaics"];
-  const supplyPhotoByHour = supplyPhoto.slice(0, 24);
+    uniform float uTime;
 
-  const min = radius * 0.5;
+    void main() {
+      float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
+      float waves = sin(dist * 1.5 * PI * 2.0 - uTime) * 0.1 * (1.0 - dist);
+      vec2 centeredUV = uv - vec2(0.5);
+      float angle = atan(centeredUV.y, centeredUV.x);
+      float normalizedAngle = (angle + PI) / (2.0 * PI) + waves;
+      float radialLines = abs((fract(normalizedAngle * 5.0) - 0.5)) * 2.0;
+      float halfChange = fwidth(radialLines) / 2.0;
+      float lowerEdge = 0.5 - halfChange * 1.5;
+      float upperEdge = 0.5 + halfChange * 1.5;
+      float step = smoothstep(lowerEdge, upperEdge, radialLines);
+      fragColor = vec4(mix(vec4(45.0 / 255.0, 0.0 / 255.0, 247.0 / 255.0, 1.0), vec4(59.0 / 255.0, 170.0 / 255.0, 64.0 / 255.0, 1.0), step));
+    }
+`;
 
-  const noiseValues = generatePolarSimplexNoiseValues(
-    supplyFromGrid.length,
-    1
-  ).map((it) => (it + 1) * 2);
-  const supply = addTimeSeries([supplyFromGridHour, supplyPhotoByHour]);
-
-  const [scaledSupply, scaledNoiseValues] = scaleTimeSeries(
-    [supply.map((it) => logTransform(it)), noiseValues],
-    min,
-    radius * 0.85
-  );
-
-  clock.addRadialChart(scaledSupply, {
+  clock.addRadialChart(new Array(100).fill(radius * 0.8), {
     subdivisions: 5,
-    texture:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/p-4.jpeg",
-    tint: {
-      r: 255,
-      g: 0,
-      b: 84,
-      a: 255,
-    },
-  });
-
-  clock.addRadialChart(scaledNoiseValues, {
-    subdivisions: 5,
-    blendMode: "add",
-    tint: {
-      r: 57,
-      g: 0,
-      b: 153,
-      a: 255,
+    fragmentShader: customFragmentShader,
+    label: "chart",
+    resources: {
+      time: {
+        uTime: {
+          value: 0.0,
+          type: "f32",
+        },
+      },
     },
   });
 
   clock.addRectangles({
-    count: scaledSupply.length,
+    count: 12,
     width: 3,
     height: 30,
     offset: 20,
   });
 
   clock.addCustomShape({
-    count: scaledSupply.length,
+    count: 12,
     handler: async (index, instance) => {
       return instance.createTextElement({
         text: `${index.toString().padStart(2, "0")}`,
@@ -71,38 +55,16 @@ createClock((clock, data) => {
     },
   });
 
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
-    scale: 0.1,
-    offsetY: -0.166,
-    label: "seconds",
-  });
+  const chart = clock.getLayerByLabel("chart") as RadialChart;
 
-  // Add minutes hand
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
-    scale: 0.1,
-    offsetY: -0.166,
-    label: "minutes",
-  });
-
-  // Add hours hand
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
-    scale: 0.1,
-    offsetY: -0.23,
-    label: "hours",
-  });
-
-  // Add animation to move clock hands
   clock.addAnimation({
-    duration: 3000,
-    handler: (progress, delta) => {
-      const step = defaultClockStep(clock);
-      step.handler?.(progress, delta);
+    duration: 5000,
+    handler: () => {
+      if (
+        typeof chart?.mesh.shader?.resources.time.uniforms.uTime === "number"
+      ) {
+        chart.mesh.shader.resources.time.uniforms.uTime += 0.01;
+      }
     },
   });
 });
