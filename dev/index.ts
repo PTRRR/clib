@@ -36,7 +36,7 @@ createClock((clock, data) => {
     },
   });
 
-  const steps = 10;
+  const steps = 80;
 
   for (let i = 0; i < steps; i++) {
     const min = radius * 0.0;
