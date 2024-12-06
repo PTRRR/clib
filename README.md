@@ -13,22 +13,17 @@ A TypeScript library for creating customizable, animated clock visualizations us
 1. Install Visual Studio Code
    - Download VS Code from [code.visualstudio.com](https://code.visualstudio.com)
    - Follow the installation instructions for your operating system
-   - Optional: Install helpful extensions like "Live Server" and "TypeScript"
 
 ### Quick Start with Examples
 
 1. Browse the examples at [https://ptrrr.github.io/energy-clock-lib/examples/](https://ptrrr.github.io/energy-clock-lib/examples/)
-2. Find an example you like and click its "demo" link to view the source code on GitHub
+2. Find an example you like and click its "code" link to view the source code on GitHub
 3. Open the example in VS Code:
 
    - Copy the code from GitHub
    - Create a new file in VS Code (e.g., `clock-example.html`)
    - Paste the code and save
-   - If you installed Live Server:
-     - Right-click the file
-     - Select "Open with Live Server"
-   - Without Live Server:
-     - Double-click the file to open in your browser
+   - Double-click the file to open in your browser
 
 4. Start experimenting!
 
