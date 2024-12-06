@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "esbuild dev/index.ts --outdir=dev --bundle --servedir=./",
     "build": "node build.js",
+    "deploy": "node generateContext.js & vercel --prod",
     "release": "./release.sh"
   },
   "author": "",
@@ -18,6 +19,7 @@
     "chaikin-smooth": "^1.0.4",
     "curve-interpolator": "^3.3.1",
     "esbuild": "^0.24.0",
+    "openai": "^4.76.0",
     "optimo-animator": "^1.2.9",
     "papaparse": "^5.4.1",
     "pixi.js": "^8.5.2",
