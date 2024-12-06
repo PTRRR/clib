@@ -16,7 +16,7 @@ A TypeScript library for creating customizable, animated clock visualizations us
 
 ### Quick Start with Examples
 
-1. Browse the examples at [https://ptrrr.github.io/energy-clock-lib/examples/](https://ptrrr.github.io/energy-clock-lib/examples/)
+1. Browse the examples at [http://clocks.pietroalberti.ch/](http://clocks.pietroalberti.ch/)
 2. Find an example you like and click its "code" link to view the source code on GitHub
 3. Open the example in VS Code:
 
