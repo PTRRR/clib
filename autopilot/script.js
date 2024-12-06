@@ -64,7 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(styles);
 
-  function processScript(scriptContent, thinking) {
+  function processScript(scriptContent, thinking, retryCount = 0) {
+    thinking.innerHTML =
+      retryCount > 0
+        ? `Thinking... (Retry attempt ${retryCount})`
+        : "Thinking...";
+
     fetch("https://clocks-lib.vpr-group.ch/api/autopilot", {
       method: "POST",
       body: JSON.stringify({ script: scriptContent }),
@@ -128,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .addEventListener("click", () => modal.remove());
         modal.querySelector(".retry-button").addEventListener("click", () => {
           modal.remove();
-          processScript(scriptContent, thinking);
+          processScript(scriptContent, thinking, retryCount + 1);
         });
 
         setTimeout(() => modal.classList.add("show"), 100);

@@ -8,7 +8,7 @@ const SYSTEM_MESSAGES = {
   pseudoCode:
     "If you encounter pseudo code in comments please come up with the a correct implementation that fits the requirements of the pseudo code, but only if the comments does not already have an implementation.",
   responseFormat:
-    "You should give back a JSON response with the following format: { script: {{ the whole content of the javascript script corrected by you }}, message: {{ a message for the student }} }",
+    "You should give back a JSON response with the following format: { script: {{ the whole content of the javascript script corrected by you with meaningfull comments to explain each step to students }}, message: {{ a message for the student }} }",
 };
 
 export default async function handler(req, res) {

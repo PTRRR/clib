@@ -8,11 +8,12 @@
   <body>
     <script nomodule autopilot>
       // 1. Create clock
-      // 2. Add the first ring of 24 text labels around the clock
-      // 3. For each number add a corresponding long rectangle beneath it. the rectangles and the numbers should not overlapp
-      // 4. Add a radial chart rgb(200, 40, 55) with noise value remapped from half of the clock radius and to the clock radius
-      // 5. Add a second radial chart rgb(0, 140, 255) with noise value remapped from quarter of the clock radius to the hals of the clock radius
-      // 6. log the values used in the radial chart
+      // 2. Add six radial charts with different shades of pink and with noise value remapped from half of the clock radius and to the clock radius.
+      // 3. Create a stacking effect by reducing the remap values for each chart in order for them to become smaller and smaller
+      // 4. Each step should be of size clock radius - (clock radius / six * step index)
+      // 5. Each one of the chart should be unique but use the same noise values (but remapped as explained in step 3 to create a stacking effect)
+      // 6. Add the first ring of 24 text labels around the clock
+      // 7. For each number add a corresponding long rectangle beneath it. the rectangles and the numbers should not overlapp
     </script>
   </body>
 </html>
