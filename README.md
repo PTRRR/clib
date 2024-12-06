@@ -52,8 +52,8 @@ A TypeScript library for creating customizable, animated clock visualizations us
        </head>
        <body>
          <script nomodule autopilot>
-           // 1. Create clock with helper function
-           // 2. Add six radial charts with different shades of gree and with noise value remapped from half of the clock radius and to the clock radius.
+           // 1. Create clock with the imported helper function
+           // 2. Add six radial charts with different shades of pink and with noise value remapped from half of the clock radius and to the clock radius - 40.
            // 3. Create a stacking effect by reducing the remap values for each chart in order for them to become smaller and smaller
            // 4. Each step should be of size clock radius - (clock radius / six * step index)
            // 5. Each one of the chart should be unique but use the same noise values (but remapped as explained in step 3 to create a stacking effect)
