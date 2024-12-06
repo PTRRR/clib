@@ -3,29 +3,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="https://clocks-lib.vpr-group.ch/api/autopilot"></script>
   </head>
   <body>
-    <script type="module">
-      // Import clock creation function
-      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
-
-      console.log("sdflkjh");
-
-      createClock((clock) => {
-        // Add the first ring of 24 text labels around the clock
-        clock.addTexts({
-          count: 24, // Number of text labels
-          fontSize: 40, // Size of text for the first ring
-          offset: 20, // Distance from edge
-        });
-
-        // Add a second, smaller ring of 24 text labels
-        clock.addTexts({
-          count: 24, // Number of text labels
-          fontSize: 20, // Size of text for the second, smaller ring
-          offset: 60, // Distance from edge (adjusted to be inside the first ring)
-        });
-      });
+    <script nomodule autopilot>
+      // 1. Create clock
+      // 2. Add the first ring of 24 text labels around the clock
+      // 3. For each number add a corresponding long rectangle beneath it. the rectangles and the numbers should not overlapp
+      // 4. Add a radial chart rgb(200, 40, 55) with noise value remapped from half of the clock radius and to the clock radius
+      // 5. Add a second radial chart rgb(0, 140, 255) with noise value remapped from quarter of the clock radius to the hals of the clock radius
+      // 6. log the values used in the radial chart
     </script>
   </body>
 </html>
