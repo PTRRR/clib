@@ -92,17 +92,9 @@ This framework was developed as a teaching tool for a graphic design workshop in
 - Blend mode support
 - High-performance WebGL rendering
 
-## Installation
-
-```bash
-npm install clock-visualization
-```
-
 ## Basic Usage
 
 ```typescript
-import { Clock } from "clock-visualization";
-
 // Create clock instance
 const clock = new Clock(container);
 await clock.initialize();
