@@ -16,7 +16,7 @@ A TypeScript library for creating customizable, animated clock visualizations us
 
 ### Quick Start with Examples
 
-1. Browse the examples at [http://clocks.pietroalberti.ch/examples](http://clocks.pietroalberti.ch/examples)
+1. Browse the examples at [https://ptrrr.github.io/clib/examples](https://ptrrr.github.io/clib/examples)
 2. Find an example you like and click its "code" link to view the source code on GitHub
 3. Open the example in VS Code:
 
@@ -79,7 +79,7 @@ This framework was developed as a teaching tool for a graphic design workshop in
 
 ## Examples
 
-[Browse Examples](http://clocks.pietroalberti.ch/examples)
+[Browse Examples](https://ptrrr.github.io/clib/examples)
 
 ## Features
 
