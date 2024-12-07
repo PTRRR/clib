@@ -43,10 +43,10 @@ A TypeScript library for creating customizable, animated clock visualizations us
            content="width=device-width, initial-scale=1.0"
          />
          <title>Document</title>
-         <script src="https://clocks-lib.vpr-group.ch/api/autopilot"></script>
+         <script src="https://autopilot.vpr-group.ch/api/clib"></script>
        </head>
        <body>
-         <script nomodule autopilot>
+         <script type="module" autopilot>
            // 1. Create clock with the imported helper function
            // 2. Add six radial charts with different shades of pink and with noise value remapped from half of the clock radius and to the clock radius - 40.
            // 3. Create a stacking effect by reducing the remap values for each chart in order for them to become smaller and smaller
