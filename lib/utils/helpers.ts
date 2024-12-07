@@ -19,6 +19,7 @@ export const createClock = async (
   body.style.justifyContent = "center";
 
   const container = document.createElement("div");
+  container.classList.add("clib-container");
   container.style.height = "80%";
   container.style.width = "auto";
   container.style.aspectRatio = "1";

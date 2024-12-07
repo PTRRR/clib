@@ -38,42 +38,10 @@ createClock((clock, data) => {
 
   const steps = 80;
 
-  for (let i = 0; i < steps; i++) {
-    const min = radius * 0.0;
-    const max = radius * 0.82 - i * (radius / steps);
-    const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(
-      [supplyFromGridHour, supplyPhotoHour],
-      min,
-      max
-    );
-
-    clock.addRadialChart(scaledSupplyFromGrid, {
-      subdivisions: 4,
-      blendMode: "multiply",
-      tint: {
-        r: 240,
-        g: 150,
-        b: 137,
-        a: 255,
-      },
-    });
-
-    clock.addRadialChart(scaledSupplyPhoto, {
-      subdivisions: 4,
-      blendMode: "multiply",
-      tint: {
-        r: 150,
-        g: 189,
-        b: 255,
-        a: 255,
-      },
-    });
-  }
-
   clock.addRectangles({
     count: 12,
     width: 3,
-    height: 30,
+    height: 100,
     offset: 20,
   });
 
