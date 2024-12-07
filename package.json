@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "esbuild dev/index.ts --outdir=dev --bundle --servedir=./",
     "build": "node build.js",
-    "deploy": "node generateContext.js & vercel --prod",
+    "generate:context": "node generateContext.js",
     "release": "./release.sh"
   },
   "author": "",
