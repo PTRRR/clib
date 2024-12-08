@@ -246,6 +246,8 @@ export class RadialChart extends Layer {
     const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
 
     Assets.load(textureUrl).then((texture) => {
+      console.log(texture);
+
       const shader = Shader.from({
         gl: {
           vertex: vertexShader || baseVertexShader,
