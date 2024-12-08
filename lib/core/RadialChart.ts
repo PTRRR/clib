@@ -246,7 +246,13 @@ export class RadialChart extends Layer {
     const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
 
     Assets.load(textureUrl).then((texture) => {
-      console.log(texture);
+      const loadMediaEvent = new CustomEvent("load-media", {
+        detail: {
+          url: textureUrl,
+        },
+      });
+
+      document.dispatchEvent(loadMediaEvent);
 
       const shader = Shader.from({
         gl: {

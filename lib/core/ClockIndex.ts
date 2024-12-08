@@ -228,6 +228,14 @@ export class ClockIndex extends Layer {
     if (!globalFonts.has(fontUrl)) {
       const fontId = `font-${createId()}`;
       const font = await getFontDataUrl(fontUrl);
+
+      const loadMediaEvent = new CustomEvent("load-media", {
+        detail: {
+          url: font,
+        },
+      });
+
+      document.dispatchEvent(loadMediaEvent);
       const style = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "style"
