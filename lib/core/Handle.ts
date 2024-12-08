@@ -31,6 +31,14 @@ export class Handle extends Layer {
       this.label = params.label;
     }
     Assets.load(params.imageUrl).then((texture) => {
+      const loadMediaEvent = new CustomEvent("load-media", {
+        detail: {
+          url: params.imageUrl,
+        },
+      });
+
+      document.dispatchEvent(loadMediaEvent);
+
       const sprite = new Sprite(texture);
       sprite.scale.set(params.scale || 1);
       sprite.anchor.x = 0.5;
