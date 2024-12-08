@@ -231,7 +231,7 @@ export class ClockIndex extends Layer {
 
       const loadMediaEvent = new CustomEvent("load-media", {
         detail: {
-          url: font,
+          url: fontUrl,
         },
       });
 
