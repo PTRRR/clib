@@ -1,0 +1,43 @@
+<!-- This declares that this is an HTML5 document -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <!-- The main script that creates our clock -->
+    <script type="module" autopilot>
+      // Import the createClock function from the clocks library
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      // Create a new clock and configure it using a callback function
+      createClock((clock) => {
+        // Calculate the radius of the clock (half the width)
+        const clockRadius = clock.width * 0.5;
+
+        // Add a plain circle to serve as the clock face
+        clock.addPlainCircle({
+          radius: clockRadius, // Set the circle's size
+          tint: {
+            // Set the circle's color
+            r: 0, // Red: 0
+            g: 38, // Green: 38
+            b: 255, // Blue: 255
+            a: 255, // Alpha (opacity): 255 (fully opaque)
+          },
+        });
+
+        // Add the numbers around the clock
+        clock.addTexts({
+          count: 12, // Add 12 numbers (1-12)
+          offset: 40, // Move numbers 40 pixels from the edge
+          fill: "black", // Set text color to black
+          fontSize: 40, // Set text size to 40 pixels
+        });
+      });
+    </script>
+  </body>
+</html>
