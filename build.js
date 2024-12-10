@@ -10,7 +10,7 @@ esbuild
     format: "esm",
     platform: "neutral",
     outExtension: { ".js": ".js" },
-    minify: false,
+    minify: true,
     sourcemap: false,
     target: ["es2020"],
     outbase: "lib",
