@@ -14,6 +14,7 @@ import {
   RectShapeParams,
   TextShapeParams,
   TriangleShapeParams,
+  PlainCircleParams,
 } from "./ClockIndex";
 import { Animator, Step, Timeline } from "optimo-animator";
 import { omit } from "../utils";
@@ -220,6 +221,27 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
+    return this;
+  }
+
+  /**
+   * Adds a plain circle to the clock visualization
+   * @param {PlainCircleParams} options - Configuration options for the plain circle
+   * @param {number} [options.segments=100] - Number of segments to use for the circle
+   * @param {number} [options.radius] - Radius of the circle (defaults to half the clock width)
+   * @param {object} [options.tint] - Color tint for the circle
+   * @returns {Clock} The Clock instance for chaining
+   */
+  addPlainCircle(options: PlainCircleParams) {
+    const values = new Array(options.segments || 100).fill(
+      options.radius || this.width * 0.5
+    );
+
+    const radialChart = new RadialChart(values, {
+      tint: options.tint || { r: 255, g: 255, b: 255, a: 255 },
+    });
+
+    this.addLayer(radialChart);
     return this;
   }
 

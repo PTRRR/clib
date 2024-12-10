@@ -6,6 +6,12 @@ import { Assets, Sprite } from "pixi.js";
 
 /**
  * Parameters for text shape creation
+ * @typedef {Object} TextShapeParams
+ * @property {string} [text] - Text content to display
+ * @property {string} [fontUrl] - URL of the font file to use
+ * @property {number} [fontSize] - Font size in pixels
+ * @property {string} [fill] - Text color
+ * @property {number} [offset] - Offset from default position
  */
 export type TextShapeParams = {
   /** Text content to display */
@@ -21,6 +27,11 @@ export type TextShapeParams = {
 
 /**
  * Parameters for rectangle shape creation
+ * @typedef {Object} RectShapeParams
+ * @property {number} [width] - Width in pixels
+ * @property {number} [height] - Height in pixels
+ * @property {string} [fill] - Fill color
+ * @property {number} [offset] - Offset from default position
  */
 export type RectShapeParams = {
   /** Width in pixels */
@@ -34,6 +45,10 @@ export type RectShapeParams = {
 
 /**
  * Parameters for circle shape creation
+ * @typedef {Object} CircleShapeParams
+ * @property {number} [radius] - Radius in pixels
+ * @property {string} [fill] - Fill color
+ * @property {number} [offset] - Offset from default position
  */
 export type CircleShapeParams = {
   /** Radius in pixels */
@@ -44,7 +59,34 @@ export type CircleShapeParams = {
 };
 
 /**
+ * Parameters for plain circle creation
+ * @typedef {Object} PlainCircleParams
+ * @property {number} [segments] - Number of segments in the circle
+ * @property {number} [radius] - Radius of the circle
+ * @property {Object} [tint] - Color tint configuration
+ * @property {number} [tint.r] - Red component (0-255)
+ * @property {number} [tint.g] - Green component (0-255)
+ * @property {number} [tint.b] - Blue component (0-255)
+ * @property {number} [tint.a] - Alpha component (0-255)
+ */
+export type PlainCircleParams = {
+  segments?: number;
+  radius?: number;
+  tint?: {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+  };
+};
+
+/**
  * Parameters for triangle shape creation
+ * @typedef {Object} TriangleShapeParams
+ * @property {number} [width] - Width of the triangle base
+ * @property {number} [height] - Height from base to apex
+ * @property {string} [fill] - Fill color
+ * @property {number} [offset] - Offset from default position
  */
 export type TriangleShapeParams = {
   /** Width of the triangle base */
