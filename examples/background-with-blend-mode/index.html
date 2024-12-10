@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // Import clock creation function
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock) => {
+        const clockRadius = clock.width / 2;
+
+        clock.addPlainCircle({
+          radius: clockRadius,
+          label: "rect",
+          tint: {
+            r: 255,
+            g: 47,
+            b: 150,
+            a: 255,
+          },
+        });
+
+        const rectLayer = clock.getLayerByLabel("rect");
+
+        rectLayer.position.x = -200;
+
+        clock.addPlainCircle({
+          radius: clockRadius,
+          label: "rect2",
+          blendMode: "add",
+          tint: {
+            r: 48,
+            g: 178,
+            b: 255,
+            a: 255,
+          },
+        });
+
+        const rectLayer2 = clock.getLayerByLabel("rect2");
+
+        rectLayer2.position.x = 200;
+      });
+    </script>
+  </body>
+</html>
