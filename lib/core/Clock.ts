@@ -225,22 +225,20 @@ export class Clock extends Application {
   }
 
   /**
-   * Adds a plain circle to the clock visualization
-   * @param {PlainCircleParams} options - Configuration options for the plain circle
-   * @param {number} [options.segments=100] - Number of segments to use for the circle
-   * @param {number} [options.radius] - Radius of the circle (defaults to half the clock width)
-   * @param {object} [options.tint] - Color tint for the circle
+   * Adds a plain circular shape to the clock
+   * @param {Object} params - Configuration parameters
+   * @param {number} [params.segments=100] - Number of segments to create the circle (higher means smoother)
+   * @param {number} [params.radius] - Radius of the circle, defaults to half the clock width
+   * @param {RadialChartOptions} [params] - Additional radial chart options inherited from RadialChartOptions
    * @returns {Clock} The Clock instance for chaining
    */
-  addPlainCircle(options: PlainCircleParams) {
-    const values = new Array(options.segments || 100).fill(
-      options.radius || this.width * 0.5
-    );
-
-    const radialChart = new RadialChart(values, {
-      tint: options.tint || { r: 255, g: 255, b: 255, a: 255 },
-    });
-
+  addPlainCircle({
+    segments,
+    radius,
+    ...args
+  }: PlainCircleParams & RadialChartOptions) {
+    const values = new Array(segments || 100).fill(radius || this.width * 0.5);
+    const radialChart = new RadialChart(values, args);
     this.addLayer(radialChart);
     return this;
   }

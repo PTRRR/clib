@@ -72,12 +72,6 @@ export type CircleShapeParams = {
 export type PlainCircleParams = {
   segments?: number;
   radius?: number;
-  tint?: {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-  };
 };
 
 /**

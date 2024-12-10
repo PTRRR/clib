@@ -19,6 +19,9 @@
         const clockRadius = clock.width * 0.5;
 
         // Add a plain circle to serve as the clock face
+
+        // Add the numbers around the clock
+
         clock.addPlainCircle({
           radius: clockRadius, // Set the circle's size
           tint: {
@@ -30,12 +33,30 @@
           },
         });
 
-        // Add the numbers around the clock
         clock.addTexts({
           count: 12, // Add 12 numbers (1-12)
-          offset: 40, // Move numbers 40 pixels from the edge
+          offset: 60, // Move numbers 40 pixels from the edge
           fill: "black", // Set text color to black
-          fontSize: 40, // Set text size to 40 pixels
+          fontSize: 100, // Set text size to 40 pixels
+        });
+
+        clock.addPlainCircle({
+          radius: 300, // Set the circle's size
+          tint: {
+            // Set the circle's color
+            r: 0, // Red: 0
+            g: 138, // Green: 38
+            b: 255, // Blue: 255
+            a: 255, // Alpha (opacity): 255 (fully opaque)
+          },
+        });
+
+        clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+          scale: 0.1,
+          offsetY: -0.166,
+          label: "seconds",
         });
       });
     </script>
