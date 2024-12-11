@@ -125,6 +125,147 @@ clock.addAnimation(defaultClockStep(clock));
 - Font loading and rendering
 - SVG conversion utilities
 
+## Documentation
+
+### Clock Instance Methods
+
+#### addRadialChart(values, options?)
+
+Creates a radial chart visualization.
+
+- `values`: `number[]` - Array of values to plot
+- `options`: Optional configuration object
+  - `subdivisions`: `number` (0-10) - Path subdivision count for smoothness
+  - `samples`: `number` (3-5000) - Sample count for path resampling
+  - `centerOffset`: `number` - Distance from center point
+  - `relativeOffset`: `boolean` - Whether centerOffset follows outer contour
+  - `blendMode`: `string` - PIXI blend mode for compositing
+  - `texture`: `string` - Texture image URL
+  - `tint`: `{r: number, g: number, b: number, a: number}` - Color tint
+  - `label`: `string` - Chart identifier
+
+#### addHandle(options)
+
+Adds a clock hand.
+
+- `options`: Configuration object
+  - `imageUrl`: `string` - URL for hand image
+  - `scale`: `number` - Size scaling factor
+  - `offsetY`: `number` - Vertical position offset
+  - `label`: `string` - Handle identifier
+
+#### addRectangles(options)
+
+Adds rectangular markers around the clock.
+
+- `options`: Configuration object
+  - `count`: `number` - Number of rectangles
+  - `width`: `number` - Rectangle width
+  - `height`: `number` - Rectangle height
+  - `offset`: `number` - Distance from edge
+  - `fill`: `string` - Fill color
+
+#### addCircles(options)
+
+Adds circular markers around the clock.
+
+- `options`: Configuration object
+  - `count`: `number` - Number of circles
+  - `radius`: `number` - Circle radius
+  - `offset`: `number` - Distance from edge
+  - `fill`: `string` - Fill color
+
+#### addTriangles(options)
+
+Adds triangular markers around the clock.
+
+- `options`: Configuration object
+  - `count`: `number` - Number of triangles
+  - `width`: `number` - Triangle base width
+  - `height`: `number` - Triangle height
+  - `offset`: `number` - Distance from edge
+  - `fill`: `string` - Fill color
+
+#### addTexts(options)
+
+Adds text labels around the clock.
+
+- `options`: Configuration object
+  - `count`: `number` - Number of labels
+  - `fontSize`: `number` - Text size in pixels
+  - `offset`: `number` - Distance from edge
+  - `fill`: `string` - Text color
+
+#### addCustomShape(options)
+
+Adds custom shapes using a handler function.
+
+- `options`: Configuration object
+  - `count`: `number` - Number of shapes
+  - `handler`: `(index: number, instance: ClockIndex) => Promise<Node>` - Shape generator
+  - `offset`: `number` - Distance from edge
+  - `label`: `string` - Shape identifier
+
+#### addPlainCircle(options)
+
+Adds a basic circle to the clock.
+
+- `options`: Configuration object
+  - `radius`: `number` - Circle radius
+  - `segments`: `number` - Number of segments
+  - `tint`: `{r: number, g: number, b: number, a: number}` - Color tint
+
+#### addAnimation(step)
+
+Adds an animation sequence.
+
+- `step`: Animation configuration object
+  - `duration`: `number` - Animation duration in milliseconds
+  - `handler`: `(progress: number, delta: number) => void` - Animation function
+
+## Utility Functions
+
+### Data Processing
+
+#### aggregateTimeSeries(values, config)
+
+Aggregates time series data.
+
+- `values`: `number[]` - Input values
+- `config`: Configuration object
+  - `period`: `"day" | "week" | "month" | "year"` - Aggregation period
+  - `aggregationType`: `"sum" | "average" | "max" | "min"` - Calculation method
+  - `startDate`: `Date` - Optional start date
+
+#### scaleTimeSeries(arrays, min?, max?)
+
+Scales multiple time series to a common range.
+
+- `arrays`: `number[][]` - Arrays of values to scale
+- `min`: `number` - Target minimum value
+- `max`: `number` - Target maximum value
+
+#### addTimeSeries(arrays)
+
+Combines multiple time series by addition.
+
+- `arrays`: `number[][]` - Arrays to combine
+
+### Visual Effects
+
+#### defaultClockStep(clock)
+
+Creates default clock hand animation.
+
+- `clock`: `Clock` - Clock instance to animate
+
+#### logTransform(value, base?)
+
+Applies logarithmic transformation to values.
+
+- `value`: `number` - Input value
+- `base`: `number` - Logarithm base (default: Math.E)
+
 ## License
 
 MIT
