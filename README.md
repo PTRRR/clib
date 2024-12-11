@@ -6,6 +6,10 @@ A TypeScript library for creating customizable, animated clock visualizations us
   <img src="example.png" width="400" alt="Example Clock Visualization">
 </div>
 
+## Workshop Origins
+
+This framework was developed as a teaching tool for a graphic design workshop introducing students to computer graphics and data-driven design principles. It provides an approachable entry point to WebGL, shader programming, and generative design through the familiar metaphor of clock visualization. The library abstracts complex graphics programming concepts while still allowing students to experiment with advanced features as their understanding grows.
+
 ## Getting Started
 
 ### Prerequisites
@@ -72,10 +76,6 @@ A TypeScript library for creating customizable, animated clock visualizations us
      - Fix syntax errors automatically
      - Add necessary imports and configurations
    - You can gradually replace autopilot-generated code with your own as you learn
-
-## Workshop Origins
-
-This framework was developed as a teaching tool for a graphic design workshop introducing students to computer graphics and data-driven design principles. It provides an approachable entry point to WebGL, shader programming, and generative design through the familiar metaphor of clock visualization. The library abstracts complex graphics programming concepts while still allowing students to experiment with advanced features as their understanding grows.
 
 ## Examples
 
