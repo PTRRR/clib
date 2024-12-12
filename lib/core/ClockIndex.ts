@@ -107,7 +107,7 @@ export type TriangleShapeParams = {
 export type CustomShapeHandler = (
   index: number,
   instance: ClockIndex
-) => Promise<Node | undefined>;
+) => Promise<Node | undefined> | Node | undefined;
 
 /**
  * Union type for different shape configurations
@@ -208,16 +208,18 @@ export class ClockIndex extends Layer {
 
         this.svg.appendChild(group);
 
-        const shapePromise =
-          params.shape.type === "custom"
-            ? params.shape.handler(i, this)
-            : this.createShape({ ...params.shape, index: i });
-
-        await shapePromise.then((shape) => {
+        if (params.shape.type === "custom") {
+          const result = params.shape.handler(i, this);
+          const shape = result instanceof Promise ? await result : result;
           if (shape) {
             group.appendChild(shape);
           }
-        });
+        } else {
+          const shape = await this.createShape({ ...params.shape, index: i });
+          if (shape) {
+            group.appendChild(shape);
+          }
+        }
       }
 
       const svgUrl = getSvgAsImageUrl(this.svg);

@@ -85,6 +85,18 @@ createClock((clock) => {
       g: 250,
     },
   });
+
+  clock.addCustomShape({
+    count: 6,
+    handler: (index, instance) => {
+      return instance.createTextElement({
+        fontSize: 40,
+        text: "CUSTOM - " + index.toString().padStart(2, "0"), // Adds leading zero
+        offset: 40, // Distance from edge of clock
+        fill: "blue",
+      });
+    },
+  });
   // clock.addHandle({
   //   imageUrl: "http://localhost:3000/api/clib/file/l5oyp4dritgsun7t74pyy7an",
   //   scale: 0.1,
