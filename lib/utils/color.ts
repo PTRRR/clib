@@ -126,7 +126,7 @@ const parseRgbColor = (color: string): RGBAColor | null => {
  * normalizeColorToRgba({ r: 255, g: 0, b: 0, a: 0.5 })
  * // Returns { r: 255, g: 0, b: 0, a: 0.5 }
  */
-export const normalizeColorToRgba = (color?: Color): RGBAColor => {
+export const normalizeColorToRgba = (color: Color = "white"): RGBAColor => {
   if (typeof color === "string") {
     // Handle hex colors
     if (isHexColor(color)) {
@@ -170,10 +170,10 @@ export const normalizeColorToRgba = (color?: Color): RGBAColor => {
   // Handle object input
   else {
     return {
-      r: Math.min(255, Math.max(0, color?.r || 0)),
-      g: Math.min(255, Math.max(0, color?.g || 0)),
-      b: Math.min(255, Math.max(0, color?.b || 0)),
-      a: Math.min(1, Math.max(0, color?.a ?? 1)), // Default alpha to 1 if not provided
+      r: Math.min(255, Math.max(0, color.r || 0)),
+      g: Math.min(255, Math.max(0, color.g || 0)),
+      b: Math.min(255, Math.max(0, color.b || 0)),
+      a: Math.min(1, Math.max(0, color.a ?? 1)), // Default alpha to 1 if not provided
     };
   }
 };
