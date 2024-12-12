@@ -30,6 +30,13 @@ export class Handle extends Layer {
     if (params.label) {
       this.label = params.label;
     }
+
+    Assets.add({
+      alias: params.imageUrl,
+      src: params.imageUrl,
+      loadParser: "loadTextures",
+    });
+
     Assets.load(params.imageUrl).then((texture) => {
       const loadMediaEvent = new CustomEvent("load-media", {
         detail: {

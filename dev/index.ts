@@ -1,1 +1,109 @@
-      import {        createClock,        scaleTimeSeries,      } from "https://clocks-lib.vpr-group.ch/api/latest";      createClock((clock, data) => {        clock.addCircles({          count: 10, // Number of rectangles          radius: 50,          offset: 100,          fill: "#574763",        });        clock.addCircles({          count: 10, // Number of rectangles          radius: 50,          offset: 120,          fill: "#474963",        });        clock.addCircles({          count: 5, // Number of rectangles          radius: 30,          offset: 300,          fill: "#496347",        });        clock.addCircles({          count: 10, // Number of circles          radius: 30, // Largest circles          offset: 100, // Closest to edge          fill: "#754d2f",        });        clock.addCircles({          count: 10,          radius: 20, // Medium circles          offset: 150, // Middle ring          fill: "#75382f",        });        // Import clock creation function        // Add three concentric rings of circles        clock.addCircles({          count: 24, // Number of circles          radius: 30, // Largest circles          offset: 30, // Closest to edge          fill: "#dbbfd6",        });        clock.addCircles({          count: 24,          radius: 20, // Medium circles          offset: 80, // Middle ring          fill: "#dbbfd6",        });        clock.addCircles({          count: 24,          radius: 10, // Smallest circles          offset: 110, // Furthest from edge          fill: "#dbbfd6",        });        clock.addPlainCircle({          radius: 400,          texture: "img2.jpg",          tint: {            r: 255,            g: 0,            b: 108,            a: 20,          },        });        // console.log(data);        // const radius = clock.width * 0.5;        // const supplyFromGrid = data["Electricity-supply-from-grid"];        // const supplyFromGridHour = supplyFromGrid.slice(0, 24);        // const supplyPhoto = data["Electricity-supply-photovoltaics"];        // const supplyPhotoHour = supplyPhoto.slice(0, 24);        // const min = radius * 0.0;        // const max = radius * 0.82;        // const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(        //   [supplyFromGridHour, supplyPhotoHour],        //   min,        //   max        // );        // clock.addRadialChart(scaledSupplyFromGrid, {        //   subdivisions: 4,        //   tint: {        //     r: 255,        //     g: 255,        //     b: 255,        //     a: 255,        //   },        // });        // clock.addRadialChart(scaledSupplyPhoto, {        //   subdivisions: 4,        //   tint: {        //     r: 255,        //     g: 255,        //     b: 255,        //     a: 255,        //   },        // });        // const steps = 80;        // for (let i = 0; i < steps; i++) {        //   const min = radius * 0.0;        //   const max = radius * 0.82 - i * (radius / steps);        //   const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(        //     [supplyFromGridHour, supplyPhotoHour],        //     min,        //     max        //   );        //   clock.addRadialChart(scaledSupplyFromGrid, {        //     subdivisions: 4,        //     blendMode: "multiply",        //     tint: {        //       r: 240,        //       g: 150,        //       b: 137,        //       a: 255,        //     },        //   });        //   clock.addRadialChart(scaledSupplyPhoto, {        //     subdivisions: 4,        //     blendMode: "multiply",        //     tint: {        //       r: 150,        //       g: 189,        //       b: 255,        //       a: 255,        //     },        //   });        // }        // clock.addPlainCircle({        //   radius: 400,        //   texture: " -21 Kopie.jpg",        //   tint: {        //     r: 48,        //     g: 178,        //     b: 255,        //     a: 20,        //   },        // });        clock.addRectangles({          count: 12,          width: 3,          height: 30,          offset: 20,          fill: "Blue",        });        clock.addCustomShape({          count: 12,          handler: async (index, instance) => {            return instance.createTextElement({              text: `${index.toString().padStart(2, "0")}`,              fontSize: 20,              offset: 10,              fill: "Blue",            });          },        });      });    
+// Import clock creation function
+import { createClock } from "../lib";
+
+createClock((clock) => {
+  const clockRadius = clock.width / 2;
+
+  clock.addPlainCircle({
+    radius: clockRadius,
+    label: "rect",
+    tint: {
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 255,
+    },
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 50, // Width of triangles
+    height: 400, // Height of triangles
+    fill: "red",
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 43, // Width of triangles
+    height: 400, // Height of triangles
+    label: "triang",
+    offset: 50,
+    fill: "darkRed",
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 35, // Width of triangles
+    height: 400, // Height of triangles
+    fill: "red",
+    label: "triang2",
+    offset: 100,
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 29, // Width of triangles
+    height: 400, // Height of triangles
+    label: "triang",
+    offset: 150,
+    fill: "darkRed",
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 23, // Width of triangles
+    height: 300, // Height of triangles
+    fill: "red",
+    label: "triang2",
+    offset: 200,
+  });
+
+  clock.addTriangles({
+    count: 24, // One triangle per hour
+    width: 14, // Width of triangles
+    height: 230, // Height of triangles
+    label: "triang3",
+    offset: 250,
+    fill: "darkRed",
+  });
+
+  clock.addTexts({
+    count: 24, // Label for each hour/position
+    fontSize: 23, // Size of text
+    offset: 12, // Distance from edge
+    fill: "red",
+    label: "text",
+  });
+
+  clock.addHandle({
+    imageUrl: "http://localhost:3000/api/clib/file/f444288uvwhpsqkoq5b2rv8q",
+    scale: 0.1,
+    offsetY: -0.166,
+    label: "seconds",
+  });
+  clock.addHandle({
+    imageUrl: "http://localhost:3000/api/clib/file/l5oyp4dritgsun7t74pyy7an",
+    scale: 0.1,
+    offsetY: -0.166,
+    label: "minutes",
+  });
+  clock.addHandle({
+    imageUrl: "http://localhost:3000/api/clib/file/utzlcudbn6gy9iz2kirkg7uk",
+    scale: 0.1,
+    offsetY: -0.23,
+    label: "hours",
+    fill: "black",
+  });
+
+  const triangLayer = clock.getLayerByLabel("triang");
+  triangLayer.rotation = 0.208 * Math.PI;
+
+  const triang2Layer = clock.getLayerByLabel("triang2");
+  triang2Layer.rotation = 0.208 * Math.PI;
+
+  const triang3Layer = clock.getLayerByLabel("triang3");
+  triang3Layer.rotation = 0.208 * Math.PI;
+
+  const textLayer = clock.getLayerByLabel("text");
+  textLayer.rotation = -0.04 * Math.PI;
+});
