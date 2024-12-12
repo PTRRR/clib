@@ -22,7 +22,7 @@ createClock((clock) => {
     fill: "red",
   });
 
-  clock.addTriangles({
+  const triangLayer = clock.addTriangles({
     count: 24, // One triangle per hour
     width: 43, // Width of triangles
     height: 400, // Height of triangles
@@ -99,7 +99,8 @@ createClock((clock) => {
   //   fill: "black",
   // });
 
-  const triangLayer = clock.getLayerByLabel("triang");
+  // const triangLayer = clock.getLayerByLabel("triang");
+  console.log(triangLayer);
   triangLayer.rotation = 0.208 * Math.PI;
 
   const triang2Layer = clock.getLayerByLabel("triang2");

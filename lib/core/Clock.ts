@@ -109,7 +109,7 @@ export class Clock extends Application {
    */
   addLayer(layer: Layer) {
     this.scene.addChild(layer);
-    return this;
+    return layer;
   }
 
   /**
@@ -129,7 +129,7 @@ export class Clock extends Application {
       },
     });
     this.addLayer(radialChart);
-    return this;
+    return radialChart;
   }
 
   /**
@@ -140,7 +140,7 @@ export class Clock extends Application {
   addHandle(options: HandleProps) {
     const handle = new Handle(options);
     this.addLayer(handle);
-    return this;
+    return handle;
   }
 
   /**
@@ -155,7 +155,7 @@ export class Clock extends Application {
       ...options,
     });
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -177,7 +177,7 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -199,7 +199,7 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -221,7 +221,7 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -240,7 +240,7 @@ export class Clock extends Application {
     const values = new Array(segments || 100).fill(radius || this.width * 0.5);
     const radialChart = new RadialChart(values, args);
     this.addLayer(radialChart);
-    return this;
+    return radialChart;
   }
 
   /**
@@ -262,7 +262,7 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -293,7 +293,7 @@ export class Clock extends Application {
     });
 
     this.addLayer(index);
-    return this;
+    return index;
   }
 
   /**
@@ -312,7 +312,7 @@ export class Clock extends Application {
     this.animator = new Animator([timeline]);
     this.animator.start();
 
-    return this;
+    return timeline;
   }
 
   /**
