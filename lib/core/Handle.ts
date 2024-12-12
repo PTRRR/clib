@@ -1,5 +1,6 @@
 import { Assets, Sprite } from "pixi.js";
 import { Layer } from "./Layer";
+import { Color, getPixiTint } from "../utils";
 
 /**
  * Configuration options for Handle component
@@ -14,6 +15,8 @@ export type HandleProps = {
   label?: string;
   scale?: number;
   offsetY?: number;
+  tint?: Color;
+  fill?: Color;
 };
 
 /**
@@ -50,6 +53,7 @@ export class Handle extends Layer {
       sprite.scale.set(params.scale || 1);
       sprite.anchor.x = 0.5;
       sprite.anchor.y = 1 + (params.offsetY || 0);
+      sprite.tint = getPixiTint(params.tint || params.fill);
       this.addChild(sprite);
     });
   }

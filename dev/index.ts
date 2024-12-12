@@ -64,14 +64,14 @@ createClock((clock) => {
     height: 230, // Height of triangles
     label: "triang3",
     offset: 250,
-    fill: "darkRed",
+    fill: "lightblue",
   });
 
   clock.addTexts({
     count: 24, // Label for each hour/position
     fontSize: 23, // Size of text
     offset: 12, // Distance from edge
-    fill: "red",
+    fill: "lightblue",
     label: "text",
   });
 
@@ -80,20 +80,24 @@ createClock((clock) => {
     scale: 0.1,
     offsetY: -0.166,
     label: "seconds",
+    fill: {
+      r: 250,
+      g: 250,
+    },
   });
-  clock.addHandle({
-    imageUrl: "http://localhost:3000/api/clib/file/l5oyp4dritgsun7t74pyy7an",
-    scale: 0.1,
-    offsetY: -0.166,
-    label: "minutes",
-  });
-  clock.addHandle({
-    imageUrl: "http://localhost:3000/api/clib/file/utzlcudbn6gy9iz2kirkg7uk",
-    scale: 0.1,
-    offsetY: -0.23,
-    label: "hours",
-    fill: "black",
-  });
+  // clock.addHandle({
+  //   imageUrl: "http://localhost:3000/api/clib/file/l5oyp4dritgsun7t74pyy7an",
+  //   scale: 0.1,
+  //   offsetY: -0.166,
+  //   label: "minutes",
+  // });
+  // clock.addHandle({
+  //   imageUrl: "http://localhost:3000/api/clib/file/utzlcudbn6gy9iz2kirkg7uk",
+  //   scale: 0.1,
+  //   offsetY: -0.23,
+  //   label: "hours",
+  //   fill: "black",
+  // });
 
   const triangLayer = clock.getLayerByLabel("triang");
   triangLayer.rotation = 0.208 * Math.PI;

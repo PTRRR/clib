@@ -9,7 +9,11 @@ import {
 import { Layer } from "./Layer";
 import { RequiredBy, Values } from "../types";
 import { clampValue, remapValue } from "../utils/math";
-import { convertTintToNormalizedVector } from "../utils/color";
+import {
+  Color,
+  convertTintToNormalizedVector,
+  normalizeColorToRgba,
+} from "../utils/color";
 import {
   mapPolarPathToValues,
   mapValuesToPolarPath,
@@ -50,12 +54,8 @@ export type RadialChartOptions = {
   /** Additional shader uniform resources */
   resources?: Record<string, any>;
   /** Color tint in RGBA format */
-  tint?: {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-  };
+  tint?: Color;
+  fill?: Color;
   /** UV mapping bounds */
   boundingBox?: {
     minX: number;
@@ -243,7 +243,13 @@ export class RadialChart extends Layer {
   private createTexturedMesh(
     params: RequiredBy<RadialChartOptions, "texture">
   ) {
-    const { texture: textureUrl, vertexShader, fragmentShader, tint } = params;
+    const {
+      texture: textureUrl,
+      vertexShader,
+      fragmentShader,
+      tint,
+      fill,
+    } = params;
 
     Assets.add({
       alias: textureUrl,
@@ -270,7 +276,9 @@ export class RadialChart extends Layer {
           uTexture: texture.source,
           globals: {
             uTint: {
-              value: convertTintToNormalizedVector(tint),
+              value: convertTintToNormalizedVector(
+                normalizeColorToRgba(tint || fill)
+              ),
               type: "vec4<f32>",
             },
             uRadialMaskStart: {
@@ -301,7 +309,7 @@ export class RadialChart extends Layer {
    * @param {RadialChartOptions} [params] - Optional visualization parameters
    */
   private createDefaultMesh(params?: RadialChartOptions) {
-    const { vertexShader, fragmentShader, tint } = params || {};
+    const { vertexShader, fragmentShader, tint, fill } = params || {};
 
     const shader = Shader.from({
       gl: {
@@ -312,7 +320,9 @@ export class RadialChart extends Layer {
         ...(params?.resources || {}),
         globals: {
           uTint: {
-            value: convertTintToNormalizedVector(tint),
+            value: convertTintToNormalizedVector(
+              normalizeColorToRgba(tint || fill)
+            ),
             type: "vec4<f32>",
           },
           uRadialMaskStart: {

@@ -17,12 +17,15 @@
     "@thi.ng/geom-resample": "^3.0.21",
     "@thi.ng/geom-subdiv-curve": "^3.0.21",
     "chaikin-smooth": "^1.0.4",
+    "css-color-names": "^1.0.1",
     "curve-interpolator": "^3.3.1",
     "esbuild": "^0.24.0",
+    "hex-rgb": "^5.0.0",
     "openai": "^4.76.0",
     "optimo-animator": "^1.2.9",
     "papaparse": "^5.4.1",
     "pixi.js": "^8.5.2",
+    "rgb2hex": "^0.2.5",
     "simplex-noise": "^4.0.3"
   },
   "devDependencies": {

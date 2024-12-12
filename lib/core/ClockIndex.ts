@@ -1,8 +1,9 @@
-import { createSvg, getSvgAsImage, getSvgAsImageUrl } from "../utils/svg";
+import { createSvg, getSvgAsImageUrl } from "../utils/svg";
 import { getFontDataUrl } from "../utils/fonts";
 import { Layer } from "./Layer";
 import { createId } from "@paralleldrive/cuid2";
 import { Assets, Sprite } from "pixi.js";
+import { Color, getHexColor } from "../utils/color";
 
 /**
  * Parameters for text shape creation
@@ -21,7 +22,8 @@ export type TextShapeParams = {
   /** Font size in pixels */
   fontSize?: number;
   /** Text color */
-  fill?: string;
+  fill?: Color;
+  tint?: Color;
   offset?: number;
 };
 
@@ -39,7 +41,8 @@ export type RectShapeParams = {
   /** Height in pixels */
   height?: number;
   /** Fill color */
-  fill?: string;
+  fill?: Color;
+  tint?: Color;
   offset?: number;
 };
 
@@ -54,7 +57,8 @@ export type CircleShapeParams = {
   /** Radius in pixels */
   radius?: number;
   /** Fill color */
-  fill?: string;
+  fill?: Color;
+  tint?: Color;
   offset?: number;
 };
 
@@ -88,7 +92,8 @@ export type TriangleShapeParams = {
   /** Height from base to apex */
   height?: number;
   /** Fill color */
-  fill?: string;
+  fill?: Color;
+  tint?: Color;
   offset?: number;
 };
 
@@ -290,7 +295,10 @@ export class ClockIndex extends Layer {
 
     text.setAttribute("font-family", globalFonts.get(fontUrl) as string);
     text.setAttribute("font-size", (params?.fontSize || 12).toString());
-    text.setAttribute("fill", params?.fill || "white");
+    text.setAttribute(
+      "fill",
+      getHexColor(params?.fill || params?.tint) || "white"
+    );
     text.setAttribute("x", "0");
     text.setAttribute(
       "y",
@@ -313,7 +321,10 @@ export class ClockIndex extends Layer {
 
     rect.setAttribute("width", (params?.width || 5).toString());
     rect.setAttribute("height", (params?.height || 5).toString());
-    rect.setAttribute("fill", params?.fill || "white");
+    rect.setAttribute(
+      "fill",
+      getHexColor(params?.fill || params?.tint) || "white"
+    );
     rect.setAttribute("x", ((params?.width || 5) * -0.5).toString());
     rect.setAttribute(
       "y",
@@ -335,7 +346,10 @@ export class ClockIndex extends Layer {
     );
 
     circle.setAttribute("r", (params?.radius || 2.5).toString());
-    circle.setAttribute("fill", params?.fill || "white");
+    circle.setAttribute(
+      "fill",
+      getHexColor(params?.fill || params?.tint) || "white"
+    );
     circle.setAttribute("cx", "0");
     circle.setAttribute(
       "cy",
@@ -367,7 +381,10 @@ export class ClockIndex extends Layer {
       this.radius - (params?.height || 5) - this.offset - (params?.offset || 0);
 
     triangle.setAttribute("points", `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
-    triangle.setAttribute("fill", params?.fill || "white");
+    triangle.setAttribute(
+      "fill",
+      getHexColor(params?.fill || params?.tint) || "white"
+    );
 
     return triangle;
   }
