@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 import { createNoise2D } from "simplex-noise";
 import { Values } from "../types";
 

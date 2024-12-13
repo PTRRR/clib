@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 import Papa from "papaparse";
 
 export const loadData = <T = unknown>(string: string) => {

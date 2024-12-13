@@ -1,6 +1,9 @@
-/**
- * Import required dependencies for curve subdivision and resampling
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
  */
+
 import { subdivide, SUBDIV_CHAIKIN } from "@thi.ng/geom-subdiv-curve";
 import { Sampler, simplify } from "@thi.ng/geom-resample";
 import { Path, Point, Values } from "../types";

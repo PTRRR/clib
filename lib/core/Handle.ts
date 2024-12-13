@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 import { Assets, Sprite } from "pixi.js";
 import { Layer } from "./Layer";
 import { Color, getPixiTint } from "../utils";

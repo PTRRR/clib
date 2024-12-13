@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 export const baseVertexShader = `
   #version 300 es
   #define PI 3.1415926538

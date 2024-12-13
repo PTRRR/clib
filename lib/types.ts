@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 export type Values = number[];
 export type Point = [number, number];
 export type Path = Point[];

@@ -1,6 +1,9 @@
-/**
- * SVG creation parameters
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
  */
+
 type SvgParams = {
   /** Width in pixels */
   width?: number;

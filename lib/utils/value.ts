@@ -1,6 +1,9 @@
-/**
- * Import required dependencies
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
  */
+
 import { Values } from "../types";
 import { remapValue } from "./math";
 

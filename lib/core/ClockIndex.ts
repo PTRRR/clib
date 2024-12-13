@@ -1,3 +1,9 @@
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
 import { createSvg, getSvgAsImageUrl } from "../utils/svg";
 import { getFontDataUrl } from "../utils/fonts";
 import { Layer } from "./Layer";
