@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // We're importing two special functions from a library that helps us create clocks
+      // Think of this like borrowing tools from a toolbox
+      import {
+        createClock,
+        scaleTimeSeries, // This function helps us adjust multiple sets of data to fit our clock
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      // Here are some web addresses where we can get different types of energy usage data
+      // These are stored in CSV files (like Excel spreadsheets)
+      // Single building data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv
+      // All buildings data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/all_buildings.csv
+      // Whole Switzerland data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv
+
+      createClock(
+        (clock, data) => {
+          // Calculate the radius (half the width) of our clock
+          const radius = clock.width * 0.5;
+
+          // Get the base energy demand data from our dataset
+          const baseDemand = data["Base-demand"];
+
+          // We're going to compare two different days:
+
+          // First day (Day 6):
+          const day6Index = 6; // This is Sunday (if we start counting from Monday)
+          // Get 24 hours worth of data for day 6
+          // We multiply by 4 because we have data every 15 minutes (4 readings per hour)
+          const day6 = baseDemand.slice(
+            day6Index * 4 * 24, // Start of day 6
+            (day6Index + 1) * 4 * 24 // End of day 6
+          );
+
+          // Second day (Day 3):
+          const day3Index = 3; // This is Thursday
+          // Get 24 hours worth of data for day 3
+          const day3 = baseDemand.slice(
+            day3Index * 4 * 24, // Start of day 3
+            (day3Index + 1) * 4 * 24 // End of day 3
+          );
+
+          // Scale both days' data to fit nicely on our clock
+          // This converts our energy values to sizes that will look good
+          // The values will be between 50% and 80% of the clock's radius
+          const [remappedDay6, remappedDay3] = scaleTimeSeries(
+            [day6, day3], // Our two days of data
+            radius * 0.5, // Minimum size
+            radius * 0.8 // Maximum size
+          );
+
+          // Add the first day's data as a red circular chart
+          clock.addRadialChart(remappedDay6, {
+            fill: "#ff3b30", // Red color
+            subdivisions: 5, // Number of rings in the chart
+          });
+
+          // Add the second day's data as an orange circular chart
+          clock.addRadialChart(remappedDay3, {
+            fill: "#ff9500", // Orange color
+            subdivisions: 5, // Number of rings in the chart
+          });
+
+          // Add hour numbers around the clock (0-23 for 24 hours)
+          clock.addTexts({
+            count: 24, // 24 numbers for 24 hours
+            fontSize: 40, // How big the numbers should be
+            offset: 40, // How far from the center the numbers should be
+          });
+
+          // Add a moving hand to show the current time
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1, // How big the hand should be
+            offsetY: -0.166, // Adjust where the hand is centered
+            label: "seconds", // What this hand represents
+          });
+        },
+        {
+          // Tell the clock where to get its data from
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>

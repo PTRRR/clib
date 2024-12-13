@@ -1,4 +1,4 @@
-import { createClock, remapValues } from "../lib";
+import { createClock, scaleTimeSeries } from "../lib";
 
 // Data URLs:
 
@@ -17,19 +17,26 @@ createClock(
 
     const baseDemand = data["Base-demand"];
 
-    const dayIndex = 6;
-    const day = baseDemand.slice(dayIndex * 4 * 24, (dayIndex + 1) * 4 * 24);
-    const remappedBaseDemand = remapValues(day, radius * 0.5, radius * 0.8);
+    const day6Index = 6;
+    const day6 = baseDemand.slice(day6Index * 4 * 24, (day6Index + 1) * 4 * 24);
 
-    clock.addRadialChart(remappedBaseDemand, {
+    const day7Index = 3;
+    const day7 = baseDemand.slice(day7Index * 4 * 24, (day7Index + 1) * 4 * 24);
+
+    const [remappedDay6, remappedDay7] = scaleTimeSeries(
+      [day6, day7],
+      radius * 0.5,
+      radius * 0.8
+    );
+
+    clock.addRadialChart(remappedDay6, {
       fill: "#ff3b30",
       subdivisions: 5,
     });
 
-    clock.addPlainCircle({
-      radius: radius * 0.55,
-      outline: true,
-      thickness: 1,
+    clock.addRadialChart(remappedDay7, {
+      fill: "#ff9500",
+      subdivisions: 5,
     });
 
     clock.addTexts({
