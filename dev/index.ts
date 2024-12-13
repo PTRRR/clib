@@ -1,116 +1,53 @@
-import {
-  aggregateTimeSeries,
-  createClock,
-  defaultClockStep,
-  scaleTimeSeries,
-} from "../lib";
+import { createClock, remapValues } from "../lib";
 
-createClock((clock, data) => {
-  const radius = clock.width * 0.5;
+// Data URLs:
 
-  const supplyFromGrid = data["Electricity-supply-from-grid"];
-  const supplyFromGridByDay = aggregateTimeSeries(supplyFromGrid, {
-    aggregationType: "average",
-    period: "day",
-  });
+// Single building:
+// https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv
 
-  const supplyPhoto = data["Electricity-supply-photovoltaics"];
-  const supplyPhotoByDay = aggregateTimeSeries(supplyPhoto, {
-    aggregationType: "average",
-    period: "day",
-  });
+// All buildings:
+// https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/all_buildings.csv
 
-  const [scaledSupplyFromGrid, scaledSupplyPhoto] = scaleTimeSeries(
-    [supplyFromGridByDay, supplyPhotoByDay],
-    radius * 0.5,
-    radius * 0.85
-  );
+// Whole Switzerland:
+// https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv
 
-  // White background
+createClock(
+  (clock, data) => {
+    const radius = clock.width * 0.5;
 
-  clock.addRadialChart(scaledSupplyPhoto, {
-    subdivisions: 5,
-    tint: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 255,
-    },
-  });
+    const baseDemand = data["Base-demand"];
 
-  // Actual charts
+    const dayIndex = 6;
+    const day = baseDemand.slice(dayIndex * 4 * 24, (dayIndex + 1) * 4 * 24);
+    const remappedBaseDemand = remapValues(day, radius * 0.5, radius * 0.8);
 
-  clock.addRadialChart(scaledSupplyFromGrid, {
-    subdivisions: 5,
-    tint: {
-      r: 2,
-      g: 48,
-      b: 72,
-      a: 255,
-    },
-  });
+    clock.addRadialChart(remappedBaseDemand, {
+      fill: "#ff3b30",
+      subdivisions: 5,
+    });
 
-  clock.addRadialChart(scaledSupplyPhoto, {
-    subdivisions: 5,
-    blendMode: "multiply",
-    tint: {
-      r: 255,
-      g: 183,
-      b: 3,
-      a: 255,
-    },
-  });
+    clock.addPlainCircle({
+      radius: radius * 0.55,
+      outline: true,
+      thickness: 1,
+    });
 
-  clock.addRectangles({
-    count: scaledSupplyPhoto.length,
-    width: 3,
-    height: 30,
-    offset: 20,
-  });
+    clock.addTexts({
+      count: 24,
+      fontSize: 40,
+      offset: 40,
+    });
 
-  clock.addCustomShape({
-    count: scaledSupplyPhoto.length,
-    handler: async (index, instance) => {
-      return instance.createTextElement({
-        text: `${index.toString().padStart(2, "0")}`,
-        fontSize: 20,
-        offset: 10,
-      });
-    },
-  });
-
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
-    scale: 0.1,
-    offsetY: -0.166,
-    label: "seconds",
-  });
-
-  // Add minutes hand
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
-    scale: 0.1,
-    offsetY: -0.166,
-    label: "minutes",
-  });
-
-  // Add hours hand
-  clock.addHandle({
-    imageUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
-    scale: 0.1,
-    offsetY: -0.23,
-    label: "hours",
-  });
-
-  // Add animation to move clock hands
-  clock.addAnimation({
-    duration: 3000,
-    handler: (progress, delta) => {
-      const step = defaultClockStep(clock);
-      step.handler?.(progress, delta);
-    },
-  });
-});
+    clock.addHandle({
+      imageUrl:
+        "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+      scale: 0.1,
+      offsetY: -0.166,
+      label: "seconds",
+    });
+  },
+  {
+    dataUrl:
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+  }
+);

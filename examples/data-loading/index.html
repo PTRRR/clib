@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // We're importing two special functions from a library that helps us create clocks
+      // Think of this like borrowing tools from a toolbox
+      import {
+        createClock,
+        remapValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      // Here are some web addresses where we can get different types of energy usage data
+      // These are stored in CSV files (like Excel spreadsheets)
+      // Single building data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv
+      // All buildings data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/all_buildings.csv
+      // Whole Switzerland data: https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv
+
+      createClock(
+        (clock, data) => {
+          // Calculate the radius (half the width) of our clock
+          const radius = clock.width * 0.5;
+
+          // Get the base energy demand data from our dataset
+          const baseDemand = data["Base-demand"];
+
+          // We're looking at day 6 of the week (Sunday, if we start counting from Monday)
+          const dayIndex = 6;
+
+          // Get 24 hours worth of data for our chosen day
+          // We multiply by 4 because we have data every 15 minutes (4 readings per hour)
+          const day = baseDemand.slice(
+            dayIndex * 4 * 24, // Start of the day
+            (dayIndex + 1) * 4 * 24 // End of the day
+          );
+
+          // Convert our energy values to sizes that will look good on our clock
+          // This maps them between 50% and 80% of the clock's radius
+          const remappedBaseDemand = remapValues(
+            day,
+            radius * 0.5, // Minimum size
+            radius * 0.8 // Maximum size
+          );
+
+          // Add a circular chart showing energy usage
+          clock.addRadialChart(remappedBaseDemand, {
+            fill: "#ff3b30", // Red color
+            subdivisions: 5, // Smooth out values
+          });
+
+          // Add a plain circle in the middle of the clock
+          clock.addPlainCircle({
+            radius: radius * 0.55, // Size of the circle
+            outline: true, // Just show the outline
+            thickness: 1, // How thick the outline should be
+          });
+
+          // Add hour numbers around the clock (0-23 for 24 hours)
+          clock.addTexts({
+            count: 24, // 24 numbers for 24 hours
+            fontSize: 40, // How big the numbers should be
+            offset: 40, // How far from the edge the numbers should be
+          });
+
+          // Add a moving hand to show the current time
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1, // How big the hand should be
+            offsetY: -0.166, // Adjust where the hand is centered
+            label: "seconds", // What this hand represents
+          });
+        },
+        {
+          // Tell the clock where to get its data from
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
