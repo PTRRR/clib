@@ -50,13 +50,7 @@
           clock.addRadialChart(remappedBaseDemand, {
             fill: "#ff3b30", // Red color
             subdivisions: 5, // Smooth out values
-          });
-
-          // Add a plain circle in the middle of the clock
-          clock.addPlainCircle({
-            radius: radius * 0.55, // Size of the circle
-            outline: true, // Just show the outline
-            thickness: 1, // How thick the outline should be
+            centerOffset: 15, // Create a whole in the center of the chart
           });
 
           // Add hour numbers around the clock (0-23 for 24 hours)
