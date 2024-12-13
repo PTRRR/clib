@@ -268,4 +268,33 @@ Applies logarithmic transformation to values.
 
 ## License
 
-MIT
+⚠️ **EDUCATIONAL USE ONLY - RESTRICTED LICENSE** ⚠️
+
+This software is licensed for educational purposes only and is restricted to students currently enrolled in the Graphic Rodeo Workshop at Fachklasse Grafik Luzern.
+
+### Permitted Uses
+
+- Educational use within the program
+- Installation on personal devices for coursework
+- Creation of backup copies for personal educational use
+
+### Restrictions
+
+- ❌ No commercial use
+- ❌ No transfer to non-program students
+- ❌ No reverse engineering or modification
+- ❌ No use after program completion/withdrawal
+
+### Eligibility
+
+- Must be an actively enrolled student in the Graphic Rodeo Workshop
+- Must provide valid student identification upon request
+- License automatically terminates upon program completion or withdrawal
+
+### Legal Notice
+
+This software is provided "AS IS" without warranty of any kind. For full license terms, see [LICENSE](./LICENSE)
+
+---
+
+_By using this software, you agree to the terms outlined above._

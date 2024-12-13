@@ -18,10 +18,10 @@ createClock(
     const baseDemand = data["Base-demand"];
 
     const day6Index = 6;
-    const day6 = baseDemand.slice(day6Index * 4 * 24, (day6Index + 1) * 4 * 24);
+    const day6 = baseDemand.slice(day6Index * 24, (day6Index + 1) * 24);
 
     const day7Index = 3;
-    const day7 = baseDemand.slice(day7Index * 4 * 24, (day7Index + 1) * 4 * 24);
+    const day7 = baseDemand.slice(day7Index * 24, (day7Index + 1) * 24);
 
     const [remappedDay6, remappedDay7] = scaleTimeSeries(
       [day6, day7],
@@ -55,6 +55,6 @@ createClock(
   },
   {
     dataUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv",
   }
 );

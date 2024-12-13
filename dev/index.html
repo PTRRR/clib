@@ -4,8 +4,57 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
   </head>
   <body>
-    <script type="module" src="/dev/index.js"></script>
+    <script type="module" autopilot>
+      // Import the createClock function from an external library
+      import {
+        createClock,
+        remapValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      // Initialize clock creation with a callback function that receives the clock object
+      createClock(
+        (clock, data) => {
+          const baseDemand = data["Base-demand"];
+
+          clock.addTexts({
+            count: 24,
+            fontSize: 40,
+            offset: 40,
+          });
+
+          const scaledBaseDemand = remapValues(baseDemand, 200, 300);
+          const day1 = scaledBaseDemand.slice(6 * 4 * 24, 7 * 4 * 24);
+
+          clock.addRadialChart(day1, {
+            fill: "red",
+            subdivisions: 5,
+            centerOffset: 200,
+          });
+
+          const day2 = scaledBaseDemand.slice(8 * 4 * 24, 9 * 4 * 24);
+
+          clock.addRadialChart(day2, {
+            fill: "blue",
+            subdivisions: 5,
+            blendMode: "add",
+          });
+
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1, // How big the hand should be
+            offsetY: -0.166, // Adjust where the hand is centered
+            label: "seconds", // What this hand represents
+          });
+        },
+        {
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
   </body>
 </html>
