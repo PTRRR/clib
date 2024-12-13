@@ -39,8 +39,11 @@ export type RadialChartOptions = {
   samples?: number;
   /** Distance from center point */
   centerOffset?: number;
+  thickness?: number;
   /** Whether centerOffset follows outer contour shape */
   relativeOffset?: boolean;
+  /** Alias for centerOffset when used in conjunction with outline mode */
+  outline?: boolean;
   /** Path subdivision count (0-10) for detail enhancement */
   subdivisions?: number;
   /** Custom GLSL vertex shader */
@@ -53,8 +56,9 @@ export type RadialChartOptions = {
   texture?: string;
   /** Additional shader uniform resources */
   resources?: Record<string, any>;
-  /** Color tint in RGBA format */
+  /** Color in RGBA format, HEX or CSS color */
   tint?: Color;
+  /** Alias for tint */
   fill?: Color;
   /** UV mapping bounds */
   boundingBox?: {
@@ -147,9 +151,11 @@ export class RadialChart extends Layer {
       path = resampleClosedPath(path, clampedSamples);
     }
 
+    const isOutline = params?.relativeOffset || params?.outline;
+    const outlineThickness = params?.centerOffset || params?.thickness || 0;
     const outerValues = mapPolarPathToValues(path);
-    const innerValues = params?.relativeOffset
-      ? outerValues.map((it) => it - (params.centerOffset || 0))
+    const innerValues = isOutline
+      ? outerValues.map((it) => it - outlineThickness)
       : new Array(outerValues.length).fill(params?.centerOffset || 0);
 
     const normalizedValueAttribute: Values = [];

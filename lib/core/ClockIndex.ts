@@ -21,9 +21,11 @@ export type TextShapeParams = {
   fontUrl?: string;
   /** Font size in pixels */
   fontSize?: number;
-  /** Text color */
-  fill?: Color;
+  /** Color in RGBA format, HEX or CSS color */
   tint?: Color;
+  /** Alias for tint */
+  fill?: Color;
+  /** Offset from the edge of the clock */
   offset?: number;
 };
 
@@ -40,9 +42,11 @@ export type RectShapeParams = {
   width?: number;
   /** Height in pixels */
   height?: number;
-  /** Fill color */
-  fill?: Color;
+  /** Color in RGBA format, HEX or CSS color */
   tint?: Color;
+  /** Alias for tint */
+  fill?: Color;
+  /** Offset from the edge of the clock */
   offset?: number;
 };
 
@@ -56,9 +60,11 @@ export type RectShapeParams = {
 export type CircleShapeParams = {
   /** Radius in pixels */
   radius?: number;
-  /** Fill color */
-  fill?: Color;
+  /** Color in RGBA format, HEX or CSS color */
   tint?: Color;
+  /** Alias for tint */
+  fill?: Color;
+  /** Offset from the edge of the clock */
   offset?: number;
 };
 
@@ -91,9 +97,11 @@ export type TriangleShapeParams = {
   width?: number;
   /** Height from base to apex */
   height?: number;
-  /** Fill color */
-  fill?: Color;
+  /** Color in RGBA format, HEX or CSS color */
   tint?: Color;
+  /** Alias for tint */
+  fill?: Color;
+  /** Offset from the edge of the clock */
   offset?: number;
 };
 
