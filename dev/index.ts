@@ -1,4 +1,4 @@
-import { createClock, scaleTimeSeries } from "../lib";
+import { createClock, scaleTimeSeries, scaleValues } from "../lib";
 
 // Data URLs:
 
@@ -17,26 +17,30 @@ createClock(
 
     const baseDemand = data["Base-demand"];
 
+    const scale = 20;
+
     const day6Index = 6;
-    const day6 = baseDemand.slice(day6Index * 24, (day6Index + 1) * 24);
+    const day6 = baseDemand.slice(day6Index * 4 * 24, (day6Index + 1) * 4 * 24);
+    const scaledDay6 = scaleValues(day6, scale);
 
-    const day7Index = 3;
-    const day7 = baseDemand.slice(day7Index * 24, (day7Index + 1) * 24);
-
-    const [remappedDay6, remappedDay7] = scaleTimeSeries(
-      [day6, day7],
-      radius * 0.5,
-      radius * 0.8
+    const day12Index = 9;
+    const day12 = baseDemand.slice(
+      day12Index * 4 * 24,
+      (day12Index + 1) * 4 * 24
     );
+    const scaledDay12 = scaleValues(day12, scale);
 
-    clock.addRadialChart(remappedDay6, {
+    clock.addRadialChart(scaledDay6, {
       fill: "#ff3b30",
       subdivisions: 5,
+      valuesOffset: 150,
     });
 
-    clock.addRadialChart(remappedDay7, {
-      fill: "#ff9500",
+    clock.addRadialChart(scaledDay12, {
+      fill: "green",
       subdivisions: 5,
+      valuesOffset: 150,
+      inverted: true,
     });
 
     clock.addTexts({
@@ -55,6 +59,6 @@ createClock(
   },
   {
     dataUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv",
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
   }
 );

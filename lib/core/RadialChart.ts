@@ -45,6 +45,8 @@ export type RadialChartOptions = {
   samples?: number;
   /** Distance from center point */
   centerOffset?: number;
+  inverted?: boolean;
+  valuesOffset?: number;
   thickness?: number;
   /** Whether centerOffset follows outer contour shape */
   relativeOffset?: boolean;
@@ -144,7 +146,8 @@ export class RadialChart extends Layer {
    * 6. Build triangle indices for quad mesh
    */
   private createDefaultGeometry(values: Values, params?: RadialChartOptions) {
-    const { subdivisions, samples } = params || {};
+    const { subdivisions, samples, inverted } = params || {};
+
     let path = mapValuesToPolarPath(values);
 
     if (typeof subdivisions === "number") {
@@ -158,11 +161,29 @@ export class RadialChart extends Layer {
     }
 
     const isOutline = params?.relativeOffset || params?.outline;
-    const outlineThickness = params?.centerOffset || params?.thickness || 0;
-    const outerValues = mapPolarPathToValues(path);
-    const innerValues = isOutline
-      ? outerValues.map((it) => it - outlineThickness)
-      : new Array(outerValues.length).fill(params?.centerOffset || 0);
+
+    const valuesOffset = params?.valuesOffset || 0;
+    const centerOffset =
+      (typeof params?.centerOffset === "number"
+        ? params.centerOffset
+        : valuesOffset) || 0;
+    const outlineThickness = centerOffset || params?.thickness || 0;
+    const finalValues = mapPolarPathToValues(path);
+
+    let outerValues: Values = [];
+    let innerValues: Values = [];
+
+    if (inverted) {
+      innerValues = finalValues.map((it) => valuesOffset - it);
+      outerValues = isOutline
+        ? innerValues.map((it) => it - outlineThickness)
+        : new Array(innerValues.length).fill(centerOffset || 0);
+    } else {
+      outerValues = finalValues.map((it) => it + valuesOffset);
+      innerValues = isOutline
+        ? outerValues.map((it) => it - outlineThickness)
+        : new Array(outerValues.length).fill(centerOffset || 0);
+    }
 
     const normalizedValueAttribute: Values = [];
     const valueAttribute: Values = [];

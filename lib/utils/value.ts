@@ -81,6 +81,10 @@ export const remapValues = (values: Values, low: number, hight: number) => {
   return normalized.map((it) => remapValue(it, 0, 1, low, hight));
 };
 
+export const scaleValues = (values: Values, scale: number) => {
+  return values.map((it) => it * scale);
+};
+
 export const getDay = (dayIndex: number, values: Values) =>
   values.slice(dayIndex * 24, dayIndex * 24 + 24);
 
