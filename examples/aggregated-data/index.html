@@ -20,11 +20,9 @@
         (clock, data) => {
           const baseDemand = data["Base-demand"];
           const hourlyValues = quarterToHourly(baseDemand);
-          const dailyValues = hourlyToDaily(hourlyToDaily);
-
-          console.log(dailyValues);
-
-          const scaledBaseDemand = scaleValues(dailyValues, 200);
+          const dailyValues = hourlyToDaily(hourlyValues);
+          const firstTwentyDays = dailyValues.slice(0, 20);
+          const scaledBaseDemand = scaleValues(firstTwentyDays, 200);
 
           clock.addRadialChart(scaledBaseDemand, {
             valuesOffset: 80,
@@ -33,7 +31,7 @@
           });
 
           clock.addTexts({
-            count: 24,
+            count: 20,
             fontSize: 40,
             offset: 40,
           });
