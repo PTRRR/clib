@@ -1,4 +1,4 @@
-import { createClock, scaleTimeSeries, scaleValues } from "../lib";
+import { addValues, createClock, extractPeriod, scaleValues } from "../lib";
 
 // Data URLs:
 
@@ -13,30 +13,25 @@ import { createClock, scaleTimeSeries, scaleValues } from "../lib";
 
 createClock(
   (clock, data) => {
-    const radius = clock.width * 0.5;
-
     const baseDemand = data["Base-demand"];
 
     const scale = 20;
 
-    const day6Index = 6;
-    const day6 = baseDemand.slice(day6Index * 4 * 24, (day6Index + 1) * 4 * 24);
+    const day6 = extractPeriod(baseDemand, 4 * 24, 6);
     const scaledDay6 = scaleValues(day6, scale);
 
-    const day12Index = 9;
-    const day12 = baseDemand.slice(
-      day12Index * 4 * 24,
-      (day12Index + 1) * 4 * 24
-    );
+    const day12 = extractPeriod(baseDemand, 4 * 24, 9);
     const scaledDay12 = scaleValues(day12, scale);
 
-    clock.addRadialChart(scaledDay6, {
+    const added = addValues(scaledDay6, scaledDay12);
+
+    clock.addRadialChart(added, {
       fill: "#ff3b30",
       subdivisions: 5,
       valuesOffset: 150,
     });
 
-    clock.addRadialChart(scaledDay12, {
+    clock.addRadialChart(added, {
       fill: "green",
       subdivisions: 5,
       valuesOffset: 150,

@@ -42,6 +42,7 @@ export const createClock = async (
     );
     setup?.(clock, data);
   } catch (error) {
+    console.error(error);
     setup?.(clock, {});
   }
 };

@@ -202,6 +202,16 @@ export const aggregateTimeSeries = (
   return results.map((it) => it.value);
 };
 
+/**
+ * Scales multiple time series arrays to a common range while preserving relative proportions
+ * @param {Values[]} timeSeriesArrays - Array of time series arrays to scale
+ * @param {number} [targetMin=0] - Minimum value of the target range
+ * @param {number} [targetMax=1] - Maximum value of the target range
+ * @returns {Values[]} Array of scaled time series arrays
+ * @throws {Error} If input arrays are empty or have different lengths
+ * @example
+ * scaleTimeSeries([[1, 2], [3, 4]], 0, 10) // returns [[0, 3.33...], [6.66..., 10]]
+ */
 export const scaleTimeSeries = (
   timeSeriesArrays: Values[],
   targetMin: number = 0,
@@ -240,6 +250,14 @@ export const scaleTimeSeries = (
   );
 };
 
+/**
+ * Adds corresponding values from multiple time series arrays
+ * @param {Values[]} timeSeriesArrays - Array of time series arrays to add together
+ * @returns {Values} Single array containing the sum of all corresponding values
+ * @throws {Error} If input arrays have different lengths
+ * @example
+ * addTimeSeries([[1, 2], [3, 4]]) // returns [4, 6]
+ */
 export const addTimeSeries = (timeSeriesArrays: Values[]): Values => {
   // If no arrays provided, return empty array
   if (!timeSeriesArrays.length) {
@@ -265,4 +283,60 @@ export const addTimeSeries = (timeSeriesArrays: Values[]): Values => {
   }
 
   return result;
+};
+
+/**
+ * Adds corresponding values from multiple time series arrays (variadic version)
+ * @param {...Values} timeSeries - Multiple time series arrays to add together
+ * @returns {Values} Single array containing the sum of all corresponding values
+ * @throws {Error} If input arrays have different lengths
+ * @example
+ * addValues([1, 2], [3, 4], [5, 6]) // returns [9, 12]
+ */
+export const addValues = (...timeSeries: Values[]): Values => {
+  // If no arrays provided, return empty array
+  if (!timeSeries.length) {
+    return [];
+  }
+
+  // Get the length of the first array
+  const length = timeSeries[0].length;
+
+  // Validate that all arrays have the same length
+  if (!timeSeries.every((arr) => arr.length === length)) {
+    throw new Error("All time series must have the same length");
+  }
+
+  // Initialize result array with zeros
+  const result = new Array(length).fill(0);
+
+  // Add values from each time series
+  for (const values of timeSeries) {
+    for (let i = 0; i < length; i++) {
+      result[i] += values[i];
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Extracts a fixed-size period of values from an array starting at a specified index
+ * @param {Values} values - Array of numerical values to extract from
+ * @param {number} [size=24] - Size of the period to extract (default: 24 for hourly data)
+ * @param {number} [index=0] - Starting period index (0-based)
+ * @returns {Values} Array of values for the specified period
+ * @example
+ * extractPeriod([1,2,3,4,5,6], 2, 1) // returns [3,4]
+ * extractPeriod([1,2,3,4,5,6]) // returns first 24 values (or all if less than 24)
+ */
+export const extractPeriod = (
+  values: Values,
+  size: number = 24,
+  index: number = 0
+) => {
+  return (Array.isArray(values) ? [...values] : []).slice(
+    index * size,
+    (index + 1) * size
+  );
 };
