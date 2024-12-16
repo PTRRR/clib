@@ -10,16 +10,16 @@ import { createClock, scaleValues, scaleTimeSeries, addValues } from "../lib";
 createClock(
   (clock, data) => {
     const basedemand = data["Base-demand"];
-    const scaledbasedemand = scaleValues(basedemand, 25);
+    const scaledbasedemand = scaleValues(basedemand, 14);
     const EDay = scaledbasedemand.slice(17 * 24, 19 * 24);
 
     const hpeh = data["Heat-pumps-electrical-heaters"];
-    const scaledhpeh = scaleValues(hpeh, 25);
+    const scaledhpeh = scaleValues(hpeh, 14);
     const SDay = scaledhpeh.slice(17 * 24, 19 * 24);
     const baseDemandAndHeatPump = addValues(EDay, SDay);
 
     const electromobility = data["Electro-mobility"];
-    const scaledelectromobility = scaleValues(electromobility, 25);
+    const scaledelectromobility = scaleValues(electromobility, 14);
     const SIDay = scaledelectromobility.slice(17 * 24, 19 * 24);
     const baseDemandAndHeatPumpAndElectromobility = addValues(
       EDay,
