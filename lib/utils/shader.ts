@@ -101,7 +101,7 @@ export const defaultFragmentHeader = `
     c += 0.5;
 
     float dlx = fwidth(c) * smoothing;
-    return endAlpha >= 1.0 ? 1.0 : smoothstep(c + dlx, c - dlx, startAlpha) * smoothstep(c - dlx, c + dlx, endAlpha);
+    return smoothstep(c + dlx, c - dlx, startAlpha) * smoothstep(c - dlx, c + dlx, endAlpha);
   }
 `;
 export const texturedFragmentShader = `

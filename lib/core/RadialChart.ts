@@ -75,6 +75,10 @@ export type RadialChartOptions = {
     maxX: number;
     maxY: number;
   };
+  radialMask?: {
+    start?: number;
+    end?: number;
+  };
 };
 
 /**
@@ -315,11 +319,11 @@ export class RadialChart extends Layer {
               type: "vec4<f32>",
             },
             uRadialMaskStart: {
-              value: 0.0,
+              value: params.radialMask?.start || 0.0,
               type: "f32",
             },
             uRadialMaskEnd: {
-              value: 1,
+              value: params.radialMask?.end || 1,
               type: "f32",
             },
           },
@@ -359,11 +363,11 @@ export class RadialChart extends Layer {
             type: "vec4<f32>",
           },
           uRadialMaskStart: {
-            value: 0.0,
+            value: params?.radialMask?.start || 0.0,
             type: "f32",
           },
           uRadialMaskEnd: {
-            value: 1,
+            value: params?.radialMask?.end || 1,
             type: "f32",
           },
         },
