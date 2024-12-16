@@ -203,6 +203,206 @@ export const aggregateTimeSeries = (
 };
 
 /**
+ * Aggregates 15-minute interval values into hourly values
+ * @param {number[]} values - Array of values at 15-minute intervals
+ * @param {Object} [options] - Configuration options
+ * @param {'sum' | 'average' | 'max' | 'min'} [options.method='average'] - Aggregation method
+ * @returns {number[]} Array of hourly values
+ * @throws {Error} If the input array length is not divisible by 4 (15-min intervals per hour)
+ * @example
+ * // Average hourly values
+ * quarterToHourly([1, 2, 3, 4, 5, 6, 7, 8]) // returns [2.5, 6.5]
+ *
+ * // Sum hourly values
+ * quarterToHourly([1, 2, 3, 4], { method: 'sum' }) // returns [10]
+ */
+export const quarterToHourly = (
+  values: number[],
+  options: { method?: "sum" | "average" | "max" | "min" } = {
+    method: "average",
+  }
+): number[] => {
+  if (values.length === 0) return [];
+
+  if (values.length % 4 !== 0) {
+    throw new Error(
+      "Input array length must be divisible by 4 (15-minute intervals)"
+    );
+  }
+
+  const hourlyValues: number[] = [];
+  const { method = "average" } = options;
+
+  // Process each hour (every 4 values)
+  for (let i = 0; i < values.length; i += 4) {
+    const quarterHourValues = values.slice(i, i + 4);
+
+    switch (method) {
+      case "sum":
+        hourlyValues.push(quarterHourValues.reduce((sum, val) => sum + val, 0));
+        break;
+
+      case "max":
+        hourlyValues.push(Math.max(...quarterHourValues));
+        break;
+
+      case "min":
+        hourlyValues.push(Math.min(...quarterHourValues));
+        break;
+
+      case "average":
+      default:
+        const sum = quarterHourValues.reduce((acc, val) => acc + val, 0);
+        hourlyValues.push(sum / 4);
+        break;
+    }
+  }
+
+  return hourlyValues;
+};
+
+/**
+ * Aggregates hourly values into daily values
+ * @param {number[]} values - Array of hourly values
+ * @param {Object} [options] - Configuration options
+ * @param {'sum' | 'average' | 'max' | 'min'} [options.method='average'] - Aggregation method
+ * @returns {number[]} Array of daily values
+ * @throws {Error} If the input array length is not divisible by 24 (hours per day)
+ * @example
+ * // Average daily values
+ * hourlyToDaily([1, 2, 3, ...24 values]) // returns [12.5] (average of 24 hours)
+ *
+ * // Sum daily values
+ * hourlyToDaily([1, 2, 3, 4, ...24 values], { method: 'sum' }) // returns [300] (sum of 24 hours)
+ */
+export const hourlyToDaily = (
+  values: number[],
+  options: { method?: "sum" | "average" | "max" | "min" } = {
+    method: "average",
+  }
+): number[] => {
+  if (values.length === 0) return [];
+
+  if (values.length % 24 !== 0) {
+    throw new Error(
+      "Input array length must be divisible by 24 (hours per day)"
+    );
+  }
+
+  const dailyValues: number[] = [];
+  const { method = "average" } = options;
+
+  // Process each day (every 24 values)
+  for (let i = 0; i < values.length; i += 24) {
+    const hourlyValues = values.slice(i, i + 24);
+
+    switch (method) {
+      case "sum":
+        dailyValues.push(hourlyValues.reduce((sum, val) => sum + val, 0));
+        break;
+
+      case "max":
+        dailyValues.push(Math.max(...hourlyValues));
+        break;
+
+      case "min":
+        dailyValues.push(Math.min(...hourlyValues));
+        break;
+
+      case "average":
+      default:
+        const sum = hourlyValues.reduce((acc, val) => acc + val, 0);
+        dailyValues.push(sum / 24);
+        break;
+    }
+  }
+
+  return dailyValues;
+};
+
+/**
+ * Aggregates daily values into monthly values
+ * @param {number[]} values - Array of daily values
+ * @param {Object} options - Configuration options
+ * @param {'sum' | 'average' | 'max' | 'min'} [options.method='average'] - Aggregation method
+ * @param {Date} options.startDate - Start date to determine month lengths correctly
+ * @returns {number[]} Array of monthly values
+ * @throws {Error} If startDate is not provided
+ * @example
+ * // Average monthly values
+ * const startDate = new Date('2024-01-01');
+ * dailyToMonthly([...31 values], { startDate }) // returns [15.5] (January average)
+ */
+export const dailyToMonthly = (
+  values: number[],
+  options: {
+    method?: "sum" | "average" | "max" | "min";
+    startDate: Date;
+  }
+): number[] => {
+  if (!options.startDate) {
+    throw new Error("startDate is required to determine month lengths");
+  }
+
+  if (values.length === 0) return [];
+
+  const monthlyValues: number[] = [];
+  const { method = "average", startDate } = options;
+
+  let currentPosition = 0;
+  const startYear = startDate.getFullYear();
+  const startMonth = startDate.getMonth();
+
+  while (currentPosition < values.length) {
+    // Calculate days in current month
+    const currentDate = new Date(
+      startYear,
+      startMonth + monthlyValues.length,
+      1
+    );
+    const daysInMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    ).getDate();
+
+    // Ensure we have enough days left
+    if (currentPosition + daysInMonth > values.length) {
+      break;
+    }
+
+    const dailyValues = values.slice(
+      currentPosition,
+      currentPosition + daysInMonth
+    );
+
+    switch (method) {
+      case "sum":
+        monthlyValues.push(dailyValues.reduce((sum, val) => sum + val, 0));
+        break;
+
+      case "max":
+        monthlyValues.push(Math.max(...dailyValues));
+        break;
+
+      case "min":
+        monthlyValues.push(Math.min(...dailyValues));
+        break;
+
+      case "average":
+      default:
+        const sum = dailyValues.reduce((acc, val) => acc + val, 0);
+        monthlyValues.push(sum / daysInMonth);
+        break;
+    }
+
+    currentPosition += daysInMonth;
+  }
+
+  return monthlyValues;
+};
+
+/**
  * Scales multiple time series arrays to a common range while preserving relative proportions
  * @param {Values[]} timeSeriesArrays - Array of time series arrays to scale
  * @param {number} [targetMin=0] - Minimum value of the target range
