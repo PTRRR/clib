@@ -109,7 +109,7 @@ export const texturedFragmentShader = `
 
   void main() {
     vec4 texture = texture(uTexture, uv);
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     fragColor = vec4(texture.x, texture.y, texture.z, 1.0) * uTint * radialMask;
   }
 `;
@@ -118,7 +118,7 @@ export const defaultFragmentShader = `
   ${defaultFragmentHeader}
 
   void main() {
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     fragColor = vec4(1.0, 1.0, 1.0, 1.0) * uTint * radialMask;
   }
 `;
@@ -127,7 +127,7 @@ export const linesFragmentShader = `
   ${defaultFragmentHeader}
 
   void main() {
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
     float mappedValue = normalizedValue;
     float sdf = abs(fract(mappedValue * 20.0) - 0.5) * 2.0;

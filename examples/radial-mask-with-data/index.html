@@ -23,7 +23,7 @@
           const day1 = scaledHourly.slice(0, 24);
           const day2 = scaledHourly.slice(24, 48);
           const day3 = scaledHourly.slice(48, 72);
-          const day4 = scaledHourly.slice(72, 96);
+          const day4 = scaledHourly.slice(12 * 24, (12 + 1) * 24);
 
           clock.addRadialChart(day1, {
             valuesOffset: 80,

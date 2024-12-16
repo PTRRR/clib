@@ -1,67 +1,98 @@
-import { addValues, createClock, extractPeriod, scaleValues } from "../lib";
+/*
+ * Graphic Rodeo Workshop - Educational License
+ * Fachklasse Grafik Luzern
+ * For educational use only - See LICENSE for terms
+ */
+
+// Import clock creation function
+import { createClock, scaleValues, scaleTimeSeries, addValues } from "../lib";
 
 createClock(
   (clock, data) => {
-    clock.addPlainCircle({
-      radius: 250,
-      fill: "#ff9500",
-      outline: true,
-      thickness: 40,
-      radialMask: {
-        start: 0,
-        end: 0.25,
-      },
+    const basedemand = data["Base-demand"];
+    const scaledbasedemand = scaleValues(basedemand, 25);
+    const EDay = scaledbasedemand.slice(17 * 24, 19 * 24);
+
+    const hpeh = data["Heat-pumps-electrical-heaters"];
+    const scaledhpeh = scaleValues(hpeh, 25);
+    const SDay = scaledhpeh.slice(17 * 24, 19 * 24);
+    const baseDemandAndHeatPump = addValues(EDay, SDay);
+
+    const electromobility = data["Electro-mobility"];
+    const scaledelectromobility = scaleValues(electromobility, 25);
+    const SIDay = scaledelectromobility.slice(17 * 24, 19 * 24);
+    const baseDemandAndHeatPumpAndElectromobility = addValues(
+      EDay,
+      SDay,
+      SIDay
+    );
+
+    //const layer1Data =
+
+    clock.addRadialChart(baseDemandAndHeatPumpAndElectromobility, {
+      valuesOffset: 100,
+      subdivisions: 5,
+      fill: "#ff24d7",
     });
 
-    clock.addPlainCircle({
-      radius: 200,
-      fill: "#ff3b30",
-      outline: true,
-      thickness: 40,
-      radialMask: {
-        start: 0.25,
-        end: 0.5,
-      },
+    clock.addRadialChart(baseDemandAndHeatPump, {
+      valuesOffset: 100,
+      subdivisions: 5,
+      fill: "Green",
     });
 
-    clock.addPlainCircle({
-      radius: 150,
-      fill: "#5856d6",
-      outline: true,
-      thickness: 40,
-      radialMask: {
-        start: 0.5,
-        end: 0.75,
-      },
+    clock.addRadialChart(EDay, {
+      valuesOffset: 100,
+      subdivisions: 5,
+      fill: "#0c155c",
     });
 
-    clock.addPlainCircle({
-      radius: 100,
-      fill: "#ffcc00",
-      outline: true,
-      thickness: 40,
-      radialMask: {
-        start: 0.75,
-        end: 1,
-      },
-    });
+    //   //   const remappedimports = remapValues(
+    //     imports,
+    //     radius * 0.5, // Minimum size
+    //     radius * 0.8 // Maximum size
+    //   );
 
+    //   //   const remappedexports = remapValues(
+    //     exports,
+    //     radius * 0.5, // Minimum size
+    //     radius * 0.8 // Maximum size
+    //   );
+
+    //   const remappedStorageinput = remapValues(
+    //     Storageinput,
+    //     radius * 0.5, // Minimum size
+    //     radius * 0.8 // Maximum size
+    //   );
+
+    //   const remappedStorageoutput = remapValues(
+    //     storageoutput,
+    //     radius * 0.5, // Minimum size
+    //     radius * 0.8 // Maximum size
+    //   );
+
+    //   const [imports, exports, storageoutput, Storageinput] = scaleTimeSeries(
+    //     [remappedimports, remappedexports, remappedStorageinput, remappedStorageoutput,],
+    //     radius * 0.5, // Minimum size
+    //     radius * 0.8 // Maximum size
+    //   );
+
+    // Add 24 rectangles evenly around clock
     clock.addTexts({
       count: 24,
       fontSize: 40,
       offset: 40,
     });
-
     clock.addHandle({
-      imageUrl:
-        "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+      imageUrl: "/api/clib/file/f444288uvwhpsqkoq5b2rv8q",
       scale: 0.1,
       offsetY: -0.166,
       label: "seconds",
     });
   },
   {
+    // Tell the clock where to get its data from
     dataUrl:
-      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+      "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/whole_switzerland.csv",
   }
 );

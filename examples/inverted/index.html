@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      import {
+        createClock,
+        quarterToHourly,
+        scaleValues,
+        extractPeriod,
+        addValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock(
+        (clock, data) => {
+          const baseDemand = data["Base-demand"];
+          const electroMobility = data["Electro-mobility"];
+          const exportToHighVoltageGrid = data["Export-to-high-voltage-grid"];
+          const importFromHighVoltageGrid =
+            data["Import-from-high-voltage-grid"];
+          const kitchen = data["Kitchen"];
+          const photovoltaics = data["Photovoltaics"];
+          const washing = data["Washing/drying"];
+
+          // Convert to hourly values
+          const hourlyBaseDemand = quarterToHourly(baseDemand);
+          const hourlyElectroMobility = quarterToHourly(electroMobility);
+          const hourlyExportToHighVoltageGrid = quarterToHourly(
+            exportToHighVoltageGrid
+          );
+          const hourlyImportFromHighVoltageGrid = quarterToHourly(
+            importFromHighVoltageGrid
+          );
+          const hourlyKitchen = quarterToHourly(kitchen);
+          const hourlyPhotovoltaics = quarterToHourly(photovoltaics);
+          const hourlyWashing = quarterToHourly(washing);
+
+          // Extract day for each of the columns
+          const dayOfBaseDemand = extractPeriod(hourlyBaseDemand, 24);
+          const dayOfElectroMobility = extractPeriod(hourlyElectroMobility, 24);
+          const dayOfExportToHighVoltageGrid = extractPeriod(
+            hourlyExportToHighVoltageGrid,
+            24
+          );
+          const dayOfImportfromHighVoltageGrid = extractPeriod(
+            hourlyImportFromHighVoltageGrid,
+            24
+          );
+          const dayOfKitchen = extractPeriod(hourlyKitchen, 24);
+          const dayOfPhotovoltaics = extractPeriod(hourlyPhotovoltaics, 24);
+          const dayOfWashing = extractPeriod(hourlyWashing, 24);
+
+          const layer1Data = addValues(
+            dayOfBaseDemand,
+            dayOfElectroMobility,
+            dayOfExportToHighVoltageGrid,
+            dayOfImportfromHighVoltageGrid,
+            dayOfKitchen,
+            dayOfPhotovoltaics,
+            dayOfWashing
+          );
+
+          const layer2Data = addValues(
+            dayOfBaseDemand,
+            dayOfElectroMobility,
+            dayOfExportToHighVoltageGrid,
+            dayOfImportfromHighVoltageGrid,
+            dayOfKitchen,
+            dayOfPhotovoltaics
+          );
+
+          const layer3Data = addValues(
+            dayOfBaseDemand,
+            dayOfElectroMobility,
+            dayOfExportToHighVoltageGrid,
+            dayOfImportfromHighVoltageGrid,
+            dayOfKitchen
+          );
+
+          const layer4Data = addValues(
+            dayOfBaseDemand,
+            dayOfElectroMobility,
+            dayOfExportToHighVoltageGrid,
+            dayOfImportfromHighVoltageGrid
+          );
+
+          const layer5Data = addValues(
+            dayOfBaseDemand,
+            dayOfElectroMobility,
+            dayOfExportToHighVoltageGrid
+          );
+
+          const layer6Data = addValues(dayOfBaseDemand, dayOfElectroMobility);
+          const layer7Data = addValues(dayOfBaseDemand);
+
+          const scale = 60;
+
+          clock.addRadialChart(scaleValues(layer1Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#5856d6",
+          });
+
+          clock.addRadialChart(scaleValues(layer2Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#007aff",
+          });
+
+          clock.addRadialChart(scaleValues(layer3Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#34aadc",
+          });
+
+          clock.addRadialChart(scaleValues(layer4Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ff2d55",
+          });
+
+          clock.addRadialChart(scaleValues(layer5Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ff3b30",
+          });
+
+          clock.addRadialChart(scaleValues(layer6Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ff9500",
+          });
+
+          clock.addRadialChart(scaleValues(layer7Data, scale), {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ffcc00",
+          });
+
+          clock.addTexts({
+            count: 24,
+            fontSize: 40,
+            offset: 40,
+          });
+
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1,
+            offsetY: -0.166,
+            label: "seconds",
+          });
+        },
+        {
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
