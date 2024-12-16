@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // Import clock creation function
+      import {
+        createClock,
+        scaleValues,
+        addValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock(
+        (clock, data) => {
+          const baseDemand = data["Base-demand"];
+          const importFromHightVoltageGrid =
+            data["Import-from-high-voltage-grid"];
+          const photovoltaics = data["Photovoltaics"];
+
+          const scaledBaseDemand = scaleValues(baseDemand, 100);
+          const dayOfBaseDemand = scaledBaseDemand.slice(0, 4 * 24);
+
+          const scaledImportFromHightVoltageGrid = scaleValues(
+            importFromHightVoltageGrid,
+            100
+          );
+          const dayOfImportFromHightVoltageGrid =
+            scaledImportFromHightVoltageGrid.slice(0, 4 * 24);
+
+          const scaledPhotovoltaics = scaleValues(photovoltaics, 100);
+          const dayOfPhotovoltaics = scaledPhotovoltaics.slice(0, 4 * 24);
+
+          const sumOfAllValues = addValues(
+            dayOfBaseDemand,
+            dayOfImportFromHightVoltageGrid,
+            dayOfPhotovoltaics
+          );
+
+          const sumOfBaseDemandAndImportFromHightVoltageGrid = addValues(
+            dayOfBaseDemand,
+            dayOfImportFromHightVoltageGrid
+          );
+
+          clock.addPlainCircle({
+            fill: "#ffcc00",
+            radius: 358,
+          });
+
+          clock.addRadialChart(sumOfAllValues, {
+            valuesOffset: 358,
+            fill: "#ff2d55",
+            subdivisions: 5,
+            inverted: true,
+          });
+
+          clock.addRadialChart(sumOfBaseDemandAndImportFromHightVoltageGrid, {
+            valuesOffset: 358,
+            fill: "#ff3b30",
+            subdivisions: 5,
+            inverted: true,
+          });
+
+          clock.addRadialChart(dayOfBaseDemand, {
+            valuesOffset: 358,
+            fill: "#ff9500",
+            subdivisions: 5,
+            inverted: true,
+          });
+
+          // Add 24 rectangles evenly around clock
+          clock.addRectangles({
+            count: 24,
+            width: 2,
+            height: 100,
+            offset: 50,
+            tint: "#007aff",
+          });
+
+          const handle = clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
+            scale: 0.1,
+            offsetY: -0.23,
+            label: "hours",
+            tint: "#007aff",
+          });
+
+          handle.rotation = 0.5;
+        },
+        {
+          // Tell the clock where to get its data from
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
