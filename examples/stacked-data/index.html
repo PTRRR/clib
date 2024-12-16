@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      import {
+        createClock,
+        scaleValues,
+        addValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock(
+        (clock, data) => {
+          const baseDemand = data["Base-demand"];
+          const scaledBaseDemand = scaleValues(baseDemand, 200);
+          const firstDay = scaledBaseDemand.slice(0, 4 * 24);
+          const secondDay = scaledBaseDemand.slice(4 * 24, 2 * 4 * 24);
+          const thirdDay = scaledBaseDemand.slice(2 * 4 * 24, 3 * 4 * 24);
+
+          const backgroundValues = addValues(firstDay, secondDay, thirdDay);
+          const middleValues = addValues(firstDay, secondDay);
+          const frontValues = firstDay;
+
+          clock.addPlainCircle({
+            radius: 250,
+            outline: true,
+            thickness: 1,
+            fill: {
+              r: 105,
+              g: 105,
+              b: 105,
+              a: 0.0,
+            },
+          });
+
+          clock.addPlainCircle({
+            radius: 200,
+            outline: true,
+            thickness: 1,
+            fill: {
+              r: 105,
+              g: 105,
+              b: 105,
+              a: 0.0,
+            },
+          });
+
+          clock.addPlainCircle({
+            radius: 150,
+            outline: true,
+            thickness: 1,
+            fill: {
+              r: 105,
+              g: 105,
+              b: 105,
+              a: 0.0,
+            },
+          });
+
+          clock.addPlainCircle({
+            radius: 100,
+            outline: true,
+            thickness: 1,
+            fill: {
+              r: 105,
+              g: 105,
+              b: 105,
+              a: 0.0,
+            },
+          });
+
+          clock.addRadialChart(backgroundValues, {
+            valuesOffset: 80,
+            fill: "#ff2d55",
+            subdivisions: 5,
+          });
+
+          clock.addRadialChart(middleValues, {
+            valuesOffset: 80,
+            fill: "#ff9500",
+            subdivisions: 5,
+          });
+
+          clock.addRadialChart(frontValues, {
+            valuesOffset: 80,
+            fill: "#ffcc00",
+            subdivisions: 5,
+          });
+
+          clock.addTexts({
+            count: 24,
+            fontSize: 40,
+            offset: 40,
+          });
+
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1,
+            offsetY: -0.166,
+            label: "seconds",
+          });
+        },
+        {
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
