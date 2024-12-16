@@ -1223,21 +1223,21 @@ ${u}`)}});return await Promise.all(l),o?s[n[0].src]:s}async unload(t){let i=de(t
 
   void main() {
     vec4 texture = texture(uTexture, uv);
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     fragColor = vec4(texture.x, texture.y, texture.z, 1.0) * uTint * radialMask;
   }
 `,l1=`
   ${If}
 
   void main() {
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     fragColor = vec4(1.0, 1.0, 1.0, 1.0) * uTint * radialMask;
   }
 `,ntt=`
   ${If}
 
   void main() {
-    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .0001);
+    float radialMask = getRadialMask(uv, uRadialMaskStart, uRadialMaskEnd, .001);
     float dist = length(uv - vec2(0.5, 0.5)) * 2.0;
     float mappedValue = normalizedValue;
     float sdf = abs(fract(mappedValue * 20.0) - 0.5) * 2.0;
