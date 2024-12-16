@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      import {
+        createClock,
+        quarterToHourly,
+        scaleValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock(
+        (clock, data) => {
+          const baseDemand = data["Base-demand"];
+          const hourly = quarterToHourly(baseDemand);
+          const scaledHourly = scaleValues(hourly, 150);
+
+          const day1 = scaledHourly.slice(0, 24);
+          const day2 = scaledHourly.slice(24, 48);
+          const day3 = scaledHourly.slice(48, 72);
+          const day4 = scaledHourly.slice(72, 96);
+
+          clock.addRadialChart(day1, {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ff9500",
+            radialMask: {
+              start: 0,
+              end: 0.25,
+            },
+          });
+
+          clock.addRadialChart(day2, {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ff3b30",
+            radialMask: {
+              start: 0.25,
+              end: 0.5,
+            },
+          });
+
+          clock.addRadialChart(day3, {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#5856d6",
+            radialMask: {
+              start: 0.5,
+              end: 0.75,
+            },
+          });
+
+          clock.addRadialChart(day4, {
+            valuesOffset: 80,
+            subdivisions: 5,
+            fill: "#ffcc00",
+            radialMask: {
+              start: 0.75,
+              end: 1,
+            },
+          });
+
+          clock.addTexts({
+            count: 24,
+            fontSize: 40,
+            offset: 40,
+          });
+
+          clock.addHandle({
+            imageUrl:
+              "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+            scale: 0.1,
+            offsetY: -0.166,
+            label: "seconds",
+          });
+        },
+        {
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
