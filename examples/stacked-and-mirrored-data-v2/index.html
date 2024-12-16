@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // Import clock creation function
+      import {
+        createClock,
+        scaleValues,
+        addValues,
+      } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock(
+        (clock, data) => {
+          const scale = 75;
+          const offset = 190;
+
+          const baseDemand = data["Base-demand"];
+          const importFromHightVoltageGrid =
+            data["Import-from-high-voltage-grid"];
+          const photovoltaics = data["Photovoltaics"];
+
+          const scaledBaseDemand = scaleValues(baseDemand, scale);
+          const dayOfBaseDemand = scaledBaseDemand.slice(0, 4 * 24);
+
+          const scaledImportFromHightVoltageGrid = scaleValues(
+            importFromHightVoltageGrid,
+            scale
+          );
+          const dayOfImportFromHightVoltageGrid =
+            scaledImportFromHightVoltageGrid.slice(0, 4 * 24);
+
+          const scaledPhotovoltaics = scaleValues(photovoltaics, scale);
+          const dayOfPhotovoltaics = scaledPhotovoltaics.slice(0, 4 * 24);
+
+          const sumOfAllValues = addValues(
+            dayOfBaseDemand,
+            dayOfImportFromHightVoltageGrid,
+            dayOfPhotovoltaics
+          );
+
+          const sumOfBaseDemandAndImportFromHightVoltageGrid = addValues(
+            dayOfBaseDemand,
+            dayOfImportFromHightVoltageGrid
+          );
+
+          // Add 24 rectangles evenly around clock
+          clock.addRectangles({
+            count: 48, // Number of rectangles
+            width: 2, // Width of each rectangle
+            height: 100, // Height of each rectangle
+            offset: 60,
+          });
+
+          clock.addRectangles({
+            count: 24, // Number of rectangles
+            width: 2, // Width of each rectangle
+            height: 100, // Height of each rectangle
+            offset: 0,
+          });
+
+          clock.addRadialChart(sumOfAllValues, {
+            valuesOffset: offset,
+            fill: "#ff2d55",
+            subdivisions: 5,
+          });
+
+          clock.addRadialChart(sumOfAllValues, {
+            valuesOffset: offset,
+            fill: "#007aff",
+            subdivisions: 5,
+            inverted: true,
+          });
+
+          clock.addRadialChart(sumOfBaseDemandAndImportFromHightVoltageGrid, {
+            valuesOffset: offset,
+            fill: "#ff3b30",
+            subdivisions: 5,
+          });
+
+          clock.addRadialChart(sumOfBaseDemandAndImportFromHightVoltageGrid, {
+            valuesOffset: offset,
+            fill: "#007aff",
+            subdivisions: 5,
+            inverted: true,
+          });
+
+          clock.addRadialChart(dayOfBaseDemand, {
+            valuesOffset: offset,
+            fill: "#ff9500",
+            subdivisions: 5,
+          });
+
+          clock.addRadialChart(dayOfBaseDemand, {
+            valuesOffset: offset,
+            fill: "#34aadc",
+            subdivisions: 5,
+            inverted: true,
+          });
+        },
+        {
+          // Tell the clock where to get its data from
+          dataUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/data/single_building.csv",
+        }
+      );
+    </script>
+  </body>
+</html>
