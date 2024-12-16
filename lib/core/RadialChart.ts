@@ -167,7 +167,7 @@ export class RadialChart extends Layer {
       (typeof params?.centerOffset === "number"
         ? params.centerOffset
         : valuesOffset) || 0;
-    const outlineThickness = centerOffset || params?.thickness || 0;
+    const outlineThickness = params?.thickness || centerOffset || 0;
     const finalValues = mapPolarPathToValues(path);
 
     let outerValues: Values = [];
