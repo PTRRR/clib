@@ -81,6 +81,10 @@ This framework was developed as a teaching tool for a graphic design workshop in
 
 [Browse Examples](https://ptrrr.github.io/clib/examples)
 
+## Workshop Archives
+
+[Browse Archives](https://autopilot.vpr-group.ch/api/clib/archives)
+
 ## Features
 
 - SVG-based clock face and hand rendering
