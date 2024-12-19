@@ -11,8 +11,8 @@ export default function handler(req, res) {
     return res.status(200).end();
   }
 
-  res.setHeader("Cache-Control", "public, max-age=3600"); // Cache for 1 hour
-  res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString());
+  res.setHeader("Cache-Control", "public, max-age=300"); // Cache for 1 hour
+  res.setHeader("Expires", new Date(Date.now() + 300000).toUTCString());
 
   const packageJson = JSON.parse(
     readFileSync(join(process.cwd(), "package.json"), "utf8")
