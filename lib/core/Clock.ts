@@ -24,6 +24,7 @@ import {
 } from "./ClockIndex";
 import { Animator, Step, Timeline } from "optimo-animator";
 import { omit } from "../utils";
+import { Picture, PictureProps } from "./Picture";
 
 /**
  * Parameters for index-based shape generation methods
@@ -92,12 +93,12 @@ export class Clock extends Application {
 
   /** Gets the current width of the application screen, scaled to 95% */
   get width() {
-    return this.screen.width * 0.95;
+    return this.screen.width * 1.0;
   }
 
   /** Gets the current height of the application screen, scaled to 95% */
   get height() {
-    return this.screen.height * 0.95;
+    return this.screen.height * 1.0;
   }
 
   /** Gets the center coordinates of the application screen */
@@ -136,6 +137,22 @@ export class Clock extends Application {
     });
     this.addLayer(radialChart);
     return radialChart;
+  }
+
+  /**
+   * Adds a new picture layer to the clock
+   * @param {PictureProps} options - Configuration options for the picture
+   * @param {string} options.imageUrl - URL of the image to load
+   * @param {string} [options.label] - Optional label for the picture
+   * @param {Color} [options.tint] - Optional color tint to apply
+   * @param {Color} [options.fill] - Optional fill color
+   * @param {number} [options.scale] - Optional scale factor
+   * @returns {Picture} The created Picture instance
+   */
+  addPicture(options: PictureProps) {
+    const picture = new Picture({ ...options, clockWidth: this.width });
+    this.addLayer(picture);
+    return picture;
   }
 
   /**

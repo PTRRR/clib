@@ -5,7 +5,7 @@
  */
 
 // Import clock creation function
-import { createClock, scaleValues, scaleTimeSeries, addValues } from "../lib";
+import { createClock, scaleValues, addValues } from "../lib";
 
 createClock(
   (clock, data) => {
@@ -27,7 +27,9 @@ createClock(
       SIDay
     );
 
-    //const layer1Data =
+    clock.addPicture({
+      imageUrl: "/assets/images/background.png",
+    });
 
     clock.addRadialChart(baseDemandAndHeatPumpAndElectromobility, {
       valuesOffset: 100,
@@ -46,36 +48,6 @@ createClock(
       subdivisions: 5,
       fill: "#0c155c",
     });
-
-    //   //   const remappedimports = remapValues(
-    //     imports,
-    //     radius * 0.5, // Minimum size
-    //     radius * 0.8 // Maximum size
-    //   );
-
-    //   //   const remappedexports = remapValues(
-    //     exports,
-    //     radius * 0.5, // Minimum size
-    //     radius * 0.8 // Maximum size
-    //   );
-
-    //   const remappedStorageinput = remapValues(
-    //     Storageinput,
-    //     radius * 0.5, // Minimum size
-    //     radius * 0.8 // Maximum size
-    //   );
-
-    //   const remappedStorageoutput = remapValues(
-    //     storageoutput,
-    //     radius * 0.5, // Minimum size
-    //     radius * 0.8 // Maximum size
-    //   );
-
-    //   const [imports, exports, storageoutput, Storageinput] = scaleTimeSeries(
-    //     [remappedimports, remappedexports, remappedStorageinput, remappedStorageoutput,],
-    //     radius * 0.5, // Minimum size
-    //     radius * 0.8 // Maximum size
-    //   );
 
     // Add 24 rectangles evenly around clock
     clock.addTexts({

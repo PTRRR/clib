@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // Import clock creation function
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock) => {
+        // Add three concentric rings of circles
+        clock.addCircles({
+          count: 24, // Number of circles
+          radius: 30, // Largest circles
+          offset: 30, // Closest to edge
+        });
+        clock.addCircles({
+          count: 24,
+          radius: 20, // Medium circles
+          offset: 80, // Middle ring
+        });
+        clock.addCircles({
+          count: 24,
+          radius: 10, // Smallest circles
+          offset: 110, // Furthest from edge
+        });
+      });
+    </script>
+  </body>
+</html>
