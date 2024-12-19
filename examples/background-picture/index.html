@@ -13,20 +13,9 @@
 
       createClock((clock) => {
         // Add three concentric rings of circles
-        clock.addCircles({
-          count: 24, // Number of circles
-          radius: 30, // Largest circles
-          offset: 30, // Closest to edge
-        });
-        clock.addCircles({
-          count: 24,
-          radius: 20, // Medium circles
-          offset: 80, // Middle ring
-        });
-        clock.addCircles({
-          count: 24,
-          radius: 10, // Smallest circles
-          offset: 110, // Furthest from edge
+        clock.addPicture({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/background.png",
         });
       });
     </script>
