@@ -340,6 +340,18 @@ export class RadialChart extends Layer {
     });
   }
 
+  set radialMaskStart(value: number) {
+    if (this.mesh && this.mesh.shader) {
+      this.mesh.shader.resources.globals.uniforms.uRadialMaskStart = value;
+    }
+  }
+
+  set radialMaskEnd(value: number) {
+    if (this.mesh && this.mesh.shader) {
+      this.mesh.shader.resources.globals.uniforms.uRadialMaskEnd = value;
+    }
+  }
+
   /**
    * Creates an untextured mesh with default shader configuration
    * @private

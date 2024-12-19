@@ -109,6 +109,10 @@ export class Clock extends Application {
     };
   }
 
+  get radius() {
+    return this.width * 0.5;
+  }
+
   /**
    * Adds a new layer to the main scene
    * @param {Layer} layer - Layer to add
