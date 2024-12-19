@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energy Clock</title>
+    <script src="https://autopilot.vpr-group.ch/api/clib"></script>
+  </head>
+  <body>
+    <script type="module" autopilot>
+      // Import clock creation function
+      import { createClock } from "https://clocks-lib.vpr-group.ch/api/latest";
+
+      createClock((clock) => {
+        clock.addPicture({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/background.png",
+        });
+
+        clock.addRectangles({
+          count: 24, // Number of rectangles
+          width: 3, // Width of each rectangle
+          height: 70, // Height of each rectangle
+          offset: 30,
+        });
+
+        const secondsHandle = clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
+          scale: 0.1,
+          offsetY: -0.166,
+        });
+
+        const minutesHandle = clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/minutes.png",
+          scale: 0.1,
+          offsetY: -0.166,
+        });
+
+        const hourHandle = clock.addHandle({
+          imageUrl:
+            "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/hours.png",
+          scale: 0.1,
+          offsetY: -0.23,
+        });
+
+        secondsHandle.rotation = 0; // Point to 12 o'clock
+        minutesHandle.rotation = Math.PI / 2 + (Math.PI / 4) * 3; // Point to 4:30
+        hourHandle.rotation = Math.PI / 2; // Point to 3 o'clock
+      });
+    </script>
+  </body>
+</html>
