@@ -93,12 +93,12 @@ export class Clock extends Application {
 
   /** Gets the current width of the application screen, scaled to 95% */
   get width() {
-    return this.screen.width * 1.0;
+    return this.screen.width * 0.95;
   }
 
   /** Gets the current height of the application screen, scaled to 95% */
   get height() {
-    return this.screen.height * 1.0;
+    return this.screen.height * 0.95;
   }
 
   /** Gets the center coordinates of the application screen */
