@@ -1,6 +1,6 @@
 {
   "name": "energy-clock-lib",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "description": "",
   "main": "lib/main.ts",
   "scripts": {
