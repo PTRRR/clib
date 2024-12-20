@@ -12,10 +12,10 @@
 
       createClock((clock) => {
         const circle1 = clock.addPlainCircle({
-          radius: 250,
+          radius: clock.radius * 0.8,
           fill: "#ff9500",
           outline: true,
-          thickness: 40,
+          thickness: clock.radius * 0.12,
           radialMask: {
             start: 0,
             end: 0.01,
@@ -23,10 +23,10 @@
         });
 
         const circle2 = clock.addPlainCircle({
-          radius: 200,
+          radius: clock.radius * 0.63,
           fill: "#ff3b30",
           outline: true,
-          thickness: 40,
+          thickness: clock.radius * 0.12,
           radialMask: {
             start: 0.25,
             end: 0.01,
@@ -34,10 +34,10 @@
         });
 
         const circle3 = clock.addPlainCircle({
-          radius: 150,
+          radius: clock.radius * 0.46,
           fill: "#5856d6",
           outline: true,
-          thickness: 40,
+          thickness: clock.radius * 0.12,
           radialMask: {
             start: 0.5,
             end: 0.01,
@@ -45,10 +45,10 @@
         });
 
         const circle4 = clock.addPlainCircle({
-          radius: 100,
+          radius: clock.radius * 0.29,
           fill: "#ffcc00",
           outline: true,
-          thickness: 40,
+          thickness: clock.radius * 0.12,
           radialMask: {
             start: 0.75,
             end: 0.01,
@@ -57,14 +57,14 @@
 
         clock.addTexts({
           count: 24,
-          fontSize: 40,
-          offset: 40,
+          fontSize: clock.radius * 0.12,
+          offset: clock.radius * 0.12,
         });
 
         const handle = clock.addHandle({
           imageUrl:
             "https://raw.githubusercontent.com/PTRRR/energy-clock-lib/main/assets/images/seconds.png",
-          scale: 0.1,
+          scale: clock.radius * 0.00028,
           offsetY: -0.166,
           label: "seconds",
         });
