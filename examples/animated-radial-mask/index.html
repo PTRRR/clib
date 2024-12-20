@@ -88,7 +88,31 @@
         });
 
         clock.addAnimation({
-          duration: 5000,
+          duration: 3000,
+          handler: (progress) => {
+            circle1.radialMaskStart = Math.max(progress, 0);
+            circle2.radialMaskStart = Math.max(progress, 0.25);
+            circle3.radialMaskStart = Math.max(progress, 0.5);
+            circle4.radialMaskStart = Math.max(progress, 0.75);
+            handle.rotation = progress * Math.PI * 2;
+          },
+          onEnd: () => {
+            circle1.radialMaskStart = 1;
+            circle2.radialMaskStart = 1;
+            circle3.radialMaskStart = 1;
+            circle4.radialMaskStart = 1;
+            handle.rotation = Math.PI * 2;
+          },
+        });
+
+        clock.addAnimation({
+          duration: 1000,
+          onEnd: () => {
+            circle1.radialMaskStart = 0;
+            circle2.radialMaskStart = 0.25;
+            circle3.radialMaskStart = 0.5;
+            circle4.radialMaskStart = 0.75;
+          },
         });
       });
     </script>
